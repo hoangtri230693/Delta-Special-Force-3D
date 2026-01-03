@@ -1,0 +1,123 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Default Local Group
+  m_EditorClassIdentifier: 
+  m_GroupName: Default Local Group
+  m_GUID: f2228ce07b97a324abaecc7934caf182
+  m_SerializeEntries:
+  - m_GUID: 01b773807bfc51f479591cecfcb00dc5
+    m_Address: Assets/_Data/Character/Model/TerroristD.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1a802d91d5442134f8730f1f24ae2062
+    m_Address: Assets/_Prefabs/CharacterModel/Terrorist_B_Model.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 22fa2eccceb57f248b6a0511261fe166
+    m_Address: Assets/_Data/Character/Model/AlphaTeam.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2d9af8ed0c8fa7a4c9aeb7f93461b37d
+    m_Address: Assets/_Data/Character/Model/TerroristA.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4eaf4dd80177eeb4086d6422fae306dc
+    m_Address: Assets/_Data/Character/Model/DeltaTeam.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 508f375dde7070d4495ec7f2dcf86939
+    m_Address: Assets/_Prefabs/CharacterModel/Bravo_Team_Model.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7df816bd5fef87d4290cefc1487d0781
+    m_Address: Assets/_Data/Map/Map_V1.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 878424ee73119dc4ba0f5adf8b755140
+    m_Address: Assets/_Data/Map/MapTableSO.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8c6aafd92482b7c4f84104a56eefa4b4
+    m_Address: Assets/_Prefabs/CharacterModel/Alpha_Team_Model.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ac2b470b4c09f2e41b65a968a76afea9
+    m_Address: Assets/_Sprites/Maps/Map_v1.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b821bbb9254cfb4498947cc69722d7d0
+    m_Address: Assets/_Prefabs/CharacterModel/Delta_Team_Model.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bc8cc3f832f144549b718eccb975bb7a
+    m_Address: Assets/_Data/Map/Map_V2.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bd42d018560fdd3448db4ee5e978e2d7
+    m_Address: Assets/_Prefabs/CharacterModel/Terrorist_C_Model.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bf48657f59d056143917c8a474cf683d
+    m_Address: Assets/_Data/Character/ModelCharacterTableSO.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c1fc63ecdc5d2e94e930583048b5c0ca
+    m_Address: Assets/_Prefabs/CharacterModel/Terrorist_A_Model.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d02c78438e74b074a8ad10da4322c308
+    m_Address: Assets/_Data/Character/Model/BravoTeam.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e140531243c2d0d448fc908c36fb12af
+    m_Address: Assets/_Prefabs/CharacterModel/Terrorist_D_Model.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e2fc7b861b2d4524cb7e371e893a8d9d
+    m_Address: Assets/_Data/Character/Model/TerroristB.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e32b40a9e454a45439a3a8b5e723fb15
+    m_Address: Assets/_Data/Character/Model/TerroristC.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fe001a11a73e7cf4db67bdfc80f09c14
+    m_Address: Assets/_Sprites/Maps/Map_v2.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 0f6a5b48bef5e9a449ca3ed794a3e81a, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: fd8afcea528d8f64293ec8746a90cc76, type: 2}
+    - {fileID: 11400000, guid: 6e9a99f4ff4a42c44b485c53e09398f7, type: 2}

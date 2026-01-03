@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d42184fb2b892024bb27fef82e8a385c, type: 3}
+  m_Name: Shotgun2_Stats
+  m_EditorClassIdentifier: 
+  weaponName: Shotgun2
+  weaponPrefab: {fileID: 3056054879541076570, guid: ca835a4292228124e8803acc8efa649c, type: 3}
+  itemType: 1
+  price: 2000
+  targetMask:
+    serializedVersion: 2
+    m_Bits: 7799
+  maxDistance: 25
+  explosionForce: 0
+  upwardForce: 0
+  damage: 80
+  attackRadius: 0
+  ammoPerMag: 8
+  ammoReverse: 32
+  attackRate: 120
+  reloadTime: 3
+  recoilAmount: 4.5
+  shakeIntensity: 0
+  throwForce: 0
+  muzzleFlash: {fileID: 7231814234855767337, guid: bc918dd7c32f1f74992bc42362914fb0, type: 3}
+  fireSmoke: {fileID: 6264529531993292978, guid: 9764655f80bf7704a94f4ade598fce2d, type: 3}
+  bulletImpact: {fileID: 9184815297835673872, guid: cefb23db6e143c147a4f74704197ea40, type: 3}
+  explosionGrenade: {fileID: 0}
+  shellCasing: {fileID: 922175680979126846, guid: deb69c14de48c84448dedec466dc44ca, type: 3}
+  cockSound: {fileID: 8300000, guid: b27e45e9f54264440a4818872c8702f0, type: 3}
+  attackSound: {fileID: 8300000, guid: 57acc706ffbba0549b782ad98ee38f8e, type: 3}
+  reloadSound: {fileID: 8300000, guid: 3ad772c3817e2804284f9784f0a6c2f4, type: 3}
+  explosionSound: {fileID: 0}
+  dryFireSound: {fileID: 8300000, guid: 42ba8db7efdd33a49a8e92d507029bd8, type: 3}

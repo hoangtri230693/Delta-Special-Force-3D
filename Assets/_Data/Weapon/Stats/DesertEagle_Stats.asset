@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d42184fb2b892024bb27fef82e8a385c, type: 3}
+  m_Name: DesertEagle_Stats
+  m_EditorClassIdentifier: 
+  weaponName: DesertEagle
+  weaponPrefab: {fileID: 7548666581388900521, guid: 5986f25703440544bbe03098b8877656, type: 3}
+  itemType: 2
+  price: 700
+  targetMask:
+    serializedVersion: 2
+    m_Bits: 7799
+  maxDistance: 60
+  explosionForce: 0
+  upwardForce: 0
+  damage: 50
+  attackRadius: 0
+  ammoPerMag: 7
+  ammoReverse: 28
+  attackRate: 250
+  reloadTime: 2
+  recoilAmount: 3
+  shakeIntensity: 0
+  throwForce: 0
+  muzzleFlash: {fileID: 7435003318120882198, guid: 512658aebda4f594c9804200e9473492, type: 3}
+  fireSmoke: {fileID: 6264529531993292978, guid: 9764655f80bf7704a94f4ade598fce2d, type: 3}
+  bulletImpact: {fileID: 9184815297835673872, guid: cefb23db6e143c147a4f74704197ea40, type: 3}
+  explosionGrenade: {fileID: 0}
+  shellCasing: {fileID: 8251667602902040775, guid: 83fb7cf04fe3e4442904a656e6be0541, type: 3}
+  cockSound: {fileID: 8300000, guid: 163d2d4ad34e5f6459cdf66c4c0deefc, type: 3}
+  attackSound: {fileID: 8300000, guid: 06a0174a99568604691cfd6e95f4bd26, type: 3}
+  reloadSound: {fileID: 8300000, guid: e75ae65cc5e2acc4291f3159ce00d850, type: 3}
+  explosionSound: {fileID: 0}
+  dryFireSound: {fileID: 8300000, guid: 42ba8db7efdd33a49a8e92d507029bd8, type: 3}

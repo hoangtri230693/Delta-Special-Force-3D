@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03012a87c24b99e47aba48766aebf7cc, type: 3}
+  m_Name: Kar98k_Rig
+  m_EditorClassIdentifier: 
+  weaponName: Kar98k
+  alpha_Weapon_Pos: {x: -0.22, y: 0.11, z: 0.44}
+  alpha_Weapon_Rot: {x: 0, y: -45, z: 0}
+  alpha_LeftHand_Pos: {x: -0.5, y: 0.024, z: 0.58}
+  alpha_LeftHand_Rot: {x: -95, y: -116, z: -18}
+  alpha_RightHand_Pos: {x: 0.19, y: 0.35, z: -2.23}
+  alpha_RightHand_Rot: {x: 0, y: -90, z: -116}
+  bravo_Weapon_Pos: {x: -0.21, y: 0.11, z: 0.46}
+  bravo_Weapon_Rot: {x: 0, y: -45, z: 0}
+  bravo_LeftHand_Pos: {x: -0.37, y: 0.1, z: 0.185}
+  bravo_LeftHand_Rot: {x: -95, y: -116, z: -18}
+  bravo_RightHand_Pos: {x: 0.14, y: 0.2, z: -2.2}
+  bravo_RightHand_Rot: {x: 0, y: -90, z: -116}
+  delta_Weapon_Pos: {x: -0.24, y: 0.14, z: 0.49}
+  delta_Weapon_Rot: {x: 0, y: -45, z: 5}
+  delta_LeftHand_Pos: {x: -0.37, y: 0.1, z: 0.185}
+  delta_LeftHand_Rot: {x: -95, y: -116, z: -18}
+  delta_RightHand_Pos: {x: 0.14, y: 0.2, z: -2.2}
+  delta_RightHand_Rot: {x: 0, y: -90, z: -116}
+  terrorist_Weapon_Pos: {x: -0.18, y: -0.45, z: -0.23}
+  terrorist_Weapon_Rot: {x: 135, y: 0, z: 105}
+  terrorist_LeftHand_Pos: {x: -0.37, y: 0.1, z: 0.19}
+  terrorist_LeftHand_Rot: {x: 0, y: 130, z: 30}
+  terrorist_RightHand_Pos: {x: 0.12, y: 0.3, z: -2.3}
+  terrorist_RightHand_Rot: {x: -68, y: 0, z: -78}

@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d42184fb2b892024bb27fef82e8a385c, type: 3}
+  m_Name: MP5_Stats
+  m_EditorClassIdentifier: 
+  weaponName: MP5
+  weaponPrefab: {fileID: 7497603253075232822, guid: 6e735cc949d31754298c8cfe76cf29aa, type: 3}
+  itemType: 1
+  price: 1500
+  targetMask:
+    serializedVersion: 2
+    m_Bits: 7799
+  maxDistance: 60
+  explosionForce: 0
+  upwardForce: 0
+  damage: 22
+  attackRadius: 0
+  ammoPerMag: 30
+  ammoReverse: 150
+  attackRate: 800
+  reloadTime: 2.2
+  recoilAmount: 2
+  shakeIntensity: 0
+  throwForce: 0
+  muzzleFlash: {fileID: 7231814234855767337, guid: f37870d69c61dc344ae1f2780cea2b65, type: 3}
+  fireSmoke: {fileID: 6264529531993292978, guid: 9764655f80bf7704a94f4ade598fce2d, type: 3}
+  bulletImpact: {fileID: 9184815297835673872, guid: cefb23db6e143c147a4f74704197ea40, type: 3}
+  explosionGrenade: {fileID: 0}
+  shellCasing: {fileID: 4850937910619775609, guid: 7e45082c7692be641b572e4afb32f4f2, type: 3}
+  cockSound: {fileID: 8300000, guid: f57a06141c6ca9b4280a483a69488b03, type: 3}
+  attackSound: {fileID: 8300000, guid: 0f671448654b6b64dbe7c58c351a78df, type: 3}
+  reloadSound: {fileID: 8300000, guid: 637c7230acb0ba64eaea974b9e136b20, type: 3}
+  explosionSound: {fileID: 0}
+  dryFireSound: {fileID: 8300000, guid: 42ba8db7efdd33a49a8e92d507029bd8, type: 3}

@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1045 &1
+EditorBuildSettings:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Scenes:
+  - enabled: 1
+    path: Assets/_Scenes/StartGame.unity
+    guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 1
+    path: Assets/_Scenes/PlayGame.unity
+    guid: 5784f59f684c73e479bb5fdf57ff86aa
+  - enabled: 1
+    path: Assets/_Scenes/Settings.unity
+    guid: 8dae8b141a288ff4db40005603967ccb
+  - enabled: 1
+    path: Assets/_Scenes/TeamDeathmatch.unity
+    guid: 939ee31b055708a4ea25b88b30868615
+  - enabled: 1
+    path: Assets/_Scenes/ZombieSurvival.unity
+    guid: 9af2542d694635e43a812abd6d50ab54
+  - enabled: 1
+    path: Assets/_Scenes/IndustrialMapV1.unity
+    guid: 5a463281e6e238742a45430f11e82829
+  - enabled: 1
+    path: Assets/_Scenes/IndustrialMapV2.unity
+    guid: 1d35c8ff8df44934ab0d5619746c0699
+  m_configObjects:
+    com.unity.addressableassets: {fileID: 11400000, guid: 40df0d05b0ba2a44fa8c99e941fdad82, type: 2}
+    com.unity.dt.app-ui: {fileID: 11400000, guid: 99f9c9493070a9d4c979a8fec7c5a8d3, type: 2}
+    com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  m_UseUCBPForAssetBundles: 0

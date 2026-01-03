@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d42184fb2b892024bb27fef82e8a385c, type: 3}
+  m_Name: GrenadeSmoke_Stats
+  m_EditorClassIdentifier: 
+  weaponName: Grenade Smoke
+  weaponPrefab: {fileID: 1221578968898106040, guid: de8cb6e0282d0284cb18ec4c4569af4a, type: 3}
+  itemType: 4
+  price: 300
+  targetMask:
+    serializedVersion: 2
+    m_Bits: 7799
+  maxDistance: 0
+  explosionForce: 0
+  upwardForce: 0
+  damage: 0
+  attackRadius: 10
+  ammoPerMag: 1
+  ammoReverse: 0
+  attackRate: 0
+  reloadTime: 0
+  recoilAmount: 0
+  shakeIntensity: 1.5
+  throwForce: 10
+  muzzleFlash: {fileID: 0}
+  fireSmoke: {fileID: 0}
+  bulletImpact: {fileID: 0}
+  explosionGrenade: {fileID: 3845622927217050777, guid: 94fff5eda13dd1b42aa556eddb6f18d4, type: 3}
+  shellCasing: {fileID: 0}
+  cockSound: {fileID: 8300000, guid: a1cc9150834784146bab5a65b1d68968, type: 3}
+  attackSound: {fileID: 8300000, guid: 92a543c53645e9043a8ff43112c8b1e1, type: 3}
+  reloadSound: {fileID: 0}
+  explosionSound: {fileID: 8300000, guid: f2ed2cdc6f1872b4baee8f776d6f463e, type: 3}
+  dryFireSound: {fileID: 0}

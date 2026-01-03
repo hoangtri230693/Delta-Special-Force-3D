@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03012a87c24b99e47aba48766aebf7cc, type: 3}
+  m_Name: Glock17_Rig
+  m_EditorClassIdentifier: 
+  weaponName: Glock17
+  alpha_Weapon_Pos: {x: -0.24, y: 0.07, z: 0.52}
+  alpha_Weapon_Rot: {x: 0, y: -35, z: 0}
+  alpha_LeftHand_Pos: {x: -0.471, y: -0.073, z: -0.725}
+  alpha_LeftHand_Rot: {x: -9, y: 108.9, z: 95.4}
+  alpha_RightHand_Pos: {x: 0.0017, y: 0.0872, z: -0.89}
+  alpha_RightHand_Rot: {x: -4, y: -74, z: -91.6}
+  bravo_Weapon_Pos: {x: -0.18, y: 0.13, z: 0.44}
+  bravo_Weapon_Rot: {x: 0, y: -35, z: 0}
+  bravo_LeftHand_Pos: {x: -0.3, y: -0.16, z: -0.58}
+  bravo_LeftHand_Rot: {x: -9, y: 108.9, z: 95.4}
+  bravo_RightHand_Pos: {x: -0.03, y: -0.02, z: -0.74}
+  bravo_RightHand_Rot: {x: -4, y: -74, z: -91.6}
+  delta_Weapon_Pos: {x: -0.19, y: 0.13, z: 0.44}
+  delta_Weapon_Rot: {x: 0, y: -35, z: 0}
+  delta_LeftHand_Pos: {x: -0.3, y: -0.16, z: -0.58}
+  delta_LeftHand_Rot: {x: -9, y: 108.9, z: 95.4}
+  delta_RightHand_Pos: {x: -0.03, y: -0.02, z: -0.74}
+  delta_RightHand_Rot: {x: -4, y: -74, z: -91.6}
+  terrorist_Weapon_Pos: {x: -0.14, y: -0.515, z: -0.24}
+  terrorist_Weapon_Rot: {x: 125, y: 0, z: 90}
+  terrorist_LeftHand_Pos: {x: -0.32, y: -0.04, z: -0.71}
+  terrorist_LeftHand_Rot: {x: 105, y: 0, z: -90}
+  terrorist_RightHand_Pos: {x: 0.09, y: -0.01, z: -0.83}
+  terrorist_RightHand_Rot: {x: -95, y: 0, z: -75}

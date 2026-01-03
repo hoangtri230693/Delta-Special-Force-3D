@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d42184fb2b892024bb27fef82e8a385c, type: 3}
+  m_Name: Glock17_Stats
+  m_EditorClassIdentifier: 
+  weaponName: Glock17
+  weaponPrefab: {fileID: 6208910163461141657, guid: 694a54724d4f115499d31d8bce5052fa, type: 3}
+  itemType: 2
+  price: 300
+  targetMask:
+    serializedVersion: 2
+    m_Bits: 7799
+  maxDistance: 50
+  explosionForce: 0
+  upwardForce: 0
+  damage: 20
+  attackRadius: 0
+  ammoPerMag: 17
+  ammoReverse: 68
+  attackRate: 450
+  reloadTime: 1.8
+  recoilAmount: 1.5
+  shakeIntensity: 0
+  throwForce: 0
+  muzzleFlash: {fileID: 7435003318120882198, guid: 2406107715a300c469f72c97b703b2b0, type: 3}
+  fireSmoke: {fileID: 6264529531993292978, guid: 9764655f80bf7704a94f4ade598fce2d, type: 3}
+  bulletImpact: {fileID: 9184815297835673872, guid: cefb23db6e143c147a4f74704197ea40, type: 3}
+  explosionGrenade: {fileID: 0}
+  shellCasing: {fileID: 8251667602902040775, guid: 83fb7cf04fe3e4442904a656e6be0541, type: 3}
+  cockSound: {fileID: 8300000, guid: 163d2d4ad34e5f6459cdf66c4c0deefc, type: 3}
+  attackSound: {fileID: 8300000, guid: bd185cb7fee4b0642a6b31bec2f2775a, type: 3}
+  reloadSound: {fileID: 8300000, guid: 9d2e44312f0250143a1102deed8c6c04, type: 3}
+  explosionSound: {fileID: 0}
+  dryFireSound: {fileID: 8300000, guid: 42ba8db7efdd33a49a8e92d507029bd8, type: 3}

@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03012a87c24b99e47aba48766aebf7cc, type: 3}
+  m_Name: Knife_Rig
+  m_EditorClassIdentifier: 
+  weaponName: Knife
+  alpha_Weapon_Pos: {x: 0.016, y: 0.084, z: 0.029}
+  alpha_Weapon_Rot: {x: 10, y: 90, z: -180}
+  alpha_LeftHand_Pos: {x: 0, y: 0, z: 0}
+  alpha_LeftHand_Rot: {x: 0, y: 0, z: 0}
+  alpha_RightHand_Pos: {x: 0, y: -0.2, z: -0.3}
+  alpha_RightHand_Rot: {x: 0, y: -70, z: 90}
+  bravo_Weapon_Pos: {x: 0.0064, y: 0.1008, z: 0.0183}
+  bravo_Weapon_Rot: {x: 10, y: 90, z: -180}
+  bravo_LeftHand_Pos: {x: 0, y: 0, z: 0}
+  bravo_LeftHand_Rot: {x: 0, y: 0, z: 0}
+  bravo_RightHand_Pos: {x: 0, y: -0.2, z: -0.3}
+  bravo_RightHand_Rot: {x: 0, y: -70, z: 90}
+  delta_Weapon_Pos: {x: 0.005, y: 0.0853, z: 0.019}
+  delta_Weapon_Rot: {x: 10, y: 90, z: -180}
+  delta_LeftHand_Pos: {x: 0, y: 0, z: 0}
+  delta_LeftHand_Rot: {x: 0, y: 0, z: 0}
+  delta_RightHand_Pos: {x: 0, y: -0.2, z: -0.3}
+  delta_RightHand_Rot: {x: 0, y: -70, z: 90}
+  terrorist_Weapon_Pos: {x: 0.0865, y: -0.045, z: -0.0236}
+  terrorist_Weapon_Rot: {x: 0, y: -160, z: -90}
+  terrorist_LeftHand_Pos: {x: 0, y: 0, z: 0}
+  terrorist_LeftHand_Rot: {x: 0, y: 0, z: 0}
+  terrorist_RightHand_Pos: {x: -0.1, y: 0.5, z: 0.1}
+  terrorist_RightHand_Rot: {x: 0, y: -70, z: 70}

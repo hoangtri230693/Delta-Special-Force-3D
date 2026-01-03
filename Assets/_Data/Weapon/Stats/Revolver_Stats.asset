@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d42184fb2b892024bb27fef82e8a385c, type: 3}
+  m_Name: Revolver_Stats
+  m_EditorClassIdentifier: 
+  weaponName: Revolver
+  weaponPrefab: {fileID: 4075533929737310989, guid: a90db50e150ce22439c47e334e713dfe, type: 3}
+  itemType: 2
+  price: 650
+  targetMask:
+    serializedVersion: 2
+    m_Bits: 7799
+  maxDistance: 70
+  explosionForce: 0
+  upwardForce: 0
+  damage: 60
+  attackRadius: 0
+  ammoPerMag: 6
+  ammoReverse: 30
+  attackRate: 60
+  reloadTime: 2.8
+  recoilAmount: 3
+  shakeIntensity: 0
+  throwForce: 0
+  muzzleFlash: {fileID: 7435003318120882198, guid: b3bc624ec3e36674f961836555dcfbb6, type: 3}
+  fireSmoke: {fileID: 6264529531993292978, guid: 9764655f80bf7704a94f4ade598fce2d, type: 3}
+  bulletImpact: {fileID: 9184815297835673872, guid: cefb23db6e143c147a4f74704197ea40, type: 3}
+  explosionGrenade: {fileID: 0}
+  shellCasing: {fileID: 8251667602902040775, guid: 83fb7cf04fe3e4442904a656e6be0541, type: 3}
+  cockSound: {fileID: 8300000, guid: 5ace4e70b06ea484d93fdcc50606dd4a, type: 3}
+  attackSound: {fileID: 8300000, guid: 06a0174a99568604691cfd6e95f4bd26, type: 3}
+  reloadSound: {fileID: 8300000, guid: 00458dc2b1f46274d982f7df6960b81d, type: 3}
+  explosionSound: {fileID: 0}
+  dryFireSound: {fileID: 8300000, guid: 42ba8db7efdd33a49a8e92d507029bd8, type: 3}

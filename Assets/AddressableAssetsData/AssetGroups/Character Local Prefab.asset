@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Character Local Prefab
+  m_EditorClassIdentifier: 
+  m_GroupName: Character Local Prefab
+  m_GUID: 9ba88f597d0024e4b9a22c4d97e6fabc
+  m_SerializeEntries:
+  - m_GUID: 4747a591945ed344f9e529434db96513
+    m_Address: Assets/_Prefabs/PlayersLocal/Terrorist_B.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4c32bd28be3694d43ac62fe48a51c8bf
+    m_Address: Assets/_Prefabs/PlayersLocal/Alpha_Team.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5f530ff56c386d04bbc3b0d2a018c5a7
+    m_Address: Assets/_Prefabs/PlayersLocal/Terrorist_D.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7357413047294c04a82a58d879899f3a
+    m_Address: Assets/_Prefabs/PlayersLocal/Bravo_Team.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a7f021e834719004984c5213c4df7c02
+    m_Address: Assets/_Prefabs/PlayersLocal/Terrorist_C.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b031fdb4aa2d23440b6b46abaf3204ed
+    m_Address: Assets/_Prefabs/PlayersLocal/Delta_Team.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b3c0a687fa2289b46b638f4f20dba651
+    m_Address: Assets/_Prefabs/PlayersLocal/Terrorist_A.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 0f6a5b48bef5e9a449ca3ed794a3e81a, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 30ffc01a087a4bf4589aeb503200d333, type: 2}
+    - {fileID: 11400000, guid: da8d15cd409a2b94e96ebf37198a15fa, type: 2}

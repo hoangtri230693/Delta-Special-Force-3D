@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03012a87c24b99e47aba48766aebf7cc, type: 3}
+  m_Name: GrenadeSmoke_Rig
+  m_EditorClassIdentifier: 
+  weaponName: Grenade Smoke
+  alpha_Weapon_Pos: {x: -0.021, y: 0.114, z: 0.037}
+  alpha_Weapon_Rot: {x: 75, y: -145, z: -50}
+  alpha_LeftHand_Pos: {x: 0, y: 0, z: 0}
+  alpha_LeftHand_Rot: {x: 0, y: 0, z: 0}
+  alpha_RightHand_Pos: {x: -0.4, y: -0.2, z: 0.1}
+  alpha_RightHand_Rot: {x: 0, y: 0, z: 90}
+  bravo_Weapon_Pos: {x: -0.021, y: 0.114, z: 0.037}
+  bravo_Weapon_Rot: {x: 75, y: -145, z: -50}
+  bravo_LeftHand_Pos: {x: 0, y: 0, z: 0}
+  bravo_LeftHand_Rot: {x: 0, y: 0, z: 0}
+  bravo_RightHand_Pos: {x: -0.4, y: -0.2, z: 0.1}
+  bravo_RightHand_Rot: {x: 0, y: 0, z: 90}
+  delta_Weapon_Pos: {x: -0.021, y: 0.114, z: 0.037}
+  delta_Weapon_Rot: {x: 75, y: -145, z: -50}
+  delta_LeftHand_Pos: {x: 0, y: 0, z: 0}
+  delta_LeftHand_Rot: {x: 0, y: 0, z: 0}
+  delta_RightHand_Pos: {x: -0.4, y: -0.2, z: 0.1}
+  delta_RightHand_Rot: {x: 0, y: 0, z: 90}
+  terrorist_Weapon_Pos: {x: 0.11, y: -0.04, z: 0.027}
+  terrorist_Weapon_Rot: {x: -30, y: -100, z: -60}
+  terrorist_LeftHand_Pos: {x: 0, y: 0, z: 0}
+  terrorist_LeftHand_Rot: {x: 0, y: 0, z: 0}
+  terrorist_RightHand_Pos: {x: -0.1, y: -0.06, z: 0.6}
+  terrorist_RightHand_Rot: {x: 0, y: -90, z: 0}

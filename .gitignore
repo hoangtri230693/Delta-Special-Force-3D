@@ -1,0 +1,26 @@
+# === Unity folders ===
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Ll]ogs/
+[Bb]uild/
+[Bb]uilds/
+
+# === User & IDE ===
+.vscode/
+.vs/
+*.csproj
+*.sln
+*.user
+*.userprefs
+
+# === OS ===
+.DS_Store
+Thumbs.db
+
+# === Unity cache ===
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
