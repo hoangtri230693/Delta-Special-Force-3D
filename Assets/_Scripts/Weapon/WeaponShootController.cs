@@ -27,6 +27,19 @@ public class WeaponShootController : MonoBehaviour
             _weaponAudio.PlayAudioCock();
             _weaponManager._playerController._isSwitchItem = false;
         }
+
+        if (_weaponManager._playerLocal != null)
+        {
+            UIGameManager.instance.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
+        }
+    }
+
+    private void Start()
+    {
+        if (_weaponManager._playerLocal != null)
+        {
+            UIGameManager.instance.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
+        }
     }
 
     private void Update()
@@ -42,15 +55,6 @@ public class WeaponShootController : MonoBehaviour
     {
         _currentAmmo = _weaponManager._weaponStats.ammoPerMag;
         _currentReverse = _weaponManager._weaponStats.ammoReverse;
-
-        if (_weaponManager._weaponStats.itemType == ItemType.PrimaryItem && _weaponManager._playerLocal != null)
-        {
-            UIGameManager.instance._weaponPrimaryController = this;
-        }
-        if (_weaponManager._weaponStats.itemType == ItemType.SecondaryItem && _weaponManager._playerLocal != null)
-        {
-            UIGameManager.instance._weaponSecondaryController = this;
-        }
     }
 
     public void AssignAnimationEvents(PlayerAnimationEvents playerAnimationEvents)
@@ -79,6 +83,10 @@ public class WeaponShootController : MonoBehaviour
         _currentAmmo += ammoToLoad;
         _currentReverse -= ammoToLoad;
         _weaponAudio.PlayAudioCock();
+        if (_weaponManager._playerLocal != null)
+        {
+            UIGameManager.instance.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
+        }
     }
 
     private void CheckActionShoot()
@@ -226,6 +234,8 @@ public class WeaponShootController : MonoBehaviour
     {
         if (_barrelPointController._playerHealth != null)
         {
+            if (_barrelPointController._playerHealth._isDead) return;
+
             float baseDamage = _weaponManager._weaponStats.damage;
             float maxDistance = _weaponManager._weaponStats.maxDistance;
             float actualDistance = Vector3.Distance(_barrelPoint.position, _barrelPointController._targetPosition);
@@ -233,6 +243,11 @@ public class WeaponShootController : MonoBehaviour
             float finalDamage = baseDamage * Mathf.Max(0.1f, damageMultiplier);
 
             _barrelPointController._playerHealth.UpdateHealth(Mathf.RoundToInt(finalDamage), _weaponManager._weaponStats.itemType);
+            if (_barrelPointController._playerHealth._currentHealth <= 0)
+            {
+                _weaponManager._playerController.IncrementKillCount();
+                _barrelPointController._playerHealth._isDead = true;
+            }
         }
     }
 
@@ -240,12 +255,15 @@ public class WeaponShootController : MonoBehaviour
     {
         _currentAmmo -= 1;
         Mathf.Clamp(_currentAmmo, 0, _weaponManager._weaponStats.ammoPerMag);
+        if (_weaponManager._playerLocal != null)
+        {
+            UIGameManager.instance.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
+        }
     }
 
     private void CheckCanReload()
     {
-        if (_currentAmmo == _weaponManager._weaponStats.ammoPerMag ||
-            _currentReverse == 0)
+        if (_currentAmmo == _weaponManager._weaponStats.ammoPerMag || _currentReverse == 0)
         {
             _weaponManager._playerController._canReload = false;
         }

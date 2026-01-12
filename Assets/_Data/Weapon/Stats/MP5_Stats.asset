@@ -14,8 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponName: MP5
   weaponPrefab: {fileID: 7497603253075232822, guid: 6e735cc949d31754298c8cfe76cf29aa, type: 3}
+  weaponID: 6
   itemType: 1
-  price: 1500
+  cash: 1500
+  gold: 6500
   targetMask:
     serializedVersion: 2
     m_Bits: 7799
@@ -31,6 +33,7 @@ MonoBehaviour:
   recoilAmount: 2
   shakeIntensity: 0
   throwForce: 0
+  armorHealth: 0
   muzzleFlash: {fileID: 7231814234855767337, guid: f37870d69c61dc344ae1f2780cea2b65, type: 3}
   fireSmoke: {fileID: 6264529531993292978, guid: 9764655f80bf7704a94f4ade598fce2d, type: 3}
   bulletImpact: {fileID: 9184815297835673872, guid: cefb23db6e143c147a4f74704197ea40, type: 3}

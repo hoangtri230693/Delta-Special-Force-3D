@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d42184fb2b892024bb27fef82e8a385c, type: 3}
+  m_Name: Armor2_Stats
+  m_EditorClassIdentifier: 
+  weaponName: Armor 2
+  weaponPrefab: {fileID: 0}
+  weaponID: 17
+  itemType: 5
+  cash: 800
+  gold: 1000
+  targetMask:
+    serializedVersion: 2
+    m_Bits: 0
+  maxDistance: 0
+  explosionForce: 0
+  upwardForce: 0
+  damage: 0
+  attackRadius: 0
+  ammoPerMag: 0
+  ammoReverse: 0
+  attackRate: 0
+  reloadTime: 0
+  recoilAmount: 0
+  shakeIntensity: 0
+  throwForce: 0
+  armorHealth: 100
+  muzzleFlash: {fileID: 0}
+  fireSmoke: {fileID: 0}
+  bulletImpact: {fileID: 0}
+  explosionGrenade: {fileID: 0}
+  shellCasing: {fileID: 0}
+  cockSound: {fileID: 0}
+  attackSound: {fileID: 0}
+  reloadSound: {fileID: 0}
+  explosionSound: {fileID: 0}
+  dryFireSound: {fileID: 0}

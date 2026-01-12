@@ -14,8 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponName: Glock17
   weaponPrefab: {fileID: 6208910163461141657, guid: 694a54724d4f115499d31d8bce5052fa, type: 3}
+  weaponID: 1
   itemType: 2
-  price: 300
+  cash: 300
+  gold: 1000
   targetMask:
     serializedVersion: 2
     m_Bits: 7799
@@ -31,6 +33,7 @@ MonoBehaviour:
   recoilAmount: 1.5
   shakeIntensity: 0
   throwForce: 0
+  armorHealth: 0
   muzzleFlash: {fileID: 7435003318120882198, guid: 2406107715a300c469f72c97b703b2b0, type: 3}
   fireSmoke: {fileID: 6264529531993292978, guid: 9764655f80bf7704a94f4ade598fce2d, type: 3}
   bulletImpact: {fileID: 9184815297835673872, guid: cefb23db6e143c147a4f74704197ea40, type: 3}

@@ -79,11 +79,6 @@ public class WeaponManager : MonoBehaviour
     {
         if (_weaponStats.itemType == ItemType.MeleeItem || _weaponStats.itemType == ItemType.ThrowItem) return;
 
-        if (_weaponStats.itemType == ItemType.PrimaryItem && _playerLocal != null) 
-            UIGameManager.instance._weaponPrimaryController = null;
-        if (_weaponStats.itemType == ItemType.SecondaryItem && _playerLocal != null) 
-            UIGameManager.instance._weaponSecondaryController = null;
-
         if (_weaponRigController != null)
             _weaponRigController.ResetRig();
 
@@ -136,12 +131,10 @@ public class WeaponManager : MonoBehaviour
         if (_weaponStats.itemType == ItemType.PrimaryItem && _playerLocal != null)
         {
             inventory = _playerInventory._primaryItem.transform;
-            UIGameManager.instance._weaponPrimaryController = _weaponShootController;
         }
         else if (_weaponStats.itemType == ItemType.SecondaryItem && _playerLocal != null)
         {
             inventory = _playerInventory._secondaryItem.transform;
-            UIGameManager.instance._weaponSecondaryController = _weaponShootController;
         }
 
         int weaponCount = 0;

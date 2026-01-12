@@ -14,8 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponName: AWP
   weaponPrefab: {fileID: 2828079787997164249, guid: b2475acbdc88a37409139dbf4548bde5, type: 3}
+  weaponID: 13
   itemType: 1
-  price: 4750
+  cash: 4750
+  gold: 50000
   targetMask:
     serializedVersion: 2
     m_Bits: 7799
@@ -31,6 +33,7 @@ MonoBehaviour:
   recoilAmount: 4
   shakeIntensity: 0
   throwForce: 0
+  armorHealth: 0
   muzzleFlash: {fileID: 7231814234855767337, guid: e6c6fa66d57bb824e87c9597e71d6e1b, type: 3}
   fireSmoke: {fileID: 6264529531993292978, guid: 9764655f80bf7704a94f4ade598fce2d, type: 3}
   bulletImpact: {fileID: 9184815297835673872, guid: cefb23db6e143c147a4f74704197ea40, type: 3}

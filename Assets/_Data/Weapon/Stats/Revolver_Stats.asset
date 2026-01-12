@@ -14,8 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponName: Revolver
   weaponPrefab: {fileID: 4075533929737310989, guid: a90db50e150ce22439c47e334e713dfe, type: 3}
+  weaponID: 2
   itemType: 2
-  price: 650
+  cash: 650
+  gold: 2500
   targetMask:
     serializedVersion: 2
     m_Bits: 7799
@@ -31,6 +33,7 @@ MonoBehaviour:
   recoilAmount: 3
   shakeIntensity: 0
   throwForce: 0
+  armorHealth: 0
   muzzleFlash: {fileID: 7435003318120882198, guid: b3bc624ec3e36674f961836555dcfbb6, type: 3}
   fireSmoke: {fileID: 6264529531993292978, guid: 9764655f80bf7704a94f4ade598fce2d, type: 3}
   bulletImpact: {fileID: 9184815297835673872, guid: cefb23db6e143c147a4f74704197ea40, type: 3}

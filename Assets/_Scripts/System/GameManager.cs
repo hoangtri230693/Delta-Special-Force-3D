@@ -1,37 +1,46 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using Unity.Behavior;
 using UnityEngine;
 
 public enum GameState { Setup, Countdown, RoundActive, RoundEnd, MatchEnd }
 public enum GameResult { Win, Lose, Draw }
 
+
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
 
+    [SerializeField] private GameplayData _gameplayData;
     [SerializeField] private GameObject[] _characterPrefabs;
     [SerializeField] private GameObject[] _botAIPrefabs;
-    [SerializeField] private WeaponStatsSO[] _weaponStats;
     [SerializeField] private Transform[] _spawnCounter;
     [SerializeField] private Transform[] _spawnTerrorist;
     [SerializeField] private Transform[] _assaultCounter;
     [SerializeField] private Transform[] _patrolTerrorist;
+    [SerializeField] private List<GameObject> _allCounterCharacter;
+    [SerializeField] private List<GameObject> _allTerroristCharacter;
 
     public PlayerController _playerController;
     public PlayerInventory _playerInventory;
     public PlayerHealth _playerHealth;
-    
+    public PlayerTeam _playerTeam;
+    public PlayerAnimationEvents _playerAnimationEvents;
+
     public GameObject _player;
-    public TeamType _playerTeam;
+    public TeamType _teamType;
     public int _cTSpawn = 5;
     public int _terroristSpawn = 5;
     public GameState _currentGameState = GameState.Setup;
 
-    private int _teamCTCount = 0;
-    private int _teamTerroristCount = 0;
-    private int _teamCTWin = 0;
-    private int _teamTerroristWin = 0;
-    private GameResult _playerResult = GameResult.Win;
+    public int _teamCTCount = 0;
+    public int _teamTerroristCount = 0;
+    public int _teamCTWin = 0;
+    public int _teamTerroristWin = 0;
+    public GameResult _playerResult = GameResult.Draw;
+
+    public float _timeCount;
+    public int _currentRound;
 
 
     private void Awake()
@@ -41,18 +50,96 @@ public class GameManager : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
 
         _currentGameState = GameState.Countdown;
+        _timeCount = _gameplayData.timeCountdown;
+        _currentRound = 0;
+        _allCounterCharacter = new List<GameObject>();
+        _allTerroristCharacter = new List<GameObject>();
     }
 
     private void Start()
     {
-        SpawnTeams();    
+        SpawnTeams();
+        UIGameManager.instance.UpdateUIResult();
+        UIGameManager.instance.UpdateUICash(_playerController._currentCash);
     }
 
     private void Update()
     {
         UpdateRound();
         UpdateMatch();
-        UpdateResult();
+        UpdateTime();
+    }
+
+    public void BuyWeapon(int weaponIndex, PlayerController playerController, PlayerInventory playerInventory, PlayerHealth playerHealth)
+    {
+        if (playerController._currentCash < WeaponDataManager.instance.weaponStats[weaponIndex].cash) return;
+
+        if (weaponIndex >= 0 && weaponIndex < WeaponDataManager.instance.weaponStats.Length)
+        {
+            Transform inventory = null;
+
+            if (WeaponDataManager.instance.weaponStats[weaponIndex].itemType == ItemType.PrimaryItem)
+            {
+                inventory = playerInventory._primaryItem.transform;
+                playerController._currentItem = ItemType.PrimaryItem;
+            }
+            else if (WeaponDataManager.instance.weaponStats[weaponIndex].itemType == ItemType.SecondaryItem)
+            {
+                inventory = playerInventory._secondaryItem.transform;
+                playerController._currentItem = ItemType.SecondaryItem;
+            }
+            else if (WeaponDataManager.instance.weaponStats[weaponIndex].itemType == ItemType.ThrowItem)
+            {
+                inventory = playerInventory._throwItem.transform;
+                playerController._currentItem = ItemType.ThrowItem;
+            }
+            else if (WeaponDataManager.instance.weaponStats[weaponIndex].itemType == ItemType.ArmorItem)
+            {
+                playerHealth._currentArmorHealth = WeaponDataManager.instance.weaponStats[weaponIndex].armorHealth;
+                if (playerHealth == _playerHealth)
+                {
+                    UIGameManager.instance.UpdateUIArmorHealth(playerHealth._currentArmorHealth, playerHealth);
+                }
+            }
+
+            if (inventory != null && inventory.childCount > 0)
+            {
+                for (int i = 0; i < inventory.childCount; i++)
+                {
+                    WeaponManager weaponManager = inventory.GetChild(i).GetComponent<WeaponManager>();
+                    if (weaponManager != null)
+                    {
+                        weaponManager.DropWeapon(inventory.GetChild(i));
+                    }
+                }
+            }
+
+            if (inventory != null)
+            {
+                GameObject weaponPrefab = Instantiate(WeaponDataManager.instance.weaponStats[weaponIndex].weaponPrefab);
+                weaponPrefab.transform.SetParent(inventory);
+                playerController._actionState = ActionState.SwitchItem;
+            }
+
+            playerController._currentCash -= WeaponDataManager.instance.weaponStats[weaponIndex].cash;
+
+            if (playerController == _playerController)
+            {
+                UIGameManager.instance.UpdateUICash(playerController._currentCash);
+            }
+        }
+    }
+
+    public void UpdateTeamCount(TeamType teamType)
+    {
+        if (teamType == TeamType.CounterTerrorist)
+        {
+            _teamCTCount--;
+        }
+        if (teamType == TeamType.Terrorist)
+        {
+            _teamTerroristCount--;
+        }
     }
 
     private void SpawnTeams()
@@ -60,19 +147,37 @@ public class GameManager : MonoBehaviour
         ShuffleTransform(_spawnCounter);
         ShuffleTransform(_spawnTerrorist);
 
-        int selectedCharacterIndex = PlayerPrefs.GetInt("SelectedCharacterIndex", 0);
-        _playerTeam = _characterPrefabs[selectedCharacterIndex].GetComponent<PlayerTeam>()._team;
+        if (_player == null)
+        {
+            int selectedCharacterIndex = PlayerPrefs.GetInt("SelectedCharacterIndex", 0);
+            _teamType = _characterPrefabs[selectedCharacterIndex].GetComponent<PlayerTeam>()._playerTeam;
 
-        Transform pSpawn = (_playerTeam == TeamType.CounterTerrorist) ? _spawnCounter[0] : _spawnTerrorist[0];
-        _player = Instantiate(_characterPrefabs[selectedCharacterIndex], pSpawn.position, pSpawn.rotation);
-        _player.AddComponent<PlayerLocal>();
-        _teamCTCount++;
+            Transform pSpawn = (_teamType == TeamType.CounterTerrorist) ? _spawnCounter[0] : _spawnTerrorist[0];
+            _player = Instantiate(_characterPrefabs[selectedCharacterIndex], pSpawn.position, pSpawn.rotation);
+            _player.AddComponent<PlayerLocal>();
+            if (_teamType == TeamType.CounterTerrorist) _teamCTCount++;
+            else _teamTerroristCount++;
 
-        _playerController = _player.GetComponent<PlayerController>();
-        _playerInventory = _player.GetComponent<PlayerInventory>();
-        _playerHealth = _player.GetComponent<PlayerHealth>();
+            _playerController = _player.GetComponent<PlayerController>();
+            _playerInventory = _player.GetComponent<PlayerInventory>();
+            _playerHealth = _player.GetComponent<PlayerHealth>();
+            _playerAnimationEvents = _player.GetComponent<PlayerAnimationEvents>();
+            _playerTeam = _player.GetComponent<PlayerTeam>();
+            _playerTeam._playerID = 0;
+        }
+        else
+        {
+            Transform pSpawn = (_teamType == TeamType.CounterTerrorist) ? _spawnCounter[0] : _spawnTerrorist[0];
+            _player.transform.position = pSpawn.position;
+            _player.transform.rotation = pSpawn.rotation;
+            if (_teamType == TeamType.CounterTerrorist) _teamCTCount++;
+            else _teamTerroristCount++;
+            _playerController.OnCharacterController(true);
+            _playerController.ResetPlayerState();
+            _playerHealth.ResetHealth();
+        }
 
-        if (_playerTeam == TeamType.CounterTerrorist)
+        if (_teamType == TeamType.CounterTerrorist)
         {
             SpawnCounterBots(_cTSpawn - 1, 1);
             SpawnTerroristBots(_terroristSpawn, 0);
@@ -92,7 +197,7 @@ public class GameManager : MonoBehaviour
             int indexCharacter = Random.Range(0, 2);
             GameObject bot = Instantiate(_botAIPrefabs[indexCharacter], spawn.position, spawn.rotation);
 
-            if (_assaultCounter.Length > 0)
+            if (_assaultCounter != null && _assaultCounter.Length > 0)
             {
                 List<GameObject> pointList = new List<GameObject>();
                 foreach (Transform child in _assaultCounter)
@@ -103,7 +208,12 @@ public class GameManager : MonoBehaviour
                 {
                     behaviorAgent.BlackboardReference.SetVariableValue("AssaultPoints", pointList);
                 }
+                if (bot.TryGetComponent<PlayerTeam>(out var playerTeam))
+                {
+                    playerTeam._playerID = i + startIndex;
+                }
             }
+            _allCounterCharacter.Add(bot);
             _teamCTCount++;
         }
     }
@@ -118,7 +228,7 @@ public class GameManager : MonoBehaviour
             int indexCharacter = Random.Range(3, 6);
             GameObject bot = Instantiate(_botAIPrefabs[indexCharacter], spawn.position, spawn.rotation);
 
-            if (_patrolTerrorist.Length > 0)
+            if (_patrolTerrorist != null && _patrolTerrorist.Length > 0)
             {
                 Transform assignedPatrolGroup = _patrolTerrorist[i % _patrolTerrorist.Length];
 
@@ -134,7 +244,13 @@ public class GameManager : MonoBehaviour
                 {
                     behaviorAgent.BlackboardReference.SetVariableValue("PatrolPoints", pointList);
                 }
+
+                if (bot.TryGetComponent<PlayerTeam>(out var playerTeam))
+                {
+                    playerTeam._playerID = i + startIndex;
+                }
             }
+            _allTerroristCharacter.Add(bot);
             _teamTerroristCount++;
         }
     }
@@ -161,125 +277,89 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void UpdateResult()
+    private void UpdateTime()
     {
-        if ((_teamCTCount <= 0 || _teamTerroristCount <= 0) && _currentGameState == GameState.RoundActive)
+        if (_timeCount > 0)
         {
-            if (_teamCTCount <= 0)
+            _timeCount -= Time.deltaTime;
+            _timeCount = Mathf.Clamp(_timeCount, 0, Mathf.Infinity);
+            if (_currentGameState == GameState.RoundActive || _currentGameState == GameState.Countdown)
             {
-                _teamTerroristWin++;
-            }
-            if (_teamTerroristCount <= 0)
-            {
-                _teamCTWin++;
-            }
-            _currentGameState = GameState.RoundEnd;
-        }
-
-        if (_currentGameState == GameState.MatchEnd)
-        {
-            if (_teamCTWin > _teamTerroristWin && _playerTeam == TeamType.CounterTerrorist)
-            {
-                _playerResult = GameResult.Win;
-            }
-            else if (_teamTerroristWin > _teamCTWin && _playerTeam == TeamType.Terrorist)
-            {
-                _playerResult = GameResult.Win;
-            }
-            else if (_teamCTWin == _teamTerroristWin)
-            {
-                _playerResult = GameResult.Draw;
-            }
-            else
-            {
-                _playerResult = GameResult.Lose;
-            }
+                UIGameManager.instance.UpdateUITime(_timeCount);
+            }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
         }
     }
 
     private void UpdateRound()
     {
-        if (_currentGameState == GameState.Countdown && UIGameManager.instance._timeCount > 0)
-            return;
-
-        if (_currentGameState == GameState.Countdown && UIGameManager.instance._timeCount <= 0)
+        if (_currentGameState == GameState.Countdown)
         {
-            _currentGameState = GameState.RoundActive;
+            if (_timeCount <= 0)
+            {
+                _currentGameState = GameState.RoundActive;
+                _timeCount = _gameplayData.timeRoundActive;
+            }
         }
-        else if (_currentGameState == GameState.RoundActive && UIGameManager.instance._timeCount <= 0)
+        else if (_currentGameState == GameState.RoundActive)
         {
-            _currentGameState = GameState.RoundEnd;
+            if (_timeCount <= 0 || _teamCTCount <= 0 || _teamTerroristCount <= 0)
+            {
+                _currentGameState = GameState.RoundEnd;
+                _timeCount = 5f;
+                _playerController.OnCharacterController(false);
+
+                UIGameManager.instance.UpdateUIResult();
+                UIGameManager.instance.OpenResultMenu(true);
+            }
         }
     }
 
     private void UpdateMatch()
     {
-        if (_currentGameState == GameState.RoundEnd && !UIGameManager.instance._isMatchEnd)
+        if (_currentGameState == GameState.RoundEnd)
         {
-            _currentGameState = GameState.Countdown;
-        }
-        else if (_currentGameState == GameState.RoundEnd && UIGameManager.instance._isMatchEnd)
-        {
-            _currentGameState = GameState.MatchEnd;
-        }
-    }
-
-    public void BuyWeapon(int weaponIndex, PlayerController playerController, PlayerInventory playerInventory)
-    {
-        if (playerController._currentCash < _weaponStats[weaponIndex].price) return;
-
-        if (weaponIndex >= 0 && weaponIndex < _weaponStats.Length)
-        {
-            Transform inventory = null;
-
-            if (_weaponStats[weaponIndex].itemType == ItemType.PrimaryItem)
+            if (_timeCount <= 0)
             {
-                inventory = playerInventory._primaryItem.transform;
-                playerController._currentItem = ItemType.PrimaryItem;
-            }
-            else if (_weaponStats[weaponIndex].itemType == ItemType.SecondaryItem)
-            {
-                inventory = playerInventory._secondaryItem.transform;
-                playerController._currentItem = ItemType.SecondaryItem;
-            }
-            else if (_weaponStats[weaponIndex].itemType == ItemType.ThrowItem)
-            {
-                inventory = playerInventory._throwItem.transform;
-                playerController._currentItem = ItemType.ThrowItem;
-            }
-
-            if (inventory.childCount > 0)
-            {
-                for (int i = 0; i < inventory.childCount; i++)
+                if (_currentRound < _gameplayData.totalRound)
                 {
-                    WeaponManager weaponManager = inventory.GetChild(i).GetComponent<WeaponManager>();
-                    if (weaponManager != null)
-                    {
-                        weaponManager.DropWeapon(inventory.GetChild(i));
-                    }
+                    UIGameManager.instance.OpenResultMenu(false);
+                    PrepareNextRound();
+                    _currentRound++;
+                    _currentGameState = GameState.Countdown;
+                    _timeCount = _gameplayData.timeCountdown;
+                }
+                else
+                {
+                    _currentGameState = GameState.MatchEnd;
                 }
             }
-
-            if (inventory != null)
-            {
-                GameObject weaponPrefab = Instantiate(_weaponStats[weaponIndex].weaponPrefab);
-                weaponPrefab.transform.SetParent(inventory);
-                playerController._actionState = ActionState.SwitchItem;
-            }
-
-            playerController._currentCash -= _weaponStats[weaponIndex].price;
-        }       
+        }
     }
 
-    public void UpdateTeamCount(TeamType teamType)
+    private void PrepareNextRound()
     {
-        if (teamType == TeamType.CounterTerrorist)
-        {
-            _teamCTCount--;
-        }
-        if (teamType == TeamType.Terrorist)
-        {
-            _teamTerroristCount--;
-        }
+        ClearOldBots();
+        SpawnTeams();
     }
+
+    private void ClearOldBots()
+    {
+        if (_playerHealth._isDead)
+        {
+            Destroy(_player);
+            _player = null;
+        }
+
+        foreach (GameObject bot in _allCounterCharacter)
+        {
+            Destroy(bot);
+        }
+        _allCounterCharacter.Clear();
+
+        foreach (GameObject bot in _allTerroristCharacter)
+        {
+            Destroy(bot);
+        }
+        _allTerroristCharacter.Clear();
+    }   
 }

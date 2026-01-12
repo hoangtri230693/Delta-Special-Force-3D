@@ -6,16 +6,21 @@ public class UIGameManager : MonoBehaviour
 {
     public static UIGameManager instance;
 
-    [SerializeField] private GameplayData _gameplayData;
+    [Header("Gameplay UI")]
     [SerializeField] private TextMeshProUGUI _health;
-    [SerializeField] private TextMeshProUGUI _shield;
+    [SerializeField] private TextMeshProUGUI _armor;
     [SerializeField] private TextMeshProUGUI _ammo;
-    [SerializeField] private TextMeshProUGUI _reverse;
     [SerializeField] private TextMeshProUGUI _time;
     [SerializeField] private TextMeshProUGUI _cash;
     [SerializeField] private TextMeshProUGUI _buy;
     [SerializeField] private GameObject _tableBuyItem;
     [SerializeField] private GameObject _tableResult;
+    [SerializeField] private TextMeshProUGUI[] _killedCounter;
+    [SerializeField] private TextMeshProUGUI[] _deathCounter;
+    [SerializeField] private TextMeshProUGUI[] _resultCounter;
+    [SerializeField] private TextMeshProUGUI[] _killedTerrorist;
+    [SerializeField] private TextMeshProUGUI[] _deathTerrorist;
+    [SerializeField] private TextMeshProUGUI[] _resultTerrorist;
 
     [Header("Weapon Management UI")]
     [SerializeField] private TextMeshProUGUI[] _textWeaponType;
@@ -25,18 +30,13 @@ public class UIGameManager : MonoBehaviour
     [SerializeField] private GameObject[] _weaponData;
     [SerializeField] private int[] _weaponTypeStartIndices;
 
-    [Header("Component Dynamic")]
-    public WeaponShootController _weaponPrimaryController;
-    public WeaponShootController _weaponSecondaryController;
-    public WeaponMeleeController _weaponMeleeController;
-    public WeaponThrowController _weaponThrowController;
-
     [Header("Flash Color")]
     [SerializeField] private Color _normalColor = Color.white;
     [SerializeField] private Color _flashColor = Color.green;
+    [SerializeField] private Color _winColor = Color.green;
+    [SerializeField] private Color _loseColor = Color.red;
+    [SerializeField] private Color _drawColor = Color.gray;
 
-    public float _timeCount;
-    public int _currentRound;
     public bool _isMatchEnd = false;
     public int _indexWeaponListOpen = -1;
 
@@ -44,20 +44,76 @@ public class UIGameManager : MonoBehaviour
     private float _flashDuration = 0.1f;
 
 
-
     private void Awake()
     {
         instance = this;
-        _timeCount = _gameplayData.timeCountdown;
-        _currentRound = 0;
     }
 
-    private void Update()
+    public void UpdateUIResult()
+    {     
+        if (GameManager.instance._teamCTWin > GameManager.instance._teamTerroristWin)
+        {
+            for (int i = 0; i < _resultCounter.Length; i++)
+            {
+                _resultCounter[i].text = "WINNER";
+                _resultCounter[i].color = _winColor;
+            }
+            for (int i = 0; i < _resultTerrorist.Length; i++)
+            {
+                _resultTerrorist[i].text = "LOSER";
+                _resultTerrorist[i].color = _loseColor;
+            }
+        }
+        else if (GameManager.instance._teamCTWin < GameManager.instance._teamTerroristWin)
+        {
+            for (int i = 0; i < _resultTerrorist.Length; i++)
+            {
+                _resultTerrorist[i].text = "WINNER";
+                _resultTerrorist[i].color = _winColor;
+            }
+            for (int i = 0; i < _resultCounter.Length; i++)
+            {
+                _resultCounter[i].text = "LOSER";
+                _resultCounter[i].color = _loseColor;
+            }
+        }
+        else if (GameManager.instance._teamCTWin == GameManager.instance._teamTerroristWin)
+        {
+            for (int i = 0; i < _resultCounter.Length; i++)
+            {
+                _resultCounter[i].text = "DRAW";
+                _resultCounter[i].color = _drawColor;
+            }
+            for (int i = 0; i < _resultTerrorist.Length; i++)
+            {
+                _resultTerrorist[i].text = "DRAW";
+                _resultTerrorist[i].color = _drawColor;
+            }
+        }
+    }
+
+    public void UpdateKilledCount(TeamType teamType, int playerID, int killedCount)
     {
-        UpdateUIPlayerHealth();
-        UpdateUIWeaponAmmo();
-        UpdateUITime();
-        UpdateUICash();
+        if (teamType == TeamType.CounterTerrorist)
+        {
+            _killedCounter[playerID].text = killedCount.ToString();
+        }
+        else if (teamType == TeamType.Terrorist)
+        {
+            _killedTerrorist[playerID].text = killedCount.ToString();
+        }
+    }
+
+    public void UpdateDeathCount(TeamType teamType, int playerID, int deathCount)
+    {
+        if (teamType == TeamType.CounterTerrorist)
+        {
+            _deathCounter[playerID].text = deathCount.ToString();
+        }
+        else if (teamType == TeamType.Terrorist)
+        {
+            _deathTerrorist[playerID].text = deathCount.ToString();
+        }
     }
 
     public void OpenResultMenu(bool isOpen)
@@ -111,7 +167,7 @@ public class UIGameManager : MonoBehaviour
 
     public void OnBuyWeapon()
     {
-        GameManager.instance.BuyWeapon(_currentWeaponIndex, GameManager.instance._playerController, GameManager.instance._playerInventory);
+        GameManager.instance.BuyWeapon(_currentWeaponIndex, GameManager.instance._playerController, GameManager.instance._playerInventory, GameManager.instance._playerHealth);
         AudioManager.instance.PlaySfx(SFXType.MetalClick);
         StartCoroutine(FlashAndFadeColor(_buy));
     }
@@ -125,116 +181,41 @@ public class UIGameManager : MonoBehaviour
         _indexWeaponListOpen = -1;
     }
 
-    private void UpdateUIPlayerHealth()
+    public void UpdateUIWeaponAmmo(int currentAmmo, int currentReverse)
     {
-        _health.text = Mathf.CeilToInt(GameManager.instance._playerHealth._currentHealth).ToString();
+        _ammo.text = currentAmmo.ToString() + " / " + currentReverse.ToString();
     }
 
-    private void UpdateUIWeaponAmmo()
+    public void UpdateUITime(float timeCount)
     {
-        if (GameManager.instance._playerController._currentItem == ItemType.PrimaryItem)
+        int minutes = Mathf.FloorToInt(timeCount / 60);
+        int seconds = Mathf.FloorToInt(timeCount % 60);
+
+        if (GameManager.instance._currentGameState == GameState.Countdown)
         {
-            if (_weaponPrimaryController != null)
-            {
-                _ammo.text = _weaponPrimaryController._currentAmmo.ToString();
-                _reverse.text = _weaponPrimaryController._currentReverse.ToString();
-            }
-            else
-            {
-                _ammo.text = "0";
-                _reverse.text = "0";
-            }
+            _time.text = $"<color=#FF0000>{minutes:00} : {seconds:00}</color>";
         }
-        else if (GameManager.instance._playerController._currentItem == ItemType.SecondaryItem)
+        else if (GameManager.instance._currentGameState == GameState.RoundActive)
         {
-            if (_weaponSecondaryController != null)
-            {
-                _ammo.text = _weaponSecondaryController._currentAmmo.ToString();
-                _reverse.text = _weaponSecondaryController._currentReverse.ToString();
-            }
-            else
-            {
-                _ammo.text = "0";
-                _reverse.text = "0";
-            }
-        }
-        else if (GameManager.instance._playerController._currentItem == ItemType.MeleeItem)
-        {
-            if (_weaponMeleeController != null)
-            {
-                _ammo.text = _weaponMeleeController._currentAmmo.ToString();
-                _reverse.text = _weaponMeleeController._currentReverse.ToString();
-            }
-            else
-            {
-                _ammo.text = "0";
-                _reverse.text = "0";
-            }
-        }
-        else if (GameManager.instance._playerController._currentItem == ItemType.ThrowItem)
-        {
-            if (_weaponThrowController != null)
-            {
-                _ammo.text = _weaponThrowController._currentAmmo.ToString();
-                _reverse.text = _weaponThrowController._currentReverse.ToString();
-            }
-            else
-            {
-                _ammo.text = "0";
-                _reverse.text = "0";
-            }
+            _time.text = $"{minutes:00} : {seconds:00}";
         }
     }
 
-    private void UpdateUITime()
+    public void UpdateUICash(float currentCash)
     {
-        if (GameManager.instance._currentGameState == GameState.MatchEnd) return;
-
-        if (_timeCount > 0)
-        {
-            _timeCount -= Time.deltaTime;
-
-            if (_timeCount < 0)
-            {
-                _timeCount = 0;
-            }
-
-            int minutes = Mathf.FloorToInt(_timeCount / 60);
-            int seconds = Mathf.FloorToInt(_timeCount % 60);
-
-            if (GameManager.instance._currentGameState == GameState.Countdown)
-            {
-                _time.text = $"<color=#FF0000>{minutes:00} : {seconds:00}</color>";
-            }
-            else if (GameManager.instance._currentGameState == GameState.RoundActive)
-            {
-                _time.text = $"{minutes:00} : {seconds:00}";
-            }
-        }
-        else
-        {
-            if (_currentRound ==_gameplayData.totalRound)
-            {
-                _isMatchEnd = true;
-            }
-            else
-            {
-                if (GameManager.instance._currentGameState == GameState.Countdown)
-                {
-                    _timeCount = _gameplayData.timeCountdown;
-                }
-                else if (GameManager.instance._currentGameState == GameState.RoundActive)
-                {
-                    _currentRound++;
-                    _timeCount = _gameplayData.timeRoundActive;
-                }
-            }
-        }
+        _cash.text = "$" + currentCash.ToString();
     }
 
-    private void UpdateUICash()
+    public void UpdateUIArmorHealth(float currentArmorHealth, PlayerHealth playerHealth)
     {
-        _cash.text = "$" + GameManager.instance._playerController._currentCash.ToString();
+        if (playerHealth == GameManager.instance._playerHealth)
+            _armor.text = currentArmorHealth.ToString();
+    }
+
+    public void UpdateUIPlayerHealth(float currentHealth, PlayerHealth playerHealth)
+    {
+        if (playerHealth == GameManager.instance._playerHealth)
+            _health.text = currentHealth.ToString();
     }
 
     private IEnumerator FlashAndFadeColor(TextMeshProUGUI text)

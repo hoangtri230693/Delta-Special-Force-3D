@@ -14,8 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponName: Shotgun1
   weaponPrefab: {fileID: 6698832762075789148, guid: 1a47535478b5d884688688ea3097758f, type: 3}
+  weaponID: 4
   itemType: 1
-  price: 1700
+  cash: 1700
+  gold: 7500
   targetMask:
     serializedVersion: 2
     m_Bits: 7799
@@ -31,6 +33,7 @@ MonoBehaviour:
   recoilAmount: 5
   shakeIntensity: 0
   throwForce: 0
+  armorHealth: 0
   muzzleFlash: {fileID: 7231814234855767337, guid: 83ef40d6fc0153f4aba24cf36b755e97, type: 3}
   fireSmoke: {fileID: 6264529531993292978, guid: 9764655f80bf7704a94f4ade598fce2d, type: 3}
   bulletImpact: {fileID: 9184815297835673872, guid: cefb23db6e143c147a4f74704197ea40, type: 3}

@@ -5233,6 +5233,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _characterStats: {fileID: 11400000, guid: f53ba2f87cfd24c44978eaa84ab90dbf, type: 2}
   _currentHealth: 0
+  _currentArmorHealth: 0
+  _isDead: 0
 --- !u!114 &7083724981053285449
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5275,7 +5277,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5d313061013d914aacbaedeb36f7df8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _team: 1
+  _playerTeam: 2
+  _playerID: 0
 --- !u!1 &7591863395901474814
 GameObject:
   m_ObjectHideFlags: 0
@@ -5670,14 +5673,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8344205686531014852}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: -0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7401671580248109803}
   m_Father: {fileID: 3943447611709720331}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
 --- !u!1 &8367239137193399203
 GameObject:
   m_ObjectHideFlags: 0

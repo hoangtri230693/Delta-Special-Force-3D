@@ -9,6 +9,7 @@ public class BotController : MonoBehaviour
     [SerializeField] private CharacterController _characterController;
     [SerializeField] private PlayerController _playerController;
     [SerializeField] private PlayerInventory _playerInventory;
+    [SerializeField] private PlayerHealth _playerHealth;
     [SerializeField] private BotNavAgent _botNavAgent;
     [SerializeField] private Animator _animator;
     [SerializeField] private BehaviorGraphAgent _behaviorGraphAgent;
@@ -28,6 +29,7 @@ public class BotController : MonoBehaviour
         RandomBuyThrowItem();
         RandomBuySecondaryItem();
         RandomBuyPrimaryItem();
+        RandomBuyArmorItem();
     }
 
     private void Update()
@@ -43,23 +45,26 @@ public class BotController : MonoBehaviour
 
     private void RandomBuyPrimaryItem()
     {
-        int index = Random.Range(4, 13);
-        GameManager.instance.BuyWeapon(index, _playerController, _playerInventory);
-        Debug.Log("Bot Buy Primary Item");
+        int index = Random.Range(4, 14);
+        GameManager.instance.BuyWeapon(index, _playerController, _playerInventory, _playerHealth);
     }
 
     private void RandomBuySecondaryItem()
     {
-        int index = Random.Range(0, 3);
-        GameManager.instance.BuyWeapon(index, _playerController, _playerInventory);
-        Debug.Log("Bot Buy Secondary Item");
+        int index = Random.Range(0, 4);
+        GameManager.instance.BuyWeapon(index, _playerController, _playerInventory, _playerHealth);
     }
 
     private void RandomBuyThrowItem()
     {
-        int index = Random.Range(14, 15);
-        GameManager.instance.BuyWeapon(index, _playerController, _playerInventory);
-        Debug.Log("Bot Buy Throw Item");
+        int index = Random.Range(14, 16);
+        GameManager.instance.BuyWeapon(index, _playerController, _playerInventory, _playerHealth);
+    }
+
+    private void RandomBuyArmorItem()
+    {
+        int index = Random.Range(16, 18);
+        GameManager.instance.BuyWeapon(index, _playerController, _playerInventory, _playerHealth);
     }
 
     private void CheckStateFromBlackBoard()

@@ -18,7 +18,7 @@ public class AimCameraController : MonoBehaviour
     private float _pitch;
     private float _targetCameraSide = 1f;
 
-    private void Start()
+    private void Awake()
     {
         Vector3 angles = _yawTarget.rotation.eulerAngles;
         _yaw = angles.y;
@@ -27,15 +27,11 @@ public class AimCameraController : MonoBehaviour
 
     private void OnEnable()
     {
-        _lookAction.action.Enable();
-        _switchShoulderAction.action.Enable();
         _switchShoulderAction.action.performed += OnSwitchShoulder;
     }
 
     private void OnDisable()
     {
-        _lookAction.action.Disable();
-        _switchShoulderAction.action.Disable();
         _switchShoulderAction.action.performed -= OnSwitchShoulder;
     }
 

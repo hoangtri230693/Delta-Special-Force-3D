@@ -3785,6 +3785,7 @@ MonoBehaviour:
   _characterController: {fileID: 6354715716475533633}
   _playerController: {fileID: 6476742399373758798}
   _playerInventory: {fileID: 5870160260859968742}
+  _playerHealth: {fileID: 6169074799899093513}
   _botNavAgent: {fileID: 2896495868369411733}
   _animator: {fileID: 3003446393191295309}
   _behaviorGraphAgent: {fileID: 6700251588636404022}
@@ -3869,7 +3870,8 @@ MonoBehaviour:
   _rigAim: {fileID: 8272001044964937898}
   _isAiming: 0
   _isCrouching: 0
-  _isOpeningTable: 0
+  _isOpeningBuyTable: 0
+  _isOpeningResultTable: 0
   _isSelectedItem: 0
   _canAction: 1
   _isSwitchItem: 0
@@ -3968,6 +3970,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _characterStats: {fileID: 11400000, guid: f53ba2f87cfd24c44978eaa84ab90dbf, type: 2}
   _currentHealth: 0
+  _currentArmorHealth: 0
+  _isDead: 0
 --- !u!114 &6421239658064293339
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4010,7 +4014,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5d313061013d914aacbaedeb36f7df8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _team: 1
+  _playerTeam: 2
+  _playerID: 0
 --- !u!1 &5077074320797922267
 GameObject:
   m_ObjectHideFlags: 0

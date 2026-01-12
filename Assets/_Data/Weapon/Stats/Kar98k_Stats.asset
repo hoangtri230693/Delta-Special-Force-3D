@@ -14,8 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponName: Kar98k
   weaponPrefab: {fileID: 8821813935428068858, guid: 8ab795f468be341478342bbb9a5047d4, type: 3}
+  weaponID: 12
   itemType: 1
-  price: 3000
+  cash: 3000
+  gold: 20000
   targetMask:
     serializedVersion: 2
     m_Bits: 7799
@@ -31,6 +33,7 @@ MonoBehaviour:
   recoilAmount: 3
   shakeIntensity: 0
   throwForce: 0
+  armorHealth: 0
   muzzleFlash: {fileID: 7231814234855767337, guid: 11849b321b91902478b808b4d6d6ab86, type: 3}
   fireSmoke: {fileID: 6264529531993292978, guid: 9764655f80bf7704a94f4ade598fce2d, type: 3}
   bulletImpact: {fileID: 9184815297835673872, guid: cefb23db6e143c147a4f74704197ea40, type: 3}

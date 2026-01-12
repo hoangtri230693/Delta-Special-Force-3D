@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using Unity.Behavior;
+using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.Animations.Rigging;
 
 public class PlayerAnimationEvents : MonoBehaviour
@@ -8,22 +10,27 @@ public class PlayerAnimationEvents : MonoBehaviour
     public WeaponMeleeController _meleeController;
     public WeaponThrowController _throwController;
 
+    [Header("Component")]
     private BotController _botController;
     private BotNavAgent _botNavAgent;
     private RangeDetector _rangeDetector;
     private LineOfSightDetector _lineOfSightDetector;
+    private RigBuilder _rigBuilder;
+    private CapsuleCollider _capsuleCollider;
+    private Animator _animator;
+    private AudioSource _audioSource;
+    private NavMeshAgent _navMeshAgent;
+    private BehaviorGraphAgent _behaviorGraphAgent;
+
+    [Header("Scripts Player")]
     private PlayerController _playerController;
     private PlayerRig _playerRig;
     private PlayerInput _playerInput;
     private PlayerAnimator _playerAnimator;
     private PlayerInventory _playerInventory;
     private PlayerAudio _playerAudio;
-    private PlayerAnimationEvents _playerAnimationEvents;
     private PlayerHealth _playerHealth;
-    private RigBuilder _rigBuilder;
-    private CapsuleCollider _capsuleCollider;
-    private Animator _animator;
-    private AudioSource _audioSource;
+    
 
     private float _primaryIKTargetWeight = 1f;
     private float _secondaryIKTargetWeight = 1f;
@@ -37,18 +44,20 @@ public class PlayerAnimationEvents : MonoBehaviour
         _botNavAgent = GetComponent<BotNavAgent>();
         _rangeDetector = GetComponent<RangeDetector>();
         _lineOfSightDetector = GetComponent<LineOfSightDetector>();
+        _rigBuilder = GetComponent<RigBuilder>();
+        _capsuleCollider = GetComponent<CapsuleCollider>();
+        _animator = GetComponent<Animator>();
+        _audioSource = GetComponent<AudioSource>();
+        _navMeshAgent = GetComponent<NavMeshAgent>();
+        _behaviorGraphAgent = GetComponent<BehaviorGraphAgent>();
+
         _playerController = GetComponent<PlayerController>();
         _playerRig = GetComponent<PlayerRig>();
         _playerInput = GetComponent<PlayerInput>();
         _playerAnimator = GetComponent<PlayerAnimator>();
         _playerInventory = GetComponent<PlayerInventory>();
         _playerAudio = GetComponent<PlayerAudio>();
-        _playerAnimationEvents = this.GetComponent<PlayerAnimationEvents>();
-        _playerHealth = GetComponent<PlayerHealth>();
-        _rigBuilder = GetComponent<RigBuilder>();
-        _capsuleCollider = GetComponent<CapsuleCollider>();
-        _animator = GetComponent<Animator>();
-        _audioSource = GetComponent<AudioSource>();
+        _playerHealth = GetComponent<PlayerHealth>();        
     }
 
     private void LateUpdate()
@@ -66,23 +75,22 @@ public class PlayerAnimationEvents : MonoBehaviour
         if (_botNavAgent != null) _botNavAgent.enabled = false;
         if (_rangeDetector != null) _rangeDetector.enabled = false;
         if (_lineOfSightDetector != null) _lineOfSightDetector.enabled = false;
-        _playerController._currentItem = ItemType.None;
-        _playerController._isAiming = false;
-        SetLayer(gameObject, "Default");
+        if (_navMeshAgent != null) _navMeshAgent.enabled = false;
+        if (_behaviorGraphAgent != null) _behaviorGraphAgent.enabled = false;
+
+        _rigBuilder.enabled = false;
+        _capsuleCollider.enabled = false;
+        _audioSource.enabled = false;   
     }
 
     public void DeathEvent1()
     {
-        _rigBuilder.enabled = false;
-        _capsuleCollider.enabled = false;
         _animator.enabled = false;
-        _audioSource.enabled = false;
+
         _playerRig.enabled = false;
         _playerInventory.enabled = false;
         _playerAudio.enabled = false;
-        _playerHealth.enabled = false;
         _playerAnimator.enabled = false;
-        _playerAnimationEvents.enabled = false;     
     }    
 
     public void ReloadingEvent()
@@ -158,18 +166,6 @@ public class PlayerAnimationEvents : MonoBehaviour
         if (_playerController._currentItem == ItemType.MeleeItem)
         {
             _meleeIKTargetWeight = 1f;
-        }
-    }
-
-    private void SetLayer(GameObject obj, string layerName)
-    {
-        int layer = LayerMask.NameToLayer(layerName);
-        if (layer == -1) return;
-
-        obj.layer = layer;
-        foreach (Transform child in obj.transform)
-        {
-            SetLayer(child.gameObject, layerName);
         }
     }
 }

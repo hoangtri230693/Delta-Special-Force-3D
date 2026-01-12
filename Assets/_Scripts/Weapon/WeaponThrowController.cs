@@ -14,20 +14,28 @@ public class WeaponThrowController : MonoBehaviour
     public int _currentAmmo;
     public int _currentReverse;
 
-
+    private void OnEnable()
+    {
+        if (_weaponManager._playerLocal != null)
+        {
+            UIGameManager.instance.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
+        }
+    }
     private void Start()
     {
         _playerCamera = Camera.main;
-        _playerOwner = transform.root;      
+        _playerOwner = transform.root;
+
+        if (_weaponManager._playerLocal != null)
+        {
+            UIGameManager.instance.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
+        }
     }
 
     public void InitializeThrow()
     {
         _currentAmmo = _weaponManager._weaponStats.ammoPerMag;
         _currentReverse = _weaponManager._weaponStats.ammoReverse;
-
-        if (_weaponManager._playerLocal != null)
-            UIGameManager.instance._weaponThrowController = this;
     }
 
     public void AssignAnimationEvents(PlayerAnimationEvents playerAnimationEvents)
@@ -113,7 +121,10 @@ public class WeaponThrowController : MonoBehaviour
                     }
                 }
                 if (finalDamage > 0f)
+                {
+                    finalDamage = Mathf.RoundToInt(finalDamage);
                     playerHealth.UpdateHealth(finalDamage, _weaponManager._weaponStats.itemType);
+                }                 
             }
         }
     }
@@ -154,6 +165,10 @@ public class WeaponThrowController : MonoBehaviour
     { 
         _currentAmmo -= 1;
         Mathf.Clamp(_currentAmmo, 0, _weaponManager._weaponStats.ammoPerMag);
+        if (_weaponManager._playerLocal != null)
+        {
+            UIGameManager.instance.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
+        }
     }
     #endregion
 }

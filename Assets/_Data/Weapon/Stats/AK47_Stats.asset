@@ -14,8 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponName: AK-47
   weaponPrefab: {fileID: 8580493119028246673, guid: 56eb1392b7faba543a8c3988fc2558f2, type: 3}
+  weaponID: 8
   itemType: 1
-  price: 2700
+  cash: 2700
+  gold: 25000
   targetMask:
     serializedVersion: 2
     m_Bits: 7799
@@ -31,6 +33,7 @@ MonoBehaviour:
   recoilAmount: 3
   shakeIntensity: 0
   throwForce: 0
+  armorHealth: 0
   muzzleFlash: {fileID: 7231814234855767337, guid: 176bf6044908c1148adbff2d44990647, type: 3}
   fireSmoke: {fileID: 6264529531993292978, guid: 9764655f80bf7704a94f4ade598fce2d, type: 3}
   bulletImpact: {fileID: 9184815297835673872, guid: cefb23db6e143c147a4f74704197ea40, type: 3}

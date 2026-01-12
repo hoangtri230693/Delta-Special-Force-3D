@@ -14,8 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponName: Uzi
   weaponPrefab: {fileID: 1362351565752272519, guid: 51eab598888471d4b86bb33a71b9b3d1, type: 3}
+  weaponID: 7
   itemType: 1
-  price: 1200
+  cash: 1200
+  gold: 5000
   targetMask:
     serializedVersion: 2
     m_Bits: 7799
@@ -31,6 +33,7 @@ MonoBehaviour:
   recoilAmount: 3
   shakeIntensity: 0
   throwForce: 0
+  armorHealth: 0
   muzzleFlash: {fileID: 7231814234855767337, guid: 798bc6f01da712f4baed50272faa86e3, type: 3}
   fireSmoke: {fileID: 6264529531993292978, guid: 9764655f80bf7704a94f4ade598fce2d, type: 3}
   bulletImpact: {fileID: 9184815297835673872, guid: cefb23db6e143c147a4f74704197ea40, type: 3}

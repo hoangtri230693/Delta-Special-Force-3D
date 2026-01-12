@@ -7,18 +7,40 @@ public class PlayerHealth : MonoBehaviour
     private PlayerController _playerController;
 
     public float _currentHealth;
+    public float _currentArmorHealth;
+    public bool _isDead = false;
+
 
     private void Awake()
     {
         _currentHealth = _characterStats.health;
+        _currentArmorHealth = 0;
         _playerController = GetComponent<PlayerController>();
+    }
+
+    private void Start()
+    {
+        UIGameManager.instance.UpdateUIArmorHealth(_currentArmorHealth, this);
+        UIGameManager.instance.UpdateUIPlayerHealth(_currentHealth, this);
     }
 
     public void UpdateHealth(float damage, ItemType itemType)
     {
-        _currentHealth -= damage;
-        _currentHealth = Mathf.Clamp(_currentHealth, 0, _characterStats.health);
+        if (_isDead) return;
 
+        if (_currentArmorHealth > 0)
+        {
+            _currentArmorHealth -= damage;
+            _currentArmorHealth = Mathf.Clamp(_currentArmorHealth, 0, _characterStats.health);
+            UIGameManager.instance.UpdateUIArmorHealth(_currentArmorHealth, this);
+        }
+        else
+        {
+            _currentHealth -= damage;
+            _currentHealth = Mathf.Clamp(_currentHealth, 0, _characterStats.health);
+            UIGameManager.instance.UpdateUIPlayerHealth(_currentHealth, this);
+        }
+            
         if (_currentHealth <= _characterStats.health / 2)
         {
             _playerController._shouldDefend = true;
@@ -38,10 +60,21 @@ public class PlayerHealth : MonoBehaviour
             {
                 _playerController._lifeState = LifeState.DeathThrow;
             }
+
+            _isDead = true;
         }
         else
         {
             _playerController._lifeState = LifeState.Hit;
         }
+   
+        
+    }
+
+    public void ResetHealth()
+    {
+        _currentHealth = _characterStats.health;
+        _isDead = false;
+        UIGameManager.instance.UpdateUIPlayerHealth(_currentHealth, this);
     }
 }

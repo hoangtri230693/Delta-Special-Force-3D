@@ -5,9 +5,9 @@ using UnityEngine.InputSystem;
 public enum MovementState { Idle, Walk, Run, JumpOI, JumpOM, Fall }
 public enum StanceState { Standing, Crouching }
 public enum ActionState { None, ManualShoot, AutomaticShoot, Melee, Throw, SwitchItem, Reload, Drop }
-public enum ItemType { None, PrimaryItem, SecondaryItem, MeleeItem, ThrowItem }
+public enum ItemType { None, PrimaryItem, SecondaryItem, MeleeItem, ThrowItem, ArmorItem }
 public enum LifeState { None, Alive, Hit, DeathShoot, DeathMelee, DeathThrow }
-public enum TeamType { CounterTerrorist, Terrorist }
+public enum TeamType { None, CounterTerrorist, Terrorist }
 
 
 public class PlayerController : MonoBehaviour
@@ -24,6 +24,9 @@ public class PlayerController : MonoBehaviour
     private PlayerTeam _playerTeam;
     private Vector3 _velocity = Vector3.zero;
     private Vector3 _moveDirection = Vector3.zero;
+
+    private int _killedCount = 0;
+    private int _deathCount = 0;
 
     public bool _isAiming = false;
     public bool _isCrouching = false;
@@ -43,9 +46,9 @@ public class PlayerController : MonoBehaviour
     public LifeState _lifeState = LifeState.Alive;
     public float _currentSpeed = 0;
     public float _currentDirection = 0;
-    public float _currentCash = 10000f;
+    public int _currentCash = 10000;
 
-
+    
     private void Awake()
     {
         _playerCamera = GetComponent<PlayerCamera>();
@@ -60,9 +63,10 @@ public class PlayerController : MonoBehaviour
     {
         if (_lifeState == LifeState.DeathShoot || _lifeState == LifeState.DeathMelee || _lifeState == LifeState.DeathThrow)
         {
-            GameManager.instance.UpdateTeamCount(_playerTeam._team);
+            GameManager.instance.UpdateTeamCount(_playerTeam._playerTeam);
             _isAiming = false;
             _rigAim.weight = 0f;
+            IncrementDeadCount();
         }
 
         if (_lifeState == LifeState.None || GameManager.instance._currentGameState == GameState.Countdown)
@@ -77,6 +81,46 @@ public class PlayerController : MonoBehaviour
             this.enabled = false;
             return;
         }    
+    }
+
+    public void ResetPlayerState()
+    {
+        _lifeState = LifeState.Alive;
+        _currentCash = 10000;
+        _isAiming = false;
+        _rigAim.weight = 0f;
+        _playerCamera.ExitAimMode();
+        _isCrouching = false;
+        _isOpeningBuyTable = false;
+        _isOpeningResultTable = false;
+        _isSelectedItem = false;
+        _isSwitchItem = false;
+        _canReload = false;
+        _canShoot = false;
+        _shouldDefend = false;
+        _movementState = MovementState.Idle;
+        _stanceState = StanceState.Standing;
+        _actionState = ActionState.None;
+        _currentItem = ItemType.SecondaryItem;
+        _currentSpeed = 0;
+        _currentDirection = 0;
+    }
+
+    public void OnCharacterController(bool isOn)
+    {
+        _characterController.enabled = isOn;
+    }
+
+    public void IncrementKillCount()
+    {
+        _killedCount++;
+        UIGameManager.instance.UpdateKilledCount(_playerTeam._playerTeam, _playerTeam._playerID, _killedCount);
+    }
+
+    public void IncrementDeadCount()
+    {
+        _deathCount++;
+        UIGameManager.instance.UpdateDeathCount(_playerTeam._playerTeam, _playerTeam._playerID, _deathCount);
     }
 
     public void UpdateInputs(Vector2 moveInput, bool isSprinting, bool isJumping, bool isCrouching,
@@ -111,6 +155,7 @@ public class PlayerController : MonoBehaviour
                 HandleOpeningBuyTable(isOpeningBuyTable);
                 HandleSelectedItem(isSelectedItem);
                 HandleBuyWeapon(isBuying);
+                HandleOpeningResultTable(isOpeningResultTable);
             }
 
             Vector3 totalMove = (_moveDirection * _currentSpeed) + _velocity;
@@ -121,6 +166,7 @@ public class PlayerController : MonoBehaviour
             HandleOpeningBuyTable(isOpeningBuyTable);
             HandleSelectedItem(isSelectedItem);
             HandleBuyWeapon(isBuying);
+            HandleOpeningResultTable(isOpeningResultTable);
         }       
     }
 

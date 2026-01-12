@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class FullBodyLayerWeight : StateMachineBehaviour
 {
-    [SerializeField] private int _fullBodyLayerIndex = 0;
     [SerializeField] private int _primaryItemLayerIndex = 1;
     [SerializeField] private int _meleeItemLayerIndex = 2;
     [SerializeField] private int _throwableItemLayerIndex = 3;
@@ -15,8 +14,6 @@ public class FullBodyLayerWeight : StateMachineBehaviour
         animator.SetLayerWeight(_meleeItemLayerIndex, 0);
         animator.SetLayerWeight(_throwableItemLayerIndex, 0);
         animator.SetLayerWeight(_actionLayerIndex, 0);
-
-        animator.SetLayerWeight(_fullBodyLayerIndex, 1);
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks

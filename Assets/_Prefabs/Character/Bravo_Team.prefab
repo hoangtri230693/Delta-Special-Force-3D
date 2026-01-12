@@ -3750,6 +3750,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _characterStats: {fileID: 11400000, guid: f53ba2f87cfd24c44978eaa84ab90dbf, type: 2}
   _currentHealth: 0
+  _currentArmorHealth: 0
+  _isDead: 0
 --- !u!114 &-5061233842823052184
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3792,7 +3794,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5d313061013d914aacbaedeb36f7df8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _team: 0
+  _playerTeam: 1
+  _playerID: 0
 --- !u!1 &6571480398161936693
 GameObject:
   m_ObjectHideFlags: 0

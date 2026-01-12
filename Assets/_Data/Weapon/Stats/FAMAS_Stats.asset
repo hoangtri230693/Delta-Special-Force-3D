@@ -14,8 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponName: FAMAS
   weaponPrefab: {fileID: 8298380109746974760, guid: d0af5ec2ce3caea4282d759f3d2115d3, type: 3}
+  weaponID: 10
   itemType: 1
-  price: 2000
+  cash: 2000
+  gold: 12000
   targetMask:
     serializedVersion: 2
     m_Bits: 7799
@@ -31,6 +33,7 @@ MonoBehaviour:
   recoilAmount: 2.5
   shakeIntensity: 0
   throwForce: 0
+  armorHealth: 0
   muzzleFlash: {fileID: 7231814234855767337, guid: b73804bb99469474382dc6cc972eb70e, type: 3}
   fireSmoke: {fileID: 6264529531993292978, guid: 9764655f80bf7704a94f4ade598fce2d, type: 3}
   bulletImpact: {fileID: 9184815297835673872, guid: cefb23db6e143c147a4f74704197ea40, type: 3}

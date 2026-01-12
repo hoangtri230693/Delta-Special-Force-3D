@@ -13,14 +13,26 @@ public class WeaponMeleeController : MonoBehaviour
     public int _currentAmmo;
     public int _currentReverse;
 
+    private void OnEnable()
+    {
+        if (_weaponManager._playerLocal != null)
+        {
+            UIGameManager.instance.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
+        }
+    }
+
+    private void Start()
+    {
+        if (_weaponManager._playerLocal != null)
+        {
+            UIGameManager.instance.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
+        }
+    }
 
     public void InitializeMelee()
     {
         _currentAmmo = _weaponManager._weaponStats.ammoPerMag;
         _currentReverse = _weaponManager._weaponStats.ammoReverse;
-
-        if (_weaponManager._playerLocal != null)
-            UIGameManager.instance._weaponMeleeController = this;
     }
 
     public void AssignAnimationEvents(PlayerAnimationEvents playerAnimationEvents)

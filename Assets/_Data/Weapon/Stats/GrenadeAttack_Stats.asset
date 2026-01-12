@@ -14,8 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponName: Grenade Attack
   weaponPrefab: {fileID: 6110689301951878486, guid: 7e9a40111c64d7d4e9e2c22e0b4df279, type: 3}
+  weaponID: 14
   itemType: 4
-  price: 300
+  cash: 300
+  gold: 500
   targetMask:
     serializedVersion: 2
     m_Bits: 7799
@@ -31,6 +33,7 @@ MonoBehaviour:
   recoilAmount: 0
   shakeIntensity: 1.5
   throwForce: 10
+  armorHealth: 0
   muzzleFlash: {fileID: 0}
   fireSmoke: {fileID: 0}
   bulletImpact: {fileID: 0}

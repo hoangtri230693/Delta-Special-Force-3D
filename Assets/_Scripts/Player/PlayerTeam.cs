@@ -3,5 +3,6 @@ using UnityEngine;
 
 public class PlayerTeam : MonoBehaviour
 {
-    public TeamType _team;
+    public TeamType _playerTeam;
+    public int _playerID;
 }
