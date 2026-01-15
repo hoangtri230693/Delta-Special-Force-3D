@@ -8,6 +8,12 @@ public class UIStartGame : MonoBehaviour
     [SerializeField] private GameObject _settingsButton;
     [SerializeField] private GameObject _quitButton;
 
+    private void Start()
+    {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+    }
+
     public void OnClickPlayGame()
     {
         SceneManager.LoadScene("PlayGame");

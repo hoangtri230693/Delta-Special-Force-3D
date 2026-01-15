@@ -14,4 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   timeCountdown: 10
   timeRoundActive: 300
-  totalRound: 5
+  totalRound: 1
+  bonusGoldWinGame: 300
+  bonusGoldDrawGame: 200
+  bonusGoldLoseGame: 100
+  bonusGoldPerKill: 10

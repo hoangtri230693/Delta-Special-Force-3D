@@ -1,6 +1,9 @@
 ﻿using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+
 
 public class UIGameManager : MonoBehaviour
 {
@@ -21,6 +24,8 @@ public class UIGameManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI[] _killedTerrorist;
     [SerializeField] private TextMeshProUGUI[] _deathTerrorist;
     [SerializeField] private TextMeshProUGUI[] _resultTerrorist;
+    [SerializeField] private GameObject _panelMatchEnd;
+    [SerializeField] private Image _victoryMatch, _drawMatch, _defeatMatch;
 
     [Header("Weapon Management UI")]
     [SerializeField] private TextMeshProUGUI[] _textWeaponType;
@@ -29,6 +34,8 @@ public class UIGameManager : MonoBehaviour
     [SerializeField] private GameObject[] _weaponPreview;
     [SerializeField] private GameObject[] _weaponData;
     [SerializeField] private int[] _weaponTypeStartIndices;
+    [SerializeField] private GameObject _backgroundLocked;
+    [SerializeField] private Button _buttonBuy;
 
     [Header("Flash Color")]
     [SerializeField] private Color _normalColor = Color.white;
@@ -37,7 +44,6 @@ public class UIGameManager : MonoBehaviour
     [SerializeField] private Color _loseColor = Color.red;
     [SerializeField] private Color _drawColor = Color.gray;
 
-    public bool _isMatchEnd = false;
     public int _indexWeaponListOpen = -1;
 
     private int _currentWeaponIndex = -1;
@@ -49,18 +55,24 @@ public class UIGameManager : MonoBehaviour
         instance = this;
     }
 
-    public void UpdateUIResult()
+    public void ShowUIResultMatch()
+    {
+        Time.timeScale = 0f;
+        StartCoroutine(MatchEndSequence());
+    }  
+
+    public void UpdateUIResultRound()
     {     
         if (GameManager.instance._teamCTWin > GameManager.instance._teamTerroristWin)
         {
             for (int i = 0; i < _resultCounter.Length; i++)
             {
-                _resultCounter[i].text = "WINNER";
+                _resultCounter[i].text = "WIN";
                 _resultCounter[i].color = _winColor;
             }
             for (int i = 0; i < _resultTerrorist.Length; i++)
             {
-                _resultTerrorist[i].text = "LOSER";
+                _resultTerrorist[i].text = "LOSE";
                 _resultTerrorist[i].color = _loseColor;
             }
         }
@@ -68,12 +80,12 @@ public class UIGameManager : MonoBehaviour
         {
             for (int i = 0; i < _resultTerrorist.Length; i++)
             {
-                _resultTerrorist[i].text = "WINNER";
+                _resultTerrorist[i].text = "WIN";
                 _resultTerrorist[i].color = _winColor;
             }
             for (int i = 0; i < _resultCounter.Length; i++)
             {
-                _resultCounter[i].text = "LOSER";
+                _resultCounter[i].text = "LOSE";
                 _resultCounter[i].color = _loseColor;
             }
         }
@@ -160,8 +172,20 @@ public class UIGameManager : MonoBehaviour
         _weaponPreview[globalWeaponIndex].SetActive(true);
         _weaponData[globalWeaponIndex].SetActive(true);
         _currentWeaponIndex = globalWeaponIndex;
-        AudioManager.instance.PlaySfx(SFXType.MetalClick);
 
+        bool isUnlocked = PlayerDataManager.instance.playerSaveData.UnlockedWeaponIDs.Contains(_currentWeaponIndex);
+        if (isUnlocked)
+        {
+            _backgroundLocked.SetActive(false);
+            _buttonBuy.interactable = true;
+        }
+        else
+        {
+            _backgroundLocked.SetActive(true);
+            _buttonBuy.interactable = false;
+        }
+
+        AudioManager.instance.PlaySfx(SFXType.MetalClick);
         StartCoroutine(FlashAndFadeColor(_textWeaponName[globalWeaponIndex]));
     }
 
@@ -247,5 +271,39 @@ public class UIGameManager : MonoBehaviour
             count++;
         }
         return count;
+    }
+
+    private IEnumerator MatchEndSequence()
+    {
+        _panelMatchEnd.SetActive(true);
+        _tableResult.SetActive(false);
+
+        int ctWins = GameManager.instance._teamCTWin;
+        int tWins = GameManager.instance._teamTerroristWin;
+        TeamType playerTeam = GameManager.instance._teamType;
+
+        bool isVictory = false;
+        bool isDraw = (ctWins == tWins);
+
+        if (!isDraw)
+        {
+            if (playerTeam == TeamType.CounterTerrorist)
+            {
+                isVictory = ctWins > tWins;
+            }
+            else if (playerTeam == TeamType.Terrorist)
+            {
+                isVictory = tWins > ctWins;
+            }
+        }
+
+        _victoryMatch.gameObject.SetActive(!isDraw && isVictory);
+        _defeatMatch.gameObject.SetActive(!isDraw && !isVictory);
+        _drawMatch.gameObject.SetActive(isDraw);
+
+        yield return new WaitForSecondsRealtime(5f);
+
+        Time.timeScale = 1f;
+        SceneManager.LoadScene("StartGame");
     }
 }

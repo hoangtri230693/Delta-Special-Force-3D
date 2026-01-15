@@ -1,25 +1,27 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using Unity.Behavior;
 using UnityEngine;
 
 public enum GameState { Setup, Countdown, RoundActive, RoundEnd, MatchEnd }
-public enum GameResult { Win, Lose, Draw }
 
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
 
-    [SerializeField] private GameplayData _gameplayData;
+    [Header("Gameplay UI")]
+    [SerializeField] private float _timeCountdown;
+    [SerializeField] private float _timeRoundActive;
+    [SerializeField] private int _totalRound;
+
+    [Header("Gameplay Data")]
     [SerializeField] private GameObject[] _characterPrefabs;
     [SerializeField] private GameObject[] _botAIPrefabs;
     [SerializeField] private Transform[] _spawnCounter;
     [SerializeField] private Transform[] _spawnTerrorist;
     [SerializeField] private Transform[] _assaultCounter;
     [SerializeField] private Transform[] _patrolTerrorist;
-    [SerializeField] private List<GameObject> _allCounterCharacter;
-    [SerializeField] private List<GameObject> _allTerroristCharacter;
+    [SerializeField] private List<GameObject> _allBotCharacter;
 
     public PlayerController _playerController;
     public PlayerInventory _playerInventory;
@@ -37,10 +39,11 @@ public class GameManager : MonoBehaviour
     public int _teamTerroristCount = 0;
     public int _teamCTWin = 0;
     public int _teamTerroristWin = 0;
-    public GameResult _playerResult = GameResult.Draw;
 
-    public float _timeCount;
-    public int _currentRound;
+    private float _timeCount;
+    private int _currentRound;
+    private bool _isMatchEnded = false;
+    public int _playerKilled = 0;
 
 
     private void Awake()
@@ -50,16 +53,15 @@ public class GameManager : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
 
         _currentGameState = GameState.Countdown;
-        _timeCount = _gameplayData.timeCountdown;
-        _currentRound = 0;
-        _allCounterCharacter = new List<GameObject>();
-        _allTerroristCharacter = new List<GameObject>();
+        _timeCount = _timeCountdown;
+        _currentRound = 1;
+        _allBotCharacter = new List<GameObject>();
     }
 
     private void Start()
     {
         SpawnTeams();
-        UIGameManager.instance.UpdateUIResult();
+        UIGameManager.instance.UpdateUIResultRound();
         UIGameManager.instance.UpdateUICash(_playerController._currentCash);
     }
 
@@ -68,6 +70,12 @@ public class GameManager : MonoBehaviour
         UpdateRound();
         UpdateMatch();
         UpdateTime();
+    }
+
+    public void UpdatePlayerKilled(PlayerController player)
+    {
+        if (player == _playerController)
+            _playerKilled++;
     }
 
     public void BuyWeapon(int weaponIndex, PlayerController playerController, PlayerInventory playerInventory, PlayerHealth playerHealth)
@@ -213,7 +221,7 @@ public class GameManager : MonoBehaviour
                     playerTeam._playerID = i + startIndex;
                 }
             }
-            _allCounterCharacter.Add(bot);
+            _allBotCharacter.Add(bot);
             _teamCTCount++;
         }
     }
@@ -250,7 +258,7 @@ public class GameManager : MonoBehaviour
                     playerTeam._playerID = i + startIndex;
                 }
             }
-            _allTerroristCharacter.Add(bot);
+            _allBotCharacter.Add(bot);
             _teamTerroristCount++;
         }
     }
@@ -297,18 +305,21 @@ public class GameManager : MonoBehaviour
             if (_timeCount <= 0)
             {
                 _currentGameState = GameState.RoundActive;
-                _timeCount = _gameplayData.timeRoundActive;
+                _timeCount = _timeRoundActive;
             }
         }
         else if (_currentGameState == GameState.RoundActive)
         {
             if (_timeCount <= 0 || _teamCTCount <= 0 || _teamTerroristCount <= 0)
             {
+                if (_teamCTCount <= 0) _teamTerroristWin++;
+                else if (_teamTerroristCount <= 0) _teamCTWin++;
+
                 _currentGameState = GameState.RoundEnd;
                 _timeCount = 5f;
                 _playerController.OnCharacterController(false);
 
-                UIGameManager.instance.UpdateUIResult();
+                UIGameManager.instance.UpdateUIResultRound();
                 UIGameManager.instance.OpenResultMenu(true);
             }
         }
@@ -320,17 +331,23 @@ public class GameManager : MonoBehaviour
         {
             if (_timeCount <= 0)
             {
-                if (_currentRound < _gameplayData.totalRound)
+                if (_currentRound < _totalRound)
                 {
                     UIGameManager.instance.OpenResultMenu(false);
                     PrepareNextRound();
                     _currentRound++;
                     _currentGameState = GameState.Countdown;
-                    _timeCount = _gameplayData.timeCountdown;
+                    _timeCount = _timeCountdown;
                 }
                 else
                 {
-                    _currentGameState = GameState.MatchEnd;
+                    if (!_isMatchEnded)
+                    {
+                        _isMatchEnded = true;
+                        _currentGameState = GameState.MatchEnd;
+                        CalculateMatchRewards();
+                        UIGameManager.instance.ShowUIResultMatch();
+                    }
                 }
             }
         }
@@ -350,16 +367,35 @@ public class GameManager : MonoBehaviour
             _player = null;
         }
 
-        foreach (GameObject bot in _allCounterCharacter)
+        foreach (GameObject bot in _allBotCharacter)
         {
             Destroy(bot);
         }
-        _allCounterCharacter.Clear();
-
-        foreach (GameObject bot in _allTerroristCharacter)
-        {
-            Destroy(bot);
-        }
-        _allTerroristCharacter.Clear();
+        _allBotCharacter.Clear();
     }   
+
+    private void CalculateMatchRewards()
+    {
+        string resultMatch;
+        int bonusGoldPerKill = GameplayDataManager.instance.GetBonusGoldPerKill();
+        int rewardKills = _playerKilled * GameplayDataManager.instance.GetBonusGoldPerKill();
+        bool isPlayerCT = (_teamType == TeamType.CounterTerrorist);
+
+        if (_teamCTWin > _teamTerroristWin)
+        {
+            resultMatch = isPlayerCT ? "WIN" : "LOSE";
+        }
+        else if (_teamTerroristWin > _teamCTWin)
+        {
+            resultMatch = !isPlayerCT ? "WIN" : "LOSE";
+        }
+        else
+        {
+            resultMatch = "DRAW";
+        }
+
+        int rewardMatch = GameplayDataManager.instance.GetBonusGoldByMatchResult(resultMatch);
+        int totalReward = rewardMatch + rewardKills;
+        PlayerDataManager.instance.AddPlayerGold(totalReward);
+    }
 }

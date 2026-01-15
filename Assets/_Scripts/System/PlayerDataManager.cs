@@ -50,4 +50,16 @@ public class PlayerDataManager : MonoBehaviour
         string json = JsonUtility.ToJson(playerSaveData);
         File.WriteAllText(savePath, json);
     }
+
+    public void AddPlayerGold(int amount)
+    {
+        playerSaveData.Gold += amount;
+        SaveData();
+    }
+
+    public void UsePlayerGold(int amount)
+    {
+        playerSaveData.Gold -= amount;
+        SaveData();
+    }
 }

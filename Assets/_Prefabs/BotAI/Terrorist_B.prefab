@@ -6757,6 +6757,7 @@ MonoBehaviour:
   _behaviorGraphAgent: {fileID: 8298719580499494441}
   _rotationSpeed: 10
   _gravity: -9.81
+  _aimDotThreshold: 0.99
 --- !u!114 &95453865428545989
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6796,7 +6797,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   behaviorAgent: {fileID: 8298719580499494441}
   viewDistance: 15
-  viewAngle: 45
+  viewAngle: 90
   targetLayer:
     serializedVersion: 2
     m_Bits: 4096

@@ -1,6 +1,5 @@
-using UnityEngine;
+﻿using UnityEngine;
 using Unity.Behavior;
-using UnityEngine.AI;
 
 public class LineOfSightDetector : MonoBehaviour
 {
@@ -11,6 +10,7 @@ public class LineOfSightDetector : MonoBehaviour
     public float viewAngle = 45f;
     public LayerMask targetLayer;
     public LayerMask obstacleLayer;
+    public float eyeHeight = 1.5f;
 
     [Header("Debug")]
     public Transform detectedTarget;
@@ -21,41 +21,56 @@ public class LineOfSightDetector : MonoBehaviour
     {
         detectedTarget = null;
 
-        Collider[] targets = Physics.OverlapSphere(transform.position, viewDistance, targetLayer);
+        Vector3 eyePos = transform.position + Vector3.up * eyeHeight;
+
+        Collider[] targets = Physics.OverlapSphere(eyePos, viewDistance, targetLayer);
+
         foreach (var target in targets)
         {
-            Vector3 directionToTarget = (target.transform.position - transform.position).normalized;
-            float angle = Vector3.Angle(transform.forward, directionToTarget);
+            PlayerController pc = target.GetComponent<PlayerController>();
+            if (pc == null || pc._lifeState != LifeState.Alive)
+                continue;
 
-            if (angle < viewAngle)
+            Vector3 dir = (target.transform.position - eyePos).normalized;
+            float angle = Vector3.Angle(transform.forward, dir);
+
+            if (angle > viewAngle * 0.5f) continue;
+
+            if (!Physics.Raycast(eyePos, dir, out RaycastHit hit, viewDistance, obstacleLayer))
             {
-                if (!Physics.Raycast(transform.position + Vector3.up * 1.5f, directionToTarget, out RaycastHit hit, viewDistance, obstacleLayer))
-                {
-                    detectedTarget = target.transform;
-                }
-                else if (hit.transform == target.transform)
-                {
-                    detectedTarget = target.transform;
-                }
+                detectedTarget = target.transform;
+                break;
+            }
+
+            if (hit.transform == target.transform)
+            {
+                detectedTarget = target.transform;
+                break;
             }
         }
 
-        GameObject targetGo = (detectedTarget != null) ? detectedTarget.gameObject : null;
-        behaviorAgent.BlackboardReference.SetVariableValue("DetectTarget", targetGo);
-        behaviorAgent.BlackboardReference.SetVariableValue("HasLineOfSight", HasLineOfSight);
-    }
+        behaviorAgent.BlackboardReference.SetVariableValue(
+            "DetectTarget",
+            detectedTarget ? detectedTarget.gameObject : null
+        );
 
+        behaviorAgent.BlackboardReference.SetVariableValue(
+            "HasLineOfSight",
+            HasLineOfSight
+        );
+    }
 
     private void OnDrawGizmosSelected()
     {
-        Gizmos.color = Color.red ;
-        Gizmos.DrawWireSphere(transform.position, viewDistance);
+        Vector3 eyePos = transform.position + Vector3.up * eyeHeight;
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(eyePos, viewDistance);
 
         Vector3 leftBoundary = Quaternion.Euler(0, -viewAngle / 2f, 0) * transform.forward;
         Vector3 rightBoundary = Quaternion.Euler(0, viewAngle / 2f, 0) * transform.forward;
 
-        Gizmos.color = Color.red;
-        Gizmos.DrawLine(transform.position, transform.position + leftBoundary * viewDistance);
-        Gizmos.DrawLine(transform.position, transform.position + rightBoundary * viewDistance);
+        Gizmos.DrawLine(eyePos, eyePos + leftBoundary * viewDistance);
+        Gizmos.DrawLine(eyePos, eyePos + rightBoundary * viewDistance);
     }
 }

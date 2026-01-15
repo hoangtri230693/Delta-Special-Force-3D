@@ -4,6 +4,12 @@ public class TutorialManager : MonoBehaviour
 {
     public static TutorialManager instance;
 
+    [Header("Gameplay UI")]
+    [SerializeField] private float _timeCountdown;
+    [SerializeField] private float _timeRoundActive;
+    [SerializeField] private int _totalRound;
+
+    [Header("Gameplay Data")]
     [SerializeField] private GameplayData _gameplayData;
     [SerializeField] private WeaponStatsSO[] _weaponStats;
 
@@ -16,7 +22,6 @@ public class TutorialManager : MonoBehaviour
     public GameObject _player;
     public TeamType _teamType;
     public GameState _currentGameState = GameState.Setup;
-    public GameResult _playerResult = GameResult.Draw;
 
     public int _teamCTCount = 1;
     public int _teamTerroristCount = 5;
@@ -32,12 +37,12 @@ public class TutorialManager : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
 
         _currentGameState = GameState.Countdown;
-        _timeCount = _gameplayData.timeCountdown;
+        _timeCount = _timeCountdown;
     }
 
     private void Start()
     {
-        UIGameManager.instance.UpdateUIResult();
+        UIGameManager.instance.UpdateUIResultRound();
     }
 
     private void Update()
@@ -126,7 +131,7 @@ public class TutorialManager : MonoBehaviour
             if (_timeCount <= 0)
             {
                 _currentGameState = GameState.RoundActive;
-                _timeCount = _gameplayData.timeRoundActive;
+                _timeCount = _timeRoundActive;
             }
         }
         else if (_currentGameState == GameState.RoundActive)
@@ -137,7 +142,7 @@ public class TutorialManager : MonoBehaviour
                 _timeCount = 5f;
                 _playerController.OnCharacterController(false);
 
-                UIGameManager.instance.UpdateUIResult();
+                UIGameManager.instance.UpdateUIResultRound();
                 UIGameManager.instance.OpenResultMenu(true);
             }
         }

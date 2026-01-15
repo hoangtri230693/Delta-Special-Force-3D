@@ -237,12 +237,12 @@ public class WeaponShootController : MonoBehaviour
             if (_barrelPointController._playerHealth._isDead) return;
 
             float baseDamage = _weaponManager._weaponStats.damage;
-            float maxDistance = _weaponManager._weaponStats.maxDistance;
-            float actualDistance = Vector3.Distance(_barrelPoint.position, _barrelPointController._targetPosition);
-            float damageMultiplier = Mathf.Clamp01(1 - (actualDistance / maxDistance));
-            float finalDamage = baseDamage * Mathf.Max(0.1f, damageMultiplier);
+            //float maxDistance = _weaponManager._weaponStats.maxDistance;
+            //float actualDistance = Vector3.Distance(_barrelPoint.position, _barrelPointController._targetPosition);
+            //float damageMultiplier = Mathf.Clamp01(1 - (actualDistance / maxDistance));
+            //float finalDamage = baseDamage * Mathf.Max(0.1f, damageMultiplier);
 
-            _barrelPointController._playerHealth.UpdateHealth(Mathf.RoundToInt(finalDamage), _weaponManager._weaponStats.itemType);
+            _barrelPointController._playerHealth.UpdateHealth(baseDamage, _weaponManager._weaponStats.itemType);
             if (_barrelPointController._playerHealth._currentHealth <= 0)
             {
                 _weaponManager._playerController.IncrementKillCount();

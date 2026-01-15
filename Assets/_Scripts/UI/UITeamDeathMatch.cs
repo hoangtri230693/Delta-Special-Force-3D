@@ -218,6 +218,7 @@ public class UITeamDeathMatch : MonoBehaviour
         AudioManager.instance.PlaySfx(SFXType.DefaultClick);
         if (isSelectedCharacter && isSelectedMap)
         {
+            GameplayDataManager.instance.GetUseGoldPerMatch();
             _backgroundLoading.SetActive(true);
             SceneManager.LoadScene(_selectedSceneName);       
         }   

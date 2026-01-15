@@ -51,7 +51,8 @@ public class BarrelPointController : MonoBehaviour
             _playerHealth = hit.collider.GetComponent<PlayerHealth>();
             _targetPosition = hit.point + hit.normal * _crosshairOffset;
             _targetRotation = Quaternion.LookRotation(hit.normal);
-            _weaponManager._playerController._canShoot = true;
+            if (_playerHealth != null)
+                _weaponManager._playerController._canShoot = true;
             Debug.DrawLine(barrelRay.origin, hit.point, Color.red);
         }
         else
@@ -59,13 +60,16 @@ public class BarrelPointController : MonoBehaviour
             _playerHealth = null;
             _targetPosition = barrelRay.GetPoint(_weaponStats.maxDistance);
             _targetRotation = Quaternion.LookRotation(aimDirection);
-            _weaponManager._playerController._canShoot = false;
+            if (_playerHealth == null)
+                _weaponManager._playerController._canShoot = false;             
             Debug.DrawLine(barrelRay.origin, _targetPosition, Color.yellow);
         }
     }
 
     private void EnableCrosshair()
     {
+        if (_weaponManager._playerLocal == null) return;
+
         if (_scopeCrosshair != null && _aimScopeCamera != null)
         {
             _scopeCrosshair.gameObject.SetActive(true);
@@ -79,6 +83,8 @@ public class BarrelPointController : MonoBehaviour
 
     private void DisableCrosshair()
     {
+        if (_weaponManager._playerLocal == null) return;
+
         if (_scopeCrosshair != null && _aimScopeCamera != null)
         {
             _scopeCrosshair.gameObject.SetActive(false);

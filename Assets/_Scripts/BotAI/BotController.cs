@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using Unity.Behavior;
 
-
 public class BotController : MonoBehaviour
 {
     [Header("References")]
@@ -18,11 +17,15 @@ public class BotController : MonoBehaviour
     [SerializeField] private float _rotationSpeed = 10f;
     [SerializeField] private float _gravity = -9.81f;
 
+    [Header("Attack Settings")]
+    [SerializeField] private float _aimDotThreshold = 0.99f;
+
     private Vector3 _verticalVelocity;
     private Transform _target;
 
     public bool RoundActive => GameManager.instance._currentGameState == GameState.RoundActive;
     public bool ShouldDefend => _playerController._shouldDefend;
+
 
     private void Start()
     {
@@ -34,15 +37,157 @@ public class BotController : MonoBehaviour
 
     private void Update()
     {
-        if (GameManager.instance._currentGameState != GameState.RoundActive) return;
+        if (!RoundActive) return;
         if (_playerController._lifeState == LifeState.None) return;
-        ApplyMovement();
+
         CheckStateFromBlackBoard();
+        ApplyMovement();
+
         _behaviorGraphAgent.BlackboardReference.SetVariableValue("RoundActive", RoundActive);
         _behaviorGraphAgent.BlackboardReference.SetVariableValue("ShouldDefend", ShouldDefend);
     }
 
+    // ===================== BLACKBOARD =====================
+    private void CheckStateFromBlackBoard()
+    {
+        if (_behaviorGraphAgent.BlackboardReference.GetVariableValue("DetectTarget", out GameObject targetObj))
+            _target = targetObj ? targetObj.transform : null;
 
+        if (_behaviorGraphAgent.BlackboardReference.GetVariableValue("TerroristState", out TerroristState terroristState))
+        {
+            switch (terroristState)
+            {
+                case TerroristState.Patrol:
+                    EnterPatrolState();
+                    break;
+
+                case TerroristState.Attack:
+                    EnterAttackState();
+                    break;
+            }
+        }
+
+        if (_behaviorGraphAgent.BlackboardReference.GetVariableValue("CounterState", out CounterState counterState))
+        {
+            switch (counterState)
+            {
+                case CounterState.Assault:
+                    EnterPatrolState();
+                    break;
+
+                case CounterState.Attack:
+                    EnterAttackState();
+                    break;
+            }
+        }
+    }
+
+    // ===================== STATES =====================
+    private void EnterPatrolState()
+    {
+        _playerController._isAiming = false;
+
+        if (_playerController._actionState == ActionState.ManualShoot)
+            _playerController._actionState = ActionState.None;
+    }
+
+    private void EnterAttackState()
+    {
+        if (_target == null) return;
+        if (_playerController._actionState == ActionState.Reload) return;
+
+        _playerController._isAiming = true;
+
+        // ===== Aim check =====
+        Vector3 dir = (_target.position - transform.position).normalized;
+        dir.y = 0f;
+
+        float dot = Vector3.Dot(transform.forward, dir);
+
+        // ===== BẮN =====
+        if (_playerController._canShoot && dot >= _aimDotThreshold)
+        {
+            if (_playerController._actionState != ActionState.ManualShoot)
+                _playerController._actionState = ActionState.ManualShoot;
+        }
+        else
+        {
+            _playerController._actionState = ActionState.None;
+        }
+    }
+
+    // ===================== MOVEMENT =====================
+    private void ApplyMovement()
+    {
+        Vector3 desiredVelocity = _botNavAgent.DesiredVelocity;
+
+        // ===== ROTATION =====
+        if (_target != null &&
+            (_playerController._isAiming ||
+             _playerController._actionState == ActionState.ManualShoot))
+        {
+            RotateTowardsTarget();
+        }
+        else if (desiredVelocity.sqrMagnitude > 0.1f)
+        {
+            RotateTowardsMovement(desiredVelocity);
+        }
+
+        // ===== GRAVITY =====
+        if (_characterController.isGrounded)
+            _verticalVelocity.y = -2f;
+        else
+            _verticalVelocity.y += _gravity * Time.deltaTime;
+
+        Vector3 finalMove = desiredVelocity + _verticalVelocity;
+        _characterController.Move(finalMove * Time.deltaTime);
+
+        UpdateAnimator(desiredVelocity);
+    }
+
+    private void RotateTowardsTarget()
+    {
+        Vector3 direction = (_target.position - transform.position);
+        direction.y = 0f;
+
+        if (direction.sqrMagnitude < 0.001f) return;
+
+        Quaternion targetRot = Quaternion.LookRotation(direction.normalized);
+
+        transform.rotation = Quaternion.Slerp(
+            transform.rotation,
+            targetRot,
+            _rotationSpeed * Time.deltaTime
+        );
+    }
+
+    private void RotateTowardsMovement(Vector3 moveDir)
+    {
+        Vector3 dir = moveDir.normalized;
+        dir.y = 0f;
+
+        Quaternion targetRot = Quaternion.LookRotation(dir);
+
+        transform.rotation = Quaternion.Slerp(
+            transform.rotation,
+            targetRot,
+            _rotationSpeed * Time.deltaTime
+        );
+    }
+
+    // ===================== ANIM =====================
+    private void UpdateAnimator(Vector3 moveDir)
+    {
+        if (!_animator) return;
+
+        float speed = new Vector3(moveDir.x, 0, moveDir.z).magnitude;
+        Vector3 localMove = transform.InverseTransformDirection(moveDir);
+
+        _animator.SetFloat("Speed", speed, 0.1f, Time.deltaTime);
+        _animator.SetFloat("Direction", localMove.z, 0.1f, Time.deltaTime);
+    }
+
+    // ===================== BUY RANDOM =====================
     private void RandomBuyPrimaryItem()
     {
         int index = Random.Range(4, 14);
@@ -65,139 +210,5 @@ public class BotController : MonoBehaviour
     {
         int index = Random.Range(16, 18);
         GameManager.instance.BuyWeapon(index, _playerController, _playerInventory, _playerHealth);
-    }
-
-    private void CheckStateFromBlackBoard()
-    {
-        if (_behaviorGraphAgent.BlackboardReference.GetVariableValue("DetectTarget", out GameObject targetObj))
-        {
-            if (targetObj != null)
-            {
-                _target = targetObj.transform;
-            }
-            else
-            {
-                _target = null;
-            }
-        }
-
-        if (_behaviorGraphAgent.BlackboardReference.GetVariableValue("TerroristState", out TerroristState currentState))
-        {
-            if (currentState == TerroristState.Patrol)
-            {
-                OnEnterPatrolState();
-            }    
-
-            if (currentState == TerroristState.Attack)
-            {
-                OnEnterAttackState();
-            }
-        }
-    }
-
-    private void OnEnterPatrolState()
-    {
-        if (_playerController._isAiming)
-            _playerController._isAiming = false;
-    }
-
-    private void OnEnterAttackState()
-    {
-        if (!_playerController._isAiming)
-            _playerController._isAiming = true;
-
-        if (_playerController._actionState == ActionState.Reload) return;
-
-        // Kiểm tra góc trước khi cho phép bắn (Aim Check)
-        Vector3 directionToTarget = (_target.position - transform.position).normalized;
-        directionToTarget.y = 0;
-        float dot = Vector3.Dot(transform.forward, directionToTarget);
-
-        // Chỉ bắn khi hướng mặt gần như trùng với hướng mục tiêu (dot > 0.99 nghĩa là góc < 8 độ)
-        if (_playerController._canShoot && dot > 0.99f)
-        {
-            _playerController._actionState = ActionState.ManualShoot;
-        }
-        else
-        {
-            // Nếu chưa xoay kịp thì chuyển về Idle hoặc Aim để chờ
-            _playerController._actionState = ActionState.None;
-        }
-    }
-
-    // ================== MOVE ==================
-    private void ApplyMovement()
-    {
-        Vector3 desiredVelocity = _botNavAgent.DesiredVelocity;
-
-        // CHỈ xoay theo hướng di chuyển nếu KHÔNG đang nhắm bắn mục tiêu
-        if (!_playerController._isAiming)
-        {
-            if (desiredVelocity.sqrMagnitude > 0.1f)
-            {
-                Vector3 lookDir = desiredVelocity.normalized;
-                lookDir.y = 0;
-                Quaternion targetRot = Quaternion.LookRotation(lookDir);
-                transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, _rotationSpeed * Time.deltaTime);
-            }
-        }
-        else if (_target != null)
-        {
-            // Nếu đang nhắm bắn, gọi hàm xoay về phía mục tiêu
-            RotateTowardsTarget();
-        }
-
-        // Phần di chuyển Gravity giữ nguyên...
-        if (_characterController.isGrounded) _verticalVelocity.y = -2f;
-        else _verticalVelocity.y += _gravity * Time.deltaTime;
-
-        Vector3 finalMove = desiredVelocity + _verticalVelocity;
-        _characterController.Move(finalMove * Time.deltaTime);
-
-        UpdateAnimator(desiredVelocity);
-    }
-
-    private void RotateTowardsTarget()
-    {
-        if (_target == null) return;
-
-        // Tính toán hướng (bỏ qua trục Y để không bị nghiêng người)
-        Vector3 direction = (_target.position - transform.position).normalized;
-        direction.y = 0;
-
-        if (direction != Vector3.zero)
-        {
-            Quaternion targetRot = Quaternion.LookRotation(direction);
-            float angle = Quaternion.Angle(transform.rotation, targetRot);
-
-            // NẾU góc sai lệch còn lớn (> 1 độ) HOẶC chưa thể bắn, thì tiếp tục xoay
-            if (angle > 1.0f || !_playerController._canShoot)
-            {
-                transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, _rotationSpeed * Time.deltaTime);
-            }
-            else
-            {
-                // Đã xoay đúng hướng và canShoot = true -> Khóa góc xoay trực tiếp
-                transform.rotation = targetRot;
-            }
-        }
-    }
-
-    private void UpdateAnimator(Vector3 moveDir)
-    {
-        if (_animator == null) return;
-
-        float speed = new Vector3(moveDir.x, 0, moveDir.z).magnitude;
-
-        Vector3 localMove = transform.InverseTransformDirection(moveDir);
-
-        _animator.SetFloat("Speed", speed, 0.1f, Time.deltaTime);
-        _animator.SetFloat("Direction", localMove.z, 0.1f, Time.deltaTime);
-    }
-
-    // ================== SET TARGET ==================
-    public void SetTarget(Transform target)
-    {
-        _target = target;
     }
 }

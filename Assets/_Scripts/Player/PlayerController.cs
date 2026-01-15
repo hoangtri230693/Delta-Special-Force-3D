@@ -115,6 +115,7 @@ public class PlayerController : MonoBehaviour
     {
         _killedCount++;
         UIGameManager.instance.UpdateKilledCount(_playerTeam._playerTeam, _playerTeam._playerID, _killedCount);
+        GameManager.instance.UpdatePlayerKilled(this);
     }
 
     public void IncrementDeadCount()
