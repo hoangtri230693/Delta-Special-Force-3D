@@ -12,8 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 067e27f1f24d8bd4c8dd9b7a06b022c0, type: 3}
   m_Name: BravoTeam
   m_EditorClassIdentifier: 
+  characterID: 1
   characterName: Bravo Team
-  characterPrefab:
+  teamType: 1
+  characterPlayerPrefab:
+    m_AssetGUID: 7357413047294c04a82a58d879899f3a
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
+  characterAIPrefab:
+    m_AssetGUID: d2d513610e470294faf8e7693a552836
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
+  characterModelPrefab:
     m_AssetGUID: 508f375dde7070d4495ec7f2dcf86939
     m_SubObjectName: 
     m_SubObjectType: 

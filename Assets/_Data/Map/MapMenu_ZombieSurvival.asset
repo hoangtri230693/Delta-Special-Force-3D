@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4cecfc5e59d089441991276a2baec95c, type: 3}
+  m_Name: MapMenu_ZombieSurvival
+  m_EditorClassIdentifier: 
+  _menuMap:
+  - {fileID: 11400000, guid: 9ffaa9392c6183e4fb8c97e295ec16d2, type: 2}
+  - {fileID: 11400000, guid: b1454ea7c5583db409d41fa4c2838eea, type: 2}

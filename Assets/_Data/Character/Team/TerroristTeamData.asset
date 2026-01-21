@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2b0d336a050ca14a934b694395e6d8d, type: 3}
+  m_Name: TerroristTeamData
+  m_EditorClassIdentifier: 
+  teamID: 1
+  teamName: Terrorist
+  teamType: 2
+  characterData:
+  - {fileID: 11400000, guid: 2d9af8ed0c8fa7a4c9aeb7f93461b37d, type: 2}
+  - {fileID: 11400000, guid: e2fc7b861b2d4524cb7e371e893a8d9d, type: 2}
+  - {fileID: 11400000, guid: e32b40a9e454a45439a3a8b5e723fb15, type: 2}
+  - {fileID: 11400000, guid: 01b773807bfc51f479591cecfcb00dc5, type: 2}

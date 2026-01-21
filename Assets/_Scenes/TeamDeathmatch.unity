@@ -393,8 +393,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 730226481}
-        m_TargetAssemblyTypeName: UISinglePlayerManager, Assembly-CSharp
-        m_MethodName: ShowCharacter
+        m_TargetAssemblyTypeName: UITeamDeathMatch, Assembly-CSharp
+        m_MethodName: OnClickCharacter
         m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -573,7 +573,7 @@ GameObject:
   m_Component:
   - component: {fileID: 130310512}
   m_Layer: 5
-  m_Name: TerroristTeam
+  m_Name: MenuTerroristTeam
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -614,7 +614,7 @@ GameObject:
   - component: {fileID: 192798756}
   - component: {fileID: 192798755}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: IndustrialEurope_Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -659,7 +659,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: '    Industrial 2'
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: be79e33d4f972a249a716013b788578c, type: 2}
   m_sharedMaterial: {fileID: -1094212626596600439, guid: be79e33d4f972a249a716013b788578c, type: 2}
@@ -750,7 +750,7 @@ GameObject:
   - component: {fileID: 229088072}
   - component: {fileID: 229088071}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: TerroristD_Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -795,7 +795,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: '    Terrorist D'
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: be79e33d4f972a249a716013b788578c, type: 2}
   m_sharedMaterial: {fileID: -1094212626596600439, guid: be79e33d4f972a249a716013b788578c, type: 2}
@@ -961,7 +961,7 @@ GameObject:
   - component: {fileID: 338724556}
   - component: {fileID: 338724555}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: DeltaTeam_Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1006,7 +1006,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: '    Delta Team'
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: be79e33d4f972a249a716013b788578c, type: 2}
   m_sharedMaterial: {fileID: -1094212626596600439, guid: be79e33d4f972a249a716013b788578c, type: 2}
@@ -1231,13 +1231,13 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 730226481}
-        m_TargetAssemblyTypeName: UISinglePlayerManager, Assembly-CSharp
-        m_MethodName: ShowCharacter
+        m_TargetAssemblyTypeName: UITeamDeathMatch, Assembly-CSharp
+        m_MethodName: OnClickCharacter
         m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 3
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -1290,7 +1290,7 @@ GameObject:
   m_Component:
   - component: {fileID: 461009378}
   m_Layer: 5
-  m_Name: OperationMapMenu
+  m_Name: MenuOperationMap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1521,7 +1521,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 730226481}
-        m_TargetAssemblyTypeName: UISinglePlayerManager, Assembly-CSharp
+        m_TargetAssemblyTypeName: UITeamDeathMatch, Assembly-CSharp
         m_MethodName: OnClickDone
         m_Mode: 1
         m_Arguments:
@@ -1822,13 +1822,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e84e89d736cd38746880d92887774b46, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _modelCharacterTable:
-    m_AssetGUID: bf48657f59d056143917c8a474cf683d
+  _teamMenuRef:
+    m_AssetGUID: 954abaa4f797a6c47bcbe6178229e051
     m_SubObjectName: 
     m_SubObjectType: 
     m_SubObjectGUID: 
     m_EditorAssetChanged: 0
-  _modelMapTable:
+  _mapMenuRef:
     m_AssetGUID: 878424ee73119dc4ba0f5adf8b755140
     m_SubObjectName: 
     m_SubObjectType: 
@@ -1837,9 +1837,21 @@ MonoBehaviour:
   _mapPreview: {fileID: 1416888000}
   _characterPreview: {fileID: 1475274700}
   _backgroundLoading: {fileID: 1915323965}
-  _counterMenu: {fileID: 1586440012}
-  _terroristMenu: {fileID: 130310511}
-  _mapMenu: {fileID: 461009377}
+  _containerCounter: {fileID: 1586440012}
+  _containerTerrorist: {fileID: 130310511}
+  _containerOperationMap: {fileID: 461009377}
+  _counterNameText:
+  - {fileID: 2090411811}
+  - {fileID: 1415928347}
+  - {fileID: 338724555}
+  _terroristNameText:
+  - {fileID: 1599513659}
+  - {fileID: 2034017815}
+  - {fileID: 1327150240}
+  - {fileID: 229088071}
+  _mapNameText:
+  - {fileID: 987601416}
+  - {fileID: 192798755}
 --- !u!1 &731397665
 GameObject:
   m_ObjectHideFlags: 0
@@ -2203,7 +2215,7 @@ GameObject:
   - component: {fileID: 987601417}
   - component: {fileID: 987601416}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: IndustrialAsia_Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2248,9 +2260,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: '    Industrial 1
-
-'
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: be79e33d4f972a249a716013b788578c, type: 2}
   m_sharedMaterial: {fileID: -1094212626596600439, guid: be79e33d4f972a249a716013b788578c, type: 2}
@@ -2415,9 +2425,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 730226481}
-        m_TargetAssemblyTypeName: UISinglePlayerManager, Assembly-CSharp
-        m_MethodName: OnClickCounterButton
-        m_Mode: 1
+        m_TargetAssemblyTypeName: UITeamDeathMatch, Assembly-CSharp
+        m_MethodName: OnClickSelectMenu
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -2943,8 +2953,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 730226481}
-        m_TargetAssemblyTypeName: UISinglePlayerManager, Assembly-CSharp
-        m_MethodName: ShowCharacter
+        m_TargetAssemblyTypeName: UITeamDeathMatch, Assembly-CSharp
+        m_MethodName: OnClickCharacter
         m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3138,13 +3148,13 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 730226481}
-        m_TargetAssemblyTypeName: UISinglePlayerManager, Assembly-CSharp
-        m_MethodName: ShowCharacter
+        m_TargetAssemblyTypeName: UITeamDeathMatch, Assembly-CSharp
+        m_MethodName: OnClickCharacter
         m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 4
+          m_IntArgument: 1
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -3333,13 +3343,13 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 730226481}
-        m_TargetAssemblyTypeName: UISinglePlayerManager, Assembly-CSharp
-        m_MethodName: ShowCharacter
+        m_TargetAssemblyTypeName: UITeamDeathMatch, Assembly-CSharp
+        m_MethodName: OnClickCharacter
         m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 5
+          m_IntArgument: 2
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -3532,7 +3542,7 @@ GameObject:
   - component: {fileID: 1327150241}
   - component: {fileID: 1327150240}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: TerroristC_Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3577,7 +3587,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: '    Terrorist C'
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: be79e33d4f972a249a716013b788578c, type: 2}
   m_sharedMaterial: {fileID: -1094212626596600439, guid: be79e33d4f972a249a716013b788578c, type: 2}
@@ -3742,13 +3752,13 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 730226481}
-        m_TargetAssemblyTypeName: UISinglePlayerManager, Assembly-CSharp
-        m_MethodName: OnClickOperationMapButton
-        m_Mode: 1
+        m_TargetAssemblyTypeName: UITeamDeathMatch, Assembly-CSharp
+        m_MethodName: OnClickSelectMenu
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: 2
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -3863,7 +3873,7 @@ GameObject:
   - component: {fileID: 1415928348}
   - component: {fileID: 1415928347}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: BravoTeam_Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3908,7 +3918,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: '    Bravo Team'
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: be79e33d4f972a249a716013b788578c, type: 2}
   m_sharedMaterial: {fileID: -1094212626596600439, guid: be79e33d4f972a249a716013b788578c, type: 2}
@@ -4075,7 +4085,7 @@ GameObject:
   - component: {fileID: 1448452099}
   - component: {fileID: 1448452098}
   m_Layer: 5
-  m_Name: Industrial1
+  m_Name: IndustrialAsia
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4206,8 +4216,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 730226481}
-        m_TargetAssemblyTypeName: UISinglePlayerManager, Assembly-CSharp
-        m_MethodName: ShowMap
+        m_TargetAssemblyTypeName: UITeamDeathMatch, Assembly-CSharp
+        m_MethodName: OnClickMap
         m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -4482,7 +4492,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1586440013}
   m_Layer: 5
-  m_Name: CounterTeam
+  m_Name: MenuCounterTeam
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4522,7 +4532,7 @@ GameObject:
   - component: {fileID: 1599513660}
   - component: {fileID: 1599513659}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: TerroristA_Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4567,9 +4577,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: '    Terrorist A
-
-'
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: be79e33d4f972a249a716013b788578c, type: 2}
   m_sharedMaterial: {fileID: -1094212626596600439, guid: be79e33d4f972a249a716013b788578c, type: 2}
@@ -4734,13 +4742,13 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 730226481}
-        m_TargetAssemblyTypeName: UISinglePlayerManager, Assembly-CSharp
-        m_MethodName: OnClickTerroristButton
-        m_Mode: 1
+        m_TargetAssemblyTypeName: UITeamDeathMatch, Assembly-CSharp
+        m_MethodName: OnClickSelectMenu
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: 1
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -4858,7 +4866,7 @@ GameObject:
   - component: {fileID: 1807006309}
   - component: {fileID: 1807006308}
   m_Layer: 5
-  m_Name: Industrial2
+  m_Name: IndustrialEurope
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4989,8 +4997,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 730226481}
-        m_TargetAssemblyTypeName: UISinglePlayerManager, Assembly-CSharp
-        m_MethodName: ShowMap
+        m_TargetAssemblyTypeName: UITeamDeathMatch, Assembly-CSharp
+        m_MethodName: OnClickMap
         m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -5184,8 +5192,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 730226481}
-        m_TargetAssemblyTypeName: UISinglePlayerManager, Assembly-CSharp
-        m_MethodName: ShowCharacter
+        m_TargetAssemblyTypeName: UITeamDeathMatch, Assembly-CSharp
+        m_MethodName: OnClickCharacter
         m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -5590,13 +5598,13 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 730226481}
-        m_TargetAssemblyTypeName: UISinglePlayerManager, Assembly-CSharp
-        m_MethodName: ShowCharacter
+        m_TargetAssemblyTypeName: UITeamDeathMatch, Assembly-CSharp
+        m_MethodName: OnClickCharacter
         m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 6
+          m_IntArgument: 3
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -5651,7 +5659,7 @@ GameObject:
   - component: {fileID: 2034017816}
   - component: {fileID: 2034017815}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: TerroristB_Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5696,7 +5704,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: '    Terrorist B'
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: be79e33d4f972a249a716013b788578c, type: 2}
   m_sharedMaterial: {fileID: -1094212626596600439, guid: be79e33d4f972a249a716013b788578c, type: 2}
@@ -5787,7 +5795,7 @@ GameObject:
   - component: {fileID: 2090411812}
   - component: {fileID: 2090411811}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: AlphaTeam_Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5832,7 +5840,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: '    Alpha Team'
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: be79e33d4f972a249a716013b788578c, type: 2}
   m_sharedMaterial: {fileID: -1094212626596600439, guid: be79e33d4f972a249a716013b788578c, type: 2}

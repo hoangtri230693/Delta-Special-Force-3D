@@ -23,7 +23,7 @@ public class BotController : MonoBehaviour
     private Vector3 _verticalVelocity;
     private Transform _target;
 
-    public bool RoundActive => GameManager.instance._currentGameState == GameState.RoundActive;
+    public bool RoundActive => GameManager_TeamDeathmatch.instance._currentGameState == GameState.RoundActive;
     public bool ShouldDefend => _playerController._shouldDefend;
 
 
@@ -191,24 +191,24 @@ public class BotController : MonoBehaviour
     private void RandomBuyPrimaryItem()
     {
         int index = Random.Range(4, 14);
-        GameManager.instance.BuyWeapon(index, _playerController, _playerInventory, _playerHealth);
+        GameManager_TeamDeathmatch.instance.BuyWeapon(index, _playerController, _playerInventory, _playerHealth);
     }
 
     private void RandomBuySecondaryItem()
     {
         int index = Random.Range(0, 4);
-        GameManager.instance.BuyWeapon(index, _playerController, _playerInventory, _playerHealth);
+        GameManager_TeamDeathmatch.instance.BuyWeapon(index, _playerController, _playerInventory, _playerHealth);
     }
 
     private void RandomBuyThrowItem()
     {
         int index = Random.Range(14, 16);
-        GameManager.instance.BuyWeapon(index, _playerController, _playerInventory, _playerHealth);
+        GameManager_TeamDeathmatch.instance.BuyWeapon(index, _playerController, _playerInventory, _playerHealth);
     }
 
     private void RandomBuyArmorItem()
     {
         int index = Random.Range(16, 18);
-        GameManager.instance.BuyWeapon(index, _playerController, _playerInventory, _playerHealth);
+        GameManager_TeamDeathmatch.instance.BuyWeapon(index, _playerController, _playerInventory, _playerHealth);
     }
 }

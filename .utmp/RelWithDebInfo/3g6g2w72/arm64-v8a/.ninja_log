@@ -1,0 +1,10 @@
+# ninja log v5
+25	1331	7902642495356002	GameActivity/CMakeFiles/game.dir/UGAInputKeyEvent.cpp.o	996f240ce56d61eb
+33	1342	7902642495431711	GameActivity/CMakeFiles/game.dir/UGAEntry.cpp.o	faedb46f401655a0
+15	1347	7902642495502470	GameActivity/CMakeFiles/game.dir/UGAConfiguration.cpp.o	b66aad1d9ba5985a
+68	1371	7902642495654400	GameActivity/CMakeFiles/game.dir/UGAInputMotionEvent.cpp.o	814c470ad717c559
+9	1418	7902642496205929	GameActivity/CMakeFiles/game.dir/UGADebug.cpp.o	8398d2935d555fcd
+41	1580	7902642497838822	GameActivity/CMakeFiles/game.dir/UGAInput.cpp.o	c587306bcb0ad153
+57	1588	7902642497904601	GameActivity/CMakeFiles/game.dir/UGASoftKeyboard.cpp.o	8f065a773de6a96c
+1	1671	7902642498739706	GameActivity/CMakeFiles/game.dir/UGAApplication.cpp.o	f12e6b6bd41ca69e
+1672	1773	7902642499775944	D:/GitHub/Delta-Special-Force-3D/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/3g6g2w72/obj/arm64-v8a/libgame.so	fabe5e4642f1b22e

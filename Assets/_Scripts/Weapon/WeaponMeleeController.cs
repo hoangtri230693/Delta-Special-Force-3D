@@ -17,7 +17,7 @@ public class WeaponMeleeController : MonoBehaviour
     {
         if (_weaponManager._playerLocal != null)
         {
-            UIGameManager.instance.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
+            UIGameManager_TeamDeathmatch.instance.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
         }
     }
 
@@ -25,7 +25,7 @@ public class WeaponMeleeController : MonoBehaviour
     {
         if (_weaponManager._playerLocal != null)
         {
-            UIGameManager.instance.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
+            UIGameManager_TeamDeathmatch.instance.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
         }
     }
 

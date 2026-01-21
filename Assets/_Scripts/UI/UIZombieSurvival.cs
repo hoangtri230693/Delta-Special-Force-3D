@@ -1,206 +1,216 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.AddressableAssets;
 using TMPro;
 using UnityEngine.UI;
 using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 
 public class UIZombieSurvival : MonoBehaviour
 {
-    [Header("Addressable Tables")]
-    [SerializeField] private AssetReferenceT<CharacterTableSO> _modelCharacterTable;
-    [SerializeField] private AssetReferenceT<MapTableSO> _modelMapTable;
+    [Header("Addressable Main Data")]
+    [SerializeField] private AssetReferenceT<TeamMenu> _teamMenuRef;
+    [SerializeField] private AssetReferenceT<MapMenu> _mapMenuRef;
 
     [Header("UI References")]
-    [SerializeField] private TMP_InputField _inputFieldName;
+    [SerializeField] private TextMeshProUGUI _teamNameText;
     [SerializeField] private TextMeshProUGUI _characterNameText;
     [SerializeField] private TextMeshProUGUI _mapNameText;
     [SerializeField] private RawImage _mapPreview;
     [SerializeField] private Transform _characterPreview;
     [SerializeField] private GameObject _backgroundLoading;
 
-    private CharacterTableSO _characterTable;
-    private MapTableSO _mapTable;
-    private int _currentCharacterIndex;
-    private int _currentMapIndex;
+    private TeamMenu _teamTable;
+    private MapMenu _mapTable;
 
-    // --- QUẢN LÝ HANDLES (Cần thiết cho giải phóng bộ nhớ) ---
-    private object _currentCharacterData;
-    private object _currentMapData;
-    private GameObject _currentCharacterPrefab;
-    private object _currentMapTexture;
+    private int _currentTeamIndex = 0;
+    private int _currentCharacterIndex = 0;
+    private int _currentMapIndex = 0;
 
-    private void Awake()
-    {
-        _backgroundLoading.SetActive(true);
-    }
+    private string _selectedSceneName;
 
-    private async void Start()
-    {
-        await InitUIAsync();
-    }
+    private GameObject _spawnedCharacterModel;
+
+    private void Awake() => _backgroundLoading.SetActive(true);
+
+    private async void Start() => await InitUIAsync();
 
     private async Task InitUIAsync()
     {
-        Task<CharacterTableSO> charTask = AddressableManager.instance.LoadAssetAsync<CharacterTableSO>(_modelCharacterTable);
-        Task<MapTableSO> mapTask = AddressableManager.instance.LoadAssetAsync<MapTableSO>(_modelMapTable);
+        var charTask = AddressableManager.instance.LoadAssetAsync<TeamMenu>(_teamMenuRef);
+        var mapTask = AddressableManager.instance.LoadAssetAsync<MapMenu>(_mapMenuRef);
 
         await Task.WhenAll(charTask, mapTask);
 
-        _characterTable = charTask.Result;
+        _teamTable = charTask.Result;
         _mapTable = mapTask.Result;
 
-        ShowCharacter(0);
-        ShowMap(0);
+        if (_teamTable != null && _mapTable != null)
+        {
+            // Khởi tạo hiển thị ban đầu
+            ShowTeam(_currentTeamIndex);
+            ShowMap(_currentMapIndex);
+        }
 
         _backgroundLoading.SetActive(false);
     }
 
-    public async void ShowCharacter(int index)
+    public void ShowTeam(int index)
     {
-        if (_characterTable == null || index < 0 || index >= _characterTable.characterData.Length) return;
+        if (_teamTable == null || _teamTable._menuTeam.Length == 0) return;
 
-        // === 1. GIẢI PHÓNG TÀI NGUYÊN CŨ (RẤT QUAN TRỌNG) ===
-        if (_currentCharacterPrefab != null)
-        {
-            AddressableManager.instance.ReleaseInstance(_currentCharacterPrefab);
-            _currentCharacterPrefab = null;
-        }
-        if (_currentCharacterData != null)
-        {
-            AddressableManager.instance.ReleaseAsset(_currentCharacterData);
-        }
+        _currentTeamIndex = index;
+        TeamData data = _teamTable._menuTeam[_currentTeamIndex];
 
-        // === 2. TẢI DỮ LIỆU SO CON VÀ PREFAB MỚI ===
-        AssetReferenceT<CharacterDataSO> charDataRef = _characterTable.characterData[index];
-        _currentCharacterData = charDataRef;
+        if (_teamNameText != null)
+            _teamNameText.text = data.teamName;
 
-        CharacterDataSO charData = await AddressableManager.instance.LoadAssetAsync<CharacterDataSO>(charDataRef);
+        // Reset nhân vật về 0 khi đổi Team
+        _currentCharacterIndex = 0;
+        ShowCharacter(_currentCharacterIndex);
 
-        if (charData != null)
-        {
-            _characterNameText.text = charData.characterName;
-
-            GameObject character = await AddressableManager.instance.
-            InstantiatePrefabAsync(charData.characterPrefab, _characterPreview);
-
-            if (character != null)
-            {
-                _currentCharacterPrefab = character;
-                _currentCharacterPrefab.transform.localPosition = Vector3.zero;
-                _currentCharacterPrefab.transform.localRotation = Quaternion.identity;
-            }
-        }
-
-        // Lưu lại lựa chọn
-        PlayerPrefs.SetInt("SelectedCharacterIndex", index);
+        PlayerPrefs.SetInt("SelectedTeamIndex", _currentTeamIndex);
     }
 
-    public async void ShowMap(int index)
+    public async void ShowCharacter(int index)
     {
-        if (_mapTable == null || index < 0 || index >= _mapTable.mapData.Length) return;
+        if (_teamTable == null) return;
+        TeamData currentTeam = _teamTable._menuTeam[_currentTeamIndex];
 
-        // === 1. GIẢI PHÓNG TÀI NGUYÊN CŨ (RẤT QUAN TRỌNG) ===
-        _mapPreview.texture = null;
-        _mapPreview.color = new Color(1, 1, 1, 0);
+        if (currentTeam.characterData == null || currentTeam.characterData.Length == 0) return;
 
-        if (_currentMapTexture != null)
+        _currentCharacterIndex = index;
+        CharacterData data = currentTeam.characterData[_currentCharacterIndex];
+
+        // 1. Dọn dẹp model cũ
+        if (_spawnedCharacterModel != null)
         {
-            AddressableManager.instance.ReleaseAsset(_currentMapTexture);
-            _currentMapTexture = null;
+            AddressableManager.instance.ReleaseInstance(_spawnedCharacterModel);
+            _spawnedCharacterModel = null;
         }
 
-        if (_currentMapData != null)
+        // 2. Cập nhật UI
+        _characterNameText.text = data.characterName;
+
+        // 3. Tải model mới
+        if (data.characterModelPrefab != null)
         {
-            AddressableManager.instance.ReleaseAsset(_currentMapData);
-            _currentMapData = null;
-        }
-
-        // === 2. TẢI DỮ LIỆU SO CON VÀ PREVIEW IMAGE MỚI ===
-        AssetReferenceT<MapDataSO> mapDataRef = _mapTable.mapData[index];
-        _currentMapData = mapDataRef;
-
-        MapDataSO mapData = await AddressableManager.instance.LoadAssetAsync<MapDataSO>(mapDataRef);
-
-        if (mapData != null)
-        {
-            _mapNameText.text = mapData.mapName;
-
-            _currentMapTexture = mapData.previewImageReference;
-            Texture2D mapTexture = await AddressableManager.instance.LoadAssetAsync<Texture2D>(mapData.previewImageReference);
-            if (mapTexture != null)
+            GameObject model = await AddressableManager.instance.InstantiatePrefabAsync(data.characterModelPrefab, _characterPreview);
+            if (model != null)
             {
-                _mapPreview.texture = mapTexture;
-                _mapPreview.color = new Color(1, 1, 1, 1);
+                _spawnedCharacterModel = model;
+                _spawnedCharacterModel.transform.localPosition = Vector3.zero;
+                _spawnedCharacterModel.transform.localRotation = Quaternion.identity;
             }
-            PlayerPrefs.SetInt("SelectedMapIndex", index);
         }
+
+        PlayerPrefs.SetInt("SelectedCharacterIndex", _currentCharacterIndex);
+    }
+
+    public void ShowMap(int index)
+    {
+        if (_mapTable == null || _mapTable._menuMap.Length == 0) return;
+
+        _currentMapIndex = index;
+        MapData data = _mapTable._menuMap[_currentMapIndex];
+
+        _mapNameText.text = data.mapName;
+        _selectedSceneName = data.mapName;
+
+        if (data.previewImage != null)
+        {
+            _mapPreview.texture = data.previewImage;
+            _mapPreview.color = Color.white;
+        }
+        else
+        {
+            _mapPreview.color = Color.clear;
+        }
+
+        PlayerPrefs.SetInt("SelectedMapIndex", _currentMapIndex);
     }
 
     #region Button Events
+
+    // --- QUẢN LÝ TEAM ---
+    public void OnClickNextTeam()
+    {
+        if (_teamTable == null) return;
+        int nextIndex = (_currentTeamIndex + 1) % _teamTable._menuTeam.Length;
+        ShowTeam(nextIndex);
+        AudioManager.instance.PlaySfx(SFXType.MetalClick);
+    }
+
+    public void OnClickPreviousTeam()
+    {
+        if (_teamTable == null) return;
+        int prevIndex = _currentTeamIndex - 1;
+        if (prevIndex < 0) prevIndex = _teamTable._menuTeam.Length - 1;
+        ShowTeam(prevIndex);
+        AudioManager.instance.PlaySfx(SFXType.MetalClick);
+    }
+
+    // --- QUẢN LÝ NHÂN VẬT ---
     public void OnClickNextCharacter()
     {
-        if (_characterTable == null) return;
-        _currentCharacterIndex = (_currentCharacterIndex + 1) % _characterTable.characterData.Length;
-        ShowCharacter(_currentCharacterIndex);
+        if (_teamTable == null) return;
+        var characters = _teamTable._menuTeam[_currentTeamIndex].characterData;
+        int nextIndex = (_currentCharacterIndex + 1) % characters.Length;
+        ShowCharacter(nextIndex);
         AudioManager.instance.PlaySfx(SFXType.MetalClick);
     }
 
     public void OnClickPreviousCharacter()
     {
-        if (_characterTable == null) return;
-        _currentCharacterIndex--;
-        if (_currentCharacterIndex < 0)
-        {
-            _currentCharacterIndex = _characterTable.characterData.Length - 1;
-        }
-        ShowCharacter(_currentCharacterIndex);
+        if (_teamTable == null) return;
+        var characters = _teamTable._menuTeam[_currentTeamIndex].characterData;
+        int prevIndex = _currentCharacterIndex - 1;
+        if (prevIndex < 0) prevIndex = characters.Length - 1;
+        ShowCharacter(prevIndex);
         AudioManager.instance.PlaySfx(SFXType.MetalClick);
     }
 
+    // --- QUẢN LÝ MAP ---
     public void OnClickNextMap()
     {
         if (_mapTable == null) return;
-        _currentMapIndex = (_currentMapIndex + 1) % _mapTable.mapData.Length;
-        ShowMap(_currentMapIndex);
+        int nextIndex = (_currentMapIndex + 1) % _mapTable._menuMap.Length;
+        ShowMap(nextIndex);
         AudioManager.instance.PlaySfx(SFXType.MetalClick);
     }
 
     public void OnClickPreviousMap()
     {
         if (_mapTable == null) return;
-        _currentMapIndex--;
-        if (_currentMapIndex < 0)
-        {
-            _currentMapIndex = _mapTable.mapData.Length - 1;
-        }
-        ShowMap(_currentMapIndex);
+        int prevIndex = _currentMapIndex - 1;
+        if (prevIndex < 0) prevIndex = _mapTable._menuMap.Length - 1;
+        ShowMap(prevIndex);
         AudioManager.instance.PlaySfx(SFXType.MetalClick);
+    }
+
+    public void OnClickDone()
+    {
+        AudioManager.instance.PlaySfx(SFXType.DefaultClick);
+        _backgroundLoading.SetActive(true);
+
+        SceneManager.LoadScene("" + _selectedSceneName);
     }
 
     public void OnClickBack()
     {
+        AudioManager.instance.PlaySfx(SFXType.DefaultClick);
         SceneManager.LoadScene("PlayGame");
-        AudioManager.instance.PlaySfx(SFXType.DefaultClick);
-    }
-
-    public void OnClickJoin()
-    {
-        AudioManager.instance.PlaySfx(SFXType.DefaultClick);
-        
-        string playerName = _inputFieldName.text;
-        if (string.IsNullOrEmpty(playerName)) return;
-        _backgroundLoading.SetActive(true);
-        PlayerPrefs.SetString("PlayerName", playerName);
     }
     #endregion
 
     private void OnDestroy()
     {
-        if (_modelCharacterTable.IsValid()) AddressableManager.instance.ReleaseAsset(_modelCharacterTable);
-        if (_modelMapTable.IsValid()) AddressableManager.instance.ReleaseAsset(_modelMapTable);
-        if (_currentCharacterData != null) AddressableManager.instance.ReleaseAsset(_currentCharacterData);
-        if (_currentCharacterPrefab != null) AddressableManager.instance.ReleaseInstance(_currentCharacterPrefab);
-        if (_currentMapData != null) AddressableManager.instance.ReleaseAsset(_currentMapData);
+        if (_teamMenuRef.IsValid()) AddressableManager.instance.ReleaseAsset(_teamMenuRef);
+        if (_mapMenuRef.IsValid()) AddressableManager.instance.ReleaseAsset(_mapMenuRef);
+
+        if (_spawnedCharacterModel != null)
+        {
+            AddressableManager.instance.ReleaseInstance(_spawnedCharacterModel);
+        }
     }
 }

@@ -1,210 +1,177 @@
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.AddressableAssets;
 using UnityEngine.UI;
+using TMPro;
 using System.Threading.Tasks;
-
-
-public enum MenuType { None, Counter, Terrorist, Map }
 
 public class UITeamDeathMatch : MonoBehaviour
 {
-    [Header("Addressable Tables")]
-    [SerializeField] private AssetReferenceT<CharacterTableSO> _modelCharacterTable;
-    [SerializeField] private AssetReferenceT<MapTableSO> _modelMapTable;
+    [Header("Addressable Main Data")]
+    [SerializeField] private AssetReferenceT<TeamMenu> _teamMenuRef;
+    [SerializeField] private AssetReferenceT<MapMenu> _mapMenuRef;
 
     [Header("UI References")]
     [SerializeField] private RawImage _mapPreview;
     [SerializeField] private Transform _characterPreview;
     [SerializeField] private GameObject _backgroundLoading;
 
-    [Header("Menu")]
-    [SerializeField] private GameObject _counterMenu;
-    [SerializeField] private GameObject _terroristMenu;
-    [SerializeField] private GameObject _mapMenu;
+    [Header("Menu Containers")]
+    [SerializeField] private GameObject _containerCounter;
+    [SerializeField] private GameObject _containerTerrorist;
+    [SerializeField] private GameObject _containerOperationMap;
 
-    private CharacterTableSO _characterTable;
-    private MapTableSO _mapTable;
-    
-    private MenuType _menuType = MenuType.None;
-    private Dictionary<MenuType, GameObject> _menuDict;
+    [Header("Text Slots")]
+    [SerializeField] private TextMeshProUGUI[] _counterNameText;
+    [SerializeField] private TextMeshProUGUI[] _terroristNameText;
+    [SerializeField] private TextMeshProUGUI[] _mapNameText;
 
-    private bool isSelectedCharacter;
-    private bool isSelectedMap;
+    private TeamMenu _teamMenu;
+    private MapMenu _mapMenu;
+
+    private int _currentTeamIndex = 0;
+    private bool _isSelectedCharacter;
+    private bool _isSelectedMap;
     private string _selectedSceneName;
+    private GameObject _spawnedCharacterModel;
 
-    // --- QUẢN LÝ HANDLES (Cần thiết cho giải phóng bộ nhớ) ---
-    private object _currentCharacterData;
-    private object _currentMapData;
-    private GameObject _currentCharacterPrefab;
-    private object _currentMapTexture;
-    
+    private void Awake() => _backgroundLoading.SetActive(true);
 
-    private void Awake()
-    {
-        _backgroundLoading.SetActive(true);
-        _menuDict = new Dictionary<MenuType, GameObject>
-        {
-            { MenuType.Counter, _counterMenu},
-            { MenuType.Terrorist, _terroristMenu},
-            { MenuType.Map, _mapMenu}
-        };
-    }
-
-    private async void Start()
-    {
-        await InitUIAsync();
-    }
+    private async void Start() => await InitUIAsync();
 
     private async Task InitUIAsync()
     {
-        Task<CharacterTableSO> charTask = AddressableManager.instance.LoadAssetAsync<CharacterTableSO>(_modelCharacterTable);
-        Task<MapTableSO> mapTask = AddressableManager.instance.LoadAssetAsync<MapTableSO>(_modelMapTable);
+        var charTask = AddressableManager.instance.LoadAssetAsync<TeamMenu>(_teamMenuRef);
+        var mapTask = AddressableManager.instance.LoadAssetAsync<MapMenu>(_mapMenuRef);
 
         await Task.WhenAll(charTask, mapTask);
 
-        _characterTable = charTask.Result;
-        _mapTable = mapTask.Result;
+        _teamMenu = charTask.Result;
+        _mapMenu = mapTask.Result;
 
-        SetMenu(MenuType.None);
+        SetupNameText();
+
+        ShowMenu(0);
+
         _backgroundLoading.SetActive(false);
-        isSelectedCharacter = false;
-        isSelectedMap = false;
     }
 
-    private void SetMenu(MenuType type)
+    private void SetupNameText()
     {
-        _menuType = type;
+        if (_teamMenu == null || _mapMenu == null) return;
 
-        foreach (var item in _menuDict)
+        // Counter (Index 0)
+        var counterData = _teamMenu._menuTeam[0].characterData;
+        for (int i = 0; i < _counterNameText.Length; i++)
         {
-            item.Value.SetActive(false);
+            if (i < counterData.Length) _counterNameText[i].text = "    " + counterData[i].characterName;
         }
 
-        if (_menuDict.ContainsKey(type))
+        // Terrorist (Index 1)
+        if (_teamMenu._menuTeam.Length > 1)
         {
-            _menuDict[type].SetActive(true);
-        }
-
-        _characterPreview.gameObject.SetActive(type == MenuType.Counter || type == MenuType.Terrorist);
-        _mapPreview.gameObject.SetActive(type == MenuType.Map);
-    }
-
-    public void ToggleMenu(MenuType type)
-    {
-        if (_menuType == type)
-        {
-            SetMenu(MenuType.None);
-        }
-        else
-        {
-            SetMenu(type);
-        }
-    }
-
-    public async void ShowCharacter(int index)
-    {
-        AudioManager.instance.PlaySfx(SFXType.MetalClick);
-
-        if (_characterTable == null || index < 0 || index >= _characterTable.characterData.Length) return;
-
-        // === 1. GIẢI PHÓNG TÀI NGUYÊN CŨ (RẤT QUAN TRỌNG) ===
-        if (_currentCharacterPrefab != null)
-        {
-            AddressableManager.instance.ReleaseInstance(_currentCharacterPrefab);
-            _currentCharacterPrefab = null;
-        }
-        if (_currentCharacterData != null)
-        {
-            AddressableManager.instance.ReleaseAsset(_currentCharacterData);
-        }
-
-        // === 2. TẢI DỮ LIỆU SO CON VÀ PREFAB MỚI ===
-        AssetReferenceT<CharacterDataSO> charDataRef = _characterTable.characterData[index];
-        _currentCharacterData = charDataRef;
-
-        CharacterDataSO charData = await AddressableManager.instance.LoadAssetAsync<CharacterDataSO>(charDataRef);
-
-        if (charData != null)
-        {
-            GameObject character = await AddressableManager.instance.
-            InstantiatePrefabAsync(charData.characterPrefab, _characterPreview);
-
-            if (character != null)
+            var terroristData = _teamMenu._menuTeam[1].characterData;
+            for (int i = 0; i < _terroristNameText.Length; i++)
             {
-                _currentCharacterPrefab = character;
-                _currentCharacterPrefab.transform.localPosition = Vector3.zero;
-                _currentCharacterPrefab.transform.localRotation = Quaternion.identity;
+                if (i < terroristData.Length) _terroristNameText[i].text = "    " + terroristData[i].characterName;
             }
         }
 
-        // Lưu lại lựa chọn
-        PlayerPrefs.SetInt("SelectedCharacterIndex", index);
-        Debug.Log("Selected Character Index: " + index);
-        isSelectedCharacter = true;
+        // Maps
+        for (int i = 0; i < _mapNameText.Length; i++)
+        {
+            if (i < _mapMenu._menuMap.Length) _mapNameText[i].text = "    " + _mapMenu._menuMap[i].mapName;
+        }
     }
 
-    public async void ShowMap(int index)
+    /// <summary>
+    /// Hiển thị Menu của Team hoặc Menu Map
+    /// index 0: Counter, index 1: Terrorist, index 2: Map
+    /// </summary>
+    public async void ShowMenu(int index)
     {
-        AudioManager.instance.PlaySfx(SFXType.MetalClick);
+        _containerCounter.SetActive(index == 0);
+        _containerTerrorist.SetActive(index == 1);
+        _containerOperationMap.SetActive(index == 2);
 
-        if (_mapTable == null || index < 0 || index >= _mapTable.mapData.Length) return;
+        _characterPreview.gameObject.SetActive(index == 0 || index == 1);
+        _mapPreview.gameObject.SetActive(index == 2);
 
-        // === 1. GIẢI PHÓNG TÀI NGUYÊN CŨ (RẤT QUAN TRỌNG) ===
-        _mapPreview.texture = null;
-        _mapPreview.color = new Color(1, 1, 1, 0);
-
-        if (_currentMapTexture != null)
+        if (index == 0 || index == 1)
         {
-            AddressableManager.instance.ReleaseAsset(_currentMapTexture);
-            _currentMapTexture = null;
+            _currentTeamIndex = index;
         }
 
-        if (_currentMapData != null)
+        AudioManager.instance.PlaySfx(SFXType.DefaultClick);
+        if (index == 0 || index == 1) await ShowCharacter(0);
+        if (index == 2) ShowMap(0);
+    }
+    
+    public async Task ShowCharacter(int index)
+    {
+        if (_teamMenu == null) return;
+        TeamData currentTeam = _teamMenu._menuTeam[_currentTeamIndex];
+        if (index < 0 || index >= currentTeam.characterData.Length) return;
+
+        CharacterData data = currentTeam.characterData[index];
+
+        // Giải phóng model cũ
+        if (_spawnedCharacterModel != null)
         {
-            AddressableManager.instance.ReleaseAsset(_currentMapData);
-            _currentMapData = null;
+            AddressableManager.instance.ReleaseInstance(_spawnedCharacterModel);
+            _spawnedCharacterModel = null;
         }
 
-        // === 2. TẢI DỮ LIỆU SO CON VÀ PREVIEW IMAGE MỚI ===
-        AssetReferenceT<MapDataSO> mapDataRef = _mapTable.mapData[index];
-        _currentMapData = mapDataRef;
-
-        MapDataSO mapData = await AddressableManager.instance.LoadAssetAsync<MapDataSO>(mapDataRef);
-
-        if (mapData != null)
+        // Tải model mới vào CharacterPreview
+        if (data.characterModelPrefab != null)
         {
-            _currentMapTexture = mapData.previewImageReference;
-            Texture2D mapTexture = await AddressableManager.instance.LoadAssetAsync<Texture2D>(mapData.previewImageReference);
-            if (mapTexture != null)
+            _spawnedCharacterModel = await AddressableManager.instance.InstantiatePrefabAsync(data.characterModelPrefab, _characterPreview);
+            if (_spawnedCharacterModel != null)
             {
-                _mapPreview.texture = mapTexture;
-                _mapPreview.color = new Color(1, 1, 1, 1);
+                _spawnedCharacterModel.transform.localPosition = Vector3.zero;
+                _spawnedCharacterModel.transform.localRotation = Quaternion.identity;
+                _spawnedCharacterModel.transform.localScale = Vector3.one;
             }
-
-            _selectedSceneName = mapData.mapName;
-            isSelectedMap = true;
         }
+
+        PlayerPrefs.SetInt("SelectedTeamID", _currentTeamIndex);
+        PlayerPrefs.SetInt("SelectedCharacterID", index);
+        _isSelectedCharacter = true;
+        AudioManager.instance.PlaySfx(SFXType.MetalClick);
     }
 
-    #region Button Events
-    public void OnClickCounterButton()
+    public void ShowMap(int index)
     {
-        ToggleMenu(MenuType.Counter);
-        AudioManager.instance.PlaySfx(SFXType.DefaultClick);
+        if (_mapMenu == null || index < 0 || index >= _mapMenu._menuMap.Length) return;
+
+        MapData data = _mapMenu._menuMap[index];
+        _mapPreview.texture = data.previewImage;
+        _mapPreview.color = data.previewImage != null ? Color.white : Color.clear;
+
+        _selectedSceneName = data.mapName;
+        _isSelectedMap = true;
+
+        PlayerPrefs.SetInt("SelectedMapID", index);
+        AudioManager.instance.PlaySfx(SFXType.MetalClick);
     }
 
-    public void OnClickTerroristButton()
-    {
-        ToggleMenu(MenuType.Terrorist);
-        AudioManager.instance.PlaySfx(SFXType.DefaultClick);
-    }
+    #region UI Callbacks
 
-    public void OnClickOperationMapButton()
+    public void OnClickSelectMenu(int index) => ShowMenu(index);
+
+    public async void OnClickCharacter(int index) => await ShowCharacter(index);
+
+    public void OnClickMap(int index) => ShowMap(index);
+
+    public void OnClickDone()
     {
-        ToggleMenu(MenuType.Map);
         AudioManager.instance.PlaySfx(SFXType.DefaultClick);
+        if (_isSelectedCharacter && _isSelectedMap)
+        {
+            _backgroundLoading.SetActive(true);
+            if (GameplayDataManager.instance != null) GameplayDataManager.instance.GetUseGoldPerMatch();
+            SceneManager.LoadScene(_selectedSceneName);
+        }
     }
 
     public void OnClickBack()
@@ -213,25 +180,12 @@ public class UITeamDeathMatch : MonoBehaviour
         AudioManager.instance.PlaySfx(SFXType.DefaultClick);
     }
 
-    public void OnClickDone()
-    {
-        AudioManager.instance.PlaySfx(SFXType.DefaultClick);
-        if (isSelectedCharacter && isSelectedMap)
-        {
-            GameplayDataManager.instance.GetUseGoldPerMatch();
-            _backgroundLoading.SetActive(true);
-            SceneManager.LoadScene(_selectedSceneName);       
-        }   
-    }
     #endregion
 
     private void OnDestroy()
     {
-        if (_modelCharacterTable.IsValid()) AddressableManager.instance.ReleaseAsset(_modelCharacterTable);
-        if (_modelMapTable.IsValid()) AddressableManager.instance.ReleaseAsset(_modelMapTable);
-        if (_currentCharacterData != null) AddressableManager.instance.ReleaseAsset(_currentCharacterData);
-        if (_currentCharacterPrefab != null) AddressableManager.instance.ReleaseInstance(_currentCharacterPrefab);
-        if (_currentMapData != null) AddressableManager.instance.ReleaseAsset(_currentMapData);
-        if (_currentMapTexture != null) AddressableManager.instance.ReleaseAsset(_currentMapTexture);
+        if (_teamMenuRef.IsValid()) AddressableManager.instance.ReleaseAsset(_teamMenuRef);
+        if (_mapMenuRef.IsValid()) AddressableManager.instance.ReleaseAsset(_mapMenuRef);
+        if (_spawnedCharacterModel != null) AddressableManager.instance.ReleaseInstance(_spawnedCharacterModel);
     }
 }

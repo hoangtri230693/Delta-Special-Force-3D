@@ -12,8 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 067e27f1f24d8bd4c8dd9b7a06b022c0, type: 3}
   m_Name: TerroristB
   m_EditorClassIdentifier: 
+  characterID: 1
   characterName: Terrorist B
-  characterPrefab:
+  teamType: 2
+  characterPlayerPrefab:
+    m_AssetGUID: 4747a591945ed344f9e529434db96513
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
+  characterAIPrefab:
+    m_AssetGUID: 407ef909df787874cb96620be3118881
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
+  characterModelPrefab:
     m_AssetGUID: 1a802d91d5442134f8730f1f24ae2062
     m_SubObjectName: 
     m_SubObjectType: 

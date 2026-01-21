@@ -42,7 +42,7 @@ public class TutorialManager : MonoBehaviour
 
     private void Start()
     {
-        UIGameManager.instance.UpdateUIResultRound();
+        UIGameManager_TeamDeathmatch.instance.UpdateUIResultRound();
     }
 
     private void Update()
@@ -79,7 +79,7 @@ public class TutorialManager : MonoBehaviour
                 playerHealth._currentArmorHealth = _weaponStats[weaponIndex].armorHealth;
                 if (playerHealth == _playerHealth)
                 {
-                    UIGameManager.instance.UpdateUIArmorHealth(playerHealth._currentArmorHealth, playerHealth);
+                    UIGameManager_TeamDeathmatch.instance.UpdateUIArmorHealth(playerHealth._currentArmorHealth, playerHealth);
                 }
             }
 
@@ -106,7 +106,7 @@ public class TutorialManager : MonoBehaviour
 
             if (playerController == _playerController)
             {
-                UIGameManager.instance.UpdateUICash(playerController._currentCash);
+                UIGameManager_TeamDeathmatch.instance.UpdateUICash(playerController._currentCash);
             }
         }
     }
@@ -119,7 +119,7 @@ public class TutorialManager : MonoBehaviour
             _timeCount = Mathf.Clamp(_timeCount, 0, Mathf.Infinity);
             if (_currentGameState == GameState.RoundActive || _currentGameState == GameState.Countdown)
             {
-                UIGameManager.instance.UpdateUITime(_timeCount);
+                UIGameManager_TeamDeathmatch.instance.UpdateUITime(_timeCount);
             }
         }
     }
@@ -142,8 +142,8 @@ public class TutorialManager : MonoBehaviour
                 _timeCount = 5f;
                 _playerController.OnCharacterController(false);
 
-                UIGameManager.instance.UpdateUIResultRound();
-                UIGameManager.instance.OpenResultMenu(true);
+                UIGameManager_TeamDeathmatch.instance.UpdateUIResultRound();
+                UIGameManager_TeamDeathmatch.instance.OpenResultMenu(true);
             }
         }
     }

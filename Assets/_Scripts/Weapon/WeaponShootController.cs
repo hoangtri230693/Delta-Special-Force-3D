@@ -30,7 +30,7 @@ public class WeaponShootController : MonoBehaviour
 
         if (_weaponManager._playerLocal != null)
         {
-            UIGameManager.instance.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
+            UIGameManager_TeamDeathmatch.instance.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
         }
     }
 
@@ -38,7 +38,7 @@ public class WeaponShootController : MonoBehaviour
     {
         if (_weaponManager._playerLocal != null)
         {
-            UIGameManager.instance.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
+            UIGameManager_TeamDeathmatch.instance.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
         }
     }
 
@@ -85,7 +85,7 @@ public class WeaponShootController : MonoBehaviour
         _weaponAudio.PlayAudioCock();
         if (_weaponManager._playerLocal != null)
         {
-            UIGameManager.instance.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
+            UIGameManager_TeamDeathmatch.instance.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
         }
     }
 
@@ -257,7 +257,7 @@ public class WeaponShootController : MonoBehaviour
         Mathf.Clamp(_currentAmmo, 0, _weaponManager._weaponStats.ammoPerMag);
         if (_weaponManager._playerLocal != null)
         {
-            UIGameManager.instance.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
+            UIGameManager_TeamDeathmatch.instance.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
         }
     }
 

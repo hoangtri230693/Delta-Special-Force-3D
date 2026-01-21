@@ -20,8 +20,8 @@ public class PlayerHealth : MonoBehaviour
 
     private void Start()
     {
-        UIGameManager.instance.UpdateUIArmorHealth(_currentArmorHealth, this);
-        UIGameManager.instance.UpdateUIPlayerHealth(_currentHealth, this);
+        UIGameManager_TeamDeathmatch.instance.UpdateUIArmorHealth(_currentArmorHealth, this);
+        UIGameManager_TeamDeathmatch.instance.UpdateUIPlayerHealth(_currentHealth, this);
     }
 
     public void UpdateHealth(float damage, ItemType itemType)
@@ -32,13 +32,13 @@ public class PlayerHealth : MonoBehaviour
         {
             _currentArmorHealth -= damage;
             _currentArmorHealth = Mathf.Clamp(_currentArmorHealth, 0, _characterStats.health);
-            UIGameManager.instance.UpdateUIArmorHealth(_currentArmorHealth, this);
+            UIGameManager_TeamDeathmatch.instance.UpdateUIArmorHealth(_currentArmorHealth, this);
         }
         else
         {
             _currentHealth -= damage;
             _currentHealth = Mathf.Clamp(_currentHealth, 0, _characterStats.health);
-            UIGameManager.instance.UpdateUIPlayerHealth(_currentHealth, this);
+            UIGameManager_TeamDeathmatch.instance.UpdateUIPlayerHealth(_currentHealth, this);
         }
             
         if (_currentHealth <= _characterStats.health / 2)
@@ -75,6 +75,6 @@ public class PlayerHealth : MonoBehaviour
     {
         _currentHealth = _characterStats.health;
         _isDead = false;
-        UIGameManager.instance.UpdateUIPlayerHealth(_currentHealth, this);
+        UIGameManager_TeamDeathmatch.instance.UpdateUIPlayerHealth(_currentHealth, this);
     }
 }

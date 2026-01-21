@@ -63,13 +63,13 @@ public class PlayerController : MonoBehaviour
     {
         if (_lifeState == LifeState.DeathShoot || _lifeState == LifeState.DeathMelee || _lifeState == LifeState.DeathThrow)
         {
-            GameManager.instance.UpdateTeamCount(_playerTeam._playerTeam);
+            GameManager_TeamDeathmatch.instance.UpdateTeamCount(_playerTeam._playerTeam);
             _isAiming = false;
             _rigAim.weight = 0f;
             IncrementDeadCount();
         }
 
-        if (_lifeState == LifeState.None || GameManager.instance._currentGameState == GameState.Countdown)
+        if (_lifeState == LifeState.None || GameManager_TeamDeathmatch.instance._currentGameState == GameState.Countdown)
         {
             HandleGravity();
             _characterController.Move(_velocity * Time.deltaTime);
@@ -114,14 +114,14 @@ public class PlayerController : MonoBehaviour
     public void IncrementKillCount()
     {
         _killedCount++;
-        UIGameManager.instance.UpdateKilledCount(_playerTeam._playerTeam, _playerTeam._playerID, _killedCount);
-        GameManager.instance.UpdatePlayerKilled(this);
+        UIGameManager_TeamDeathmatch.instance.UpdateKilledCount(_playerTeam._playerTeam, _playerTeam._playerID, _killedCount);
+        GameManager_TeamDeathmatch.instance.UpdatePlayerKilled(this);
     }
 
     public void IncrementDeadCount()
     {
         _deathCount++;
-        UIGameManager.instance.UpdateDeathCount(_playerTeam._playerTeam, _playerTeam._playerID, _deathCount);
+        UIGameManager_TeamDeathmatch.instance.UpdateDeathCount(_playerTeam._playerTeam, _playerTeam._playerID, _deathCount);
     }
 
     public void UpdateInputs(Vector2 moveInput, bool isSprinting, bool isJumping, bool isCrouching,
@@ -132,7 +132,7 @@ public class PlayerController : MonoBehaviour
     {
         if (_lifeState == LifeState.None) return;
 
-        if (GameManager.instance._currentGameState == GameState.RoundActive)
+        if (GameManager_TeamDeathmatch.instance._currentGameState == GameState.RoundActive)
         {
             if (_canAction)
             {
@@ -391,12 +391,12 @@ public class PlayerController : MonoBehaviour
         if (isOpeningResultTable && !_isOpeningResultTable)
         {
             _isOpeningResultTable = true;
-            UIGameManager.instance.OpenResultMenu(true);
+            UIGameManager_TeamDeathmatch.instance.OpenResultMenu(true);
         }
         else if (isOpeningResultTable && _isOpeningResultTable)
         {
             _isOpeningResultTable = false;
-            UIGameManager.instance.OpenResultMenu(false);
+            UIGameManager_TeamDeathmatch.instance.OpenResultMenu(false);
         }
     }
 
@@ -406,7 +406,7 @@ public class PlayerController : MonoBehaviour
         {
             _canAction = false;
             _isOpeningBuyTable = true;
-            UIGameManager.instance.OpenMenuItem(true);
+            UIGameManager_TeamDeathmatch.instance.OpenMenuItem(true);
             Cursor.visible = true;
             Cursor.lockState = CursorLockMode.None;
         }
@@ -414,7 +414,7 @@ public class PlayerController : MonoBehaviour
         {
             _canAction = true;
             _isOpeningBuyTable = false;
-            UIGameManager.instance.OpenMenuItem(false);
+            UIGameManager_TeamDeathmatch.instance.OpenMenuItem(false);
             Cursor.visible = false;
             Cursor.lockState = CursorLockMode.Locked;
         }
@@ -426,22 +426,22 @@ public class PlayerController : MonoBehaviour
 
         int indexWeaponListOpen = -1;
 
-        indexWeaponListOpen = UIGameManager.instance._indexWeaponListOpen;
+        indexWeaponListOpen = UIGameManager_TeamDeathmatch.instance._indexWeaponListOpen;
 
         if (_isOpeningBuyTable && indexWeaponListOpen > -1)
         {
             var keyboard = Keyboard.current;
 
-            if (keyboard.digit1Key.wasPressedThisFrame) UIGameManager.instance.OnShowWeapon(0);
-            else if (keyboard.digit2Key.wasPressedThisFrame) UIGameManager.instance.OnShowWeapon(1);
-            else if (keyboard.digit3Key.wasPressedThisFrame) UIGameManager.instance.OnShowWeapon(2);
-            else if (keyboard.digit4Key.wasPressedThisFrame) UIGameManager.instance.OnShowWeapon(3);
-            else if (keyboard.digit5Key.wasPressedThisFrame) UIGameManager.instance.OnShowWeapon(4);
-            else if (keyboard.digit6Key.wasPressedThisFrame) UIGameManager.instance.OnShowWeapon(5);
-            else if (keyboard.digit7Key.wasPressedThisFrame) UIGameManager.instance.OnShowWeapon(6);
-            else if (keyboard.digit8Key.wasPressedThisFrame) UIGameManager.instance.OnShowWeapon(7);
-            else if (keyboard.digit9Key.wasPressedThisFrame) UIGameManager.instance.OnShowWeapon(8);
-            else if (keyboard.escapeKey.wasPressedThisFrame) UIGameManager.instance.HideAllMenuWeapon();
+            if (keyboard.digit1Key.wasPressedThisFrame) UIGameManager_TeamDeathmatch.instance.OnShowWeapon(0);
+            else if (keyboard.digit2Key.wasPressedThisFrame) UIGameManager_TeamDeathmatch.instance.OnShowWeapon(1);
+            else if (keyboard.digit3Key.wasPressedThisFrame) UIGameManager_TeamDeathmatch.instance.OnShowWeapon(2);
+            else if (keyboard.digit4Key.wasPressedThisFrame) UIGameManager_TeamDeathmatch.instance.OnShowWeapon(3);
+            else if (keyboard.digit5Key.wasPressedThisFrame) UIGameManager_TeamDeathmatch.instance.OnShowWeapon(4);
+            else if (keyboard.digit6Key.wasPressedThisFrame) UIGameManager_TeamDeathmatch.instance.OnShowWeapon(5);
+            else if (keyboard.digit7Key.wasPressedThisFrame) UIGameManager_TeamDeathmatch.instance.OnShowWeapon(6);
+            else if (keyboard.digit8Key.wasPressedThisFrame) UIGameManager_TeamDeathmatch.instance.OnShowWeapon(7);
+            else if (keyboard.digit9Key.wasPressedThisFrame) UIGameManager_TeamDeathmatch.instance.OnShowWeapon(8);
+            else if (keyboard.escapeKey.wasPressedThisFrame) UIGameManager_TeamDeathmatch.instance.HideAllMenuWeapon();
 
             _isSelectedItem = true;
         }
@@ -449,15 +449,15 @@ public class PlayerController : MonoBehaviour
         {
             var keyboard = Keyboard.current;
 
-            if (keyboard.digit1Key.wasPressedThisFrame) UIGameManager.instance.OnShowWeaponList(0);
-            else if (keyboard.digit2Key.wasPressedThisFrame) UIGameManager.instance.OnShowWeaponList(1);
-            else if (keyboard.digit3Key.wasPressedThisFrame) UIGameManager.instance.OnShowWeaponList(2);
-            else if (keyboard.digit4Key.wasPressedThisFrame) UIGameManager.instance.OnShowWeaponList(3);
-            else if (keyboard.digit5Key.wasPressedThisFrame) UIGameManager.instance.OnShowWeaponList(4);
-            else if (keyboard.digit6Key.wasPressedThisFrame) UIGameManager.instance.OnShowWeaponList(5);
-            else if (keyboard.digit7Key.wasPressedThisFrame) UIGameManager.instance.OnShowWeaponList(6);
-            else if (keyboard.digit8Key.wasPressedThisFrame) UIGameManager.instance.OnShowWeaponList(7);
-            else if (keyboard.digit9Key.wasPressedThisFrame) UIGameManager.instance.OnShowWeaponList(8);
+            if (keyboard.digit1Key.wasPressedThisFrame) UIGameManager_TeamDeathmatch.instance.OnShowWeaponList(0);
+            else if (keyboard.digit2Key.wasPressedThisFrame) UIGameManager_TeamDeathmatch.instance.OnShowWeaponList(1);
+            else if (keyboard.digit3Key.wasPressedThisFrame) UIGameManager_TeamDeathmatch.instance.OnShowWeaponList(2);
+            else if (keyboard.digit4Key.wasPressedThisFrame) UIGameManager_TeamDeathmatch.instance.OnShowWeaponList(3);
+            else if (keyboard.digit5Key.wasPressedThisFrame) UIGameManager_TeamDeathmatch.instance.OnShowWeaponList(4);
+            else if (keyboard.digit6Key.wasPressedThisFrame) UIGameManager_TeamDeathmatch.instance.OnShowWeaponList(5);
+            else if (keyboard.digit7Key.wasPressedThisFrame) UIGameManager_TeamDeathmatch.instance.OnShowWeaponList(6);
+            else if (keyboard.digit8Key.wasPressedThisFrame) UIGameManager_TeamDeathmatch.instance.OnShowWeaponList(7);
+            else if (keyboard.digit9Key.wasPressedThisFrame) UIGameManager_TeamDeathmatch.instance.OnShowWeaponList(8);
         }       
     }
 
@@ -467,7 +467,7 @@ public class PlayerController : MonoBehaviour
 
         if (_isSelectedItem)
         {
-            UIGameManager.instance.OnBuyWeapon();
+            UIGameManager_TeamDeathmatch.instance.OnBuyWeapon();
         }
     }
 }

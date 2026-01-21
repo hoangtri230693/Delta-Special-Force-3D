@@ -30,8 +30,28 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2ab094d152e24394eaf3dec6d925b4ae
+    m_Address: Assets/_Prefabs/BotAI/Delta_Team_AI.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 2d9af8ed0c8fa7a4c9aeb7f93461b37d
     m_Address: Assets/_Data/Character/Model/TerroristA.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 31bcb669703482a4aa6a48aedc92c199
+    m_Address: Assets/_Prefabs/Map/Greenland_Map.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 407ef909df787874cb96620be3118881
+    m_Address: Assets/_Prefabs/BotAI/Terrorist_B_AI.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 476e842252a2d6944992cfe2142ab4e6
+    m_Address: Assets/_Prefabs/Map/IndustrialMap_V1.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -40,8 +60,28 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4fc9e0029062b194e96056e54e383f99
+    m_Address: Assets/_Prefabs/BotAI/Terrorist_C_AI.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 508f375dde7070d4495ec7f2dcf86939
     m_Address: Assets/_Prefabs/CharacterModel/Bravo_Team_Model.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 55378a251c2f3b94da493a4beb3a72f7
+    m_Address: Assets/_Prefabs/BotAI/Terrorist_A_AI.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6287da85037357445b5a7c64c11c3175
+    m_Address: Assets/_Prefabs/BotAI/Terrorist_D_AI.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 69d623139cb9dd448893fe86cc3bc7a8
+    m_Address: Assets/_Data/Character/Team/TerroristTeamData.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -50,8 +90,18 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7e96953c6d797104689bb56d701012f4
+    m_Address: Assets/_Prefabs/Map/RockyDesert_Map.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 878424ee73119dc4ba0f5adf8b755140
     m_Address: Assets/_Data/Map/MapTableSO.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8969d5402002e724f878019965d7de53
+    m_Address: Assets/_Data/Character/Team/CounterTeamData.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -60,8 +110,23 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: ac2b470b4c09f2e41b65a968a76afea9
-    m_Address: Assets/_Sprites/Maps/Map_v1.png
+  - m_GUID: 954abaa4f797a6c47bcbe6178229e051
+    m_Address: Assets/_Data/Character/Team/TeamMenu.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9a735cebe76599d4986c576c2387f469
+    m_Address: Assets/_Prefabs/BotAI/Alpha_Team.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9ffaa9392c6183e4fb8c97e295ec16d2
+    m_Address: Assets/_Data/Map/RockyDesertMap.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b1454ea7c5583db409d41fa4c2838eea
+    m_Address: Assets/_Data/Map/Greenland_Map.asset
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -80,11 +145,6 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: bf48657f59d056143917c8a474cf683d
-    m_Address: Assets/_Data/Character/ModelCharacterTableSO.asset
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c1fc63ecdc5d2e94e930583048b5c0ca
     m_Address: Assets/_Prefabs/CharacterModel/Terrorist_A_Model.prefab
     m_ReadOnly: 0
@@ -92,6 +152,21 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d02c78438e74b074a8ad10da4322c308
     m_Address: Assets/_Data/Character/Model/BravoTeam.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d2d513610e470294faf8e7693a552836
+    m_Address: Assets/_Prefabs/BotAI/Bravo_Team_AI.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d63ee2f3687663045b8011efb18bcca1
+    m_Address: Assets/_Data/Map/MapZombieSurvival.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dddd2e32035db4345b142bcff8c5422d
+    m_Address: Assets/_Prefabs/Map/IndustrialMap_V2.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -107,11 +182,6 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e32b40a9e454a45439a3a8b5e723fb15
     m_Address: Assets/_Data/Character/Model/TerroristC.asset
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: fe001a11a73e7cf4db67bdfc80f09c14
-    m_Address: Assets/_Sprites/Maps/Map_v2.png
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

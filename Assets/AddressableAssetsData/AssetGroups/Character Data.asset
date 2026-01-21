@@ -14,47 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_GroupName: Character Data
   m_GUID: de8063008a3c9764d84687697bc685e9
-  m_SerializeEntries:
-  - m_GUID: 3043797f733c6d948b49eedfdb755db3
-    m_Address: Assets/_Data/Character/BravoTeam.asset
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 4ada3573218d71f45aacd53a55ef8291
-    m_Address: Assets/_Data/Character/TerroristC.asset
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 56190a6ef0b7ff74c92ae8d299d18b3b
-    m_Address: Assets/_Data/Character/TerroristA.asset
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 5e78ac22bda008f4b9ce80720b82e879
-    m_Address: Assets/_Data/Character/TerroristD.asset
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: a4da3a3f550b53b428316eee1b3cc6f6
-    m_Address: Assets/_Data/CharacterTableSO.asset
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: b293c97a81e95384fa5ad107afe03fb1
-    m_Address: Assets/_Data/Character/AlphaTeam.asset
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: bb519f9e86f7bbf40ad0e7b9a9ebcd26
-    m_Address: Assets/_Data/Character/DeltaTeam.asset
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: c6f1fa91fbbd9e04f85d3968cb3e528b
-    m_Address: Assets/_Data/Character/TerroristB.asset
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
+  m_SerializeEntries: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 0f6a5b48bef5e9a449ca3ed794a3e81a, type: 2}
   m_SchemaSet:

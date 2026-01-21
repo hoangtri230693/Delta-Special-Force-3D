@@ -12,8 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 067e27f1f24d8bd4c8dd9b7a06b022c0, type: 3}
   m_Name: DeltaTeam
   m_EditorClassIdentifier: 
+  characterID: 2
   characterName: Delta Team
-  characterPrefab:
+  teamType: 1
+  characterPlayerPrefab:
+    m_AssetGUID: b031fdb4aa2d23440b6b46abaf3204ed
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
+  characterAIPrefab:
+    m_AssetGUID: 2ab094d152e24394eaf3dec6d925b4ae
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
+  characterModelPrefab:
     m_AssetGUID: b821bbb9254cfb4498947cc69722d7d0
     m_SubObjectName: 
     m_SubObjectType: 

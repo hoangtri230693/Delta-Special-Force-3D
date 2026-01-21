@@ -12,8 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 067e27f1f24d8bd4c8dd9b7a06b022c0, type: 3}
   m_Name: AlphaTeam
   m_EditorClassIdentifier: 
+  characterID: 0
   characterName: Alpha Team
-  characterPrefab:
+  teamType: 1
+  characterPlayerPrefab:
+    m_AssetGUID: 4c32bd28be3694d43ac62fe48a51c8bf
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
+  characterAIPrefab:
+    m_AssetGUID: 9a735cebe76599d4986c576c2387f469
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
+  characterModelPrefab:
     m_AssetGUID: 8c6aafd92482b7c4f84104a56eefa4b4
     m_SubObjectName: 
     m_SubObjectType: 
