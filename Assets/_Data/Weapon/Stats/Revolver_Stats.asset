@@ -20,10 +20,9 @@ MonoBehaviour:
   gold: 2500
   targetMask:
     serializedVersion: 2
-    m_Bits: 7799
+    m_Bits: 7795
   maxDistance: 70
-  explosionForce: 0
-  upwardForce: 0
+  shootForce: 50
   damage: 60
   attackRadius: 0
   ammoPerMag: 6

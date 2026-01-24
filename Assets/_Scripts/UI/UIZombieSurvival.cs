@@ -4,7 +4,6 @@ using UnityEngine.AddressableAssets;
 using TMPro;
 using UnityEngine.UI;
 using System.Threading.Tasks;
-using System.Runtime.CompilerServices;
 
 public class UIZombieSurvival : MonoBehaviour
 {
@@ -69,7 +68,7 @@ public class UIZombieSurvival : MonoBehaviour
         _currentCharacterIndex = 0;
         ShowCharacter(_currentCharacterIndex);
 
-        PlayerPrefs.SetInt("SelectedTeamIndex", _currentTeamIndex);
+        PlayerPrefs.SetInt("SelectedTeamID", _currentTeamIndex);
     }
 
     public async void ShowCharacter(int index)
@@ -104,7 +103,7 @@ public class UIZombieSurvival : MonoBehaviour
             }
         }
 
-        PlayerPrefs.SetInt("SelectedCharacterIndex", _currentCharacterIndex);
+        PlayerPrefs.SetInt("SelectedCharacterID", _currentCharacterIndex);
     }
 
     public void ShowMap(int index)
@@ -126,8 +125,6 @@ public class UIZombieSurvival : MonoBehaviour
         {
             _mapPreview.color = Color.clear;
         }
-
-        PlayerPrefs.SetInt("SelectedMapIndex", _currentMapIndex);
     }
 
     #region Button Events

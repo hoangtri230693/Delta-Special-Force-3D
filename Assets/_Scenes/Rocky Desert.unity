@@ -5381,6 +5381,96 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1812b24efb38bf46a6e5221c54109fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _health: {fileID: 1606978125}
+  _armor: {fileID: 868587893}
+  _ammo: {fileID: 1689911559}
+  _time: {fileID: 259603856}
+  _cash: {fileID: 773893559}
+  _buy: {fileID: 1785137089}
+  _kill: {fileID: 1343004470}
+  _tableBuyItem: {fileID: 1757501575}
+  _panelMatchEnd: {fileID: 1845751612}
+  _victoryMatch: {fileID: 1546281551}
+  _drawMatch: {fileID: 1734808082}
+  _defeatMatch: {fileID: 1882392470}
+  _textWeaponType:
+  - {fileID: 1658011944}
+  - {fileID: 817317250}
+  - {fileID: 159397965}
+  - {fileID: 403971883}
+  - {fileID: 695492772}
+  - {fileID: 1123994492}
+  - {fileID: 1928607207}
+  _textWeaponName:
+  - {fileID: 1195196320}
+  - {fileID: 1920481070}
+  - {fileID: 1487792936}
+  - {fileID: 540282464}
+  - {fileID: 1304616965}
+  - {fileID: 909972258}
+  - {fileID: 1687857984}
+  - {fileID: 181287001}
+  - {fileID: 1788294126}
+  - {fileID: 276103735}
+  - {fileID: 1383781519}
+  - {fileID: 1156810893}
+  - {fileID: 554552137}
+  - {fileID: 2088268499}
+  - {fileID: 230804304}
+  - {fileID: 1517173889}
+  - {fileID: 415719890}
+  - {fileID: 487049506}
+  _weaponList:
+  - {fileID: 2137145818}
+  - {fileID: 595719831}
+  - {fileID: 605452980}
+  - {fileID: 194142710}
+  - {fileID: 203031729}
+  - {fileID: 689295545}
+  - {fileID: 308787585}
+  _weaponPreview:
+  - {fileID: 857117487}
+  - {fileID: 649093953}
+  - {fileID: 1130304214}
+  - {fileID: 783412256}
+  - {fileID: 1422409599}
+  - {fileID: 1909623567}
+  - {fileID: 1614919768}
+  - {fileID: 1138174604}
+  - {fileID: 777088479}
+  - {fileID: 1483287906}
+  - {fileID: 1787373441}
+  - {fileID: 1554397600}
+  - {fileID: 1872969125}
+  - {fileID: 1497198055}
+  - {fileID: 1882772521}
+  - {fileID: 1439485774}
+  - {fileID: 347358102}
+  - {fileID: 632543727}
+  _weaponData:
+  - {fileID: 995964037}
+  - {fileID: 1668886976}
+  - {fileID: 271877514}
+  - {fileID: 417382939}
+  - {fileID: 1276288463}
+  - {fileID: 855128276}
+  - {fileID: 1306046613}
+  - {fileID: 1252245670}
+  - {fileID: 602652643}
+  - {fileID: 740982436}
+  - {fileID: 1071060322}
+  - {fileID: 1534483186}
+  - {fileID: 1226365656}
+  - {fileID: 1291575982}
+  - {fileID: 864745983}
+  - {fileID: 718734700}
+  - {fileID: 2019538734}
+  - {fileID: 1205279523}
+  _weaponTypeStartIndices: 000000000400000006000000080000000c0000000e0000001000000012000000
+  _backgroundLocked: {fileID: 1160486388}
+  _normalColor: {r: 1, g: 1, b: 1, a: 1}
+  _flashColor: {r: 0, g: 1, b: 0, a: 1}
+  _indexWeaponListOpen: -1
 --- !u!1 &325184045
 GameObject:
   m_ObjectHideFlags: 0
@@ -10944,7 +11034,7 @@ Transform:
   m_GameObject: {fileID: 755800564}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.5, z: -0, w: 0.8660254}
-  m_LocalPosition: {x: 120, y: -20, z: 500}
+  m_LocalPosition: {x: 120, y: -21, z: 500}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -18745,8 +18835,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1223979674}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0.5, z: 0, w: 0.8660254}
-  m_LocalPosition: {x: 120, y: -20, z: 500}
+  m_LocalRotation: {x: 0.17364812, y: -0.000000032813812, z: 0.0000000057859584, w: 0.9848078}
+  m_LocalPosition: {x: 0, y: 3.3101006, z: -4.698463}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -20265,7 +20355,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 864fa270b50b2fe4f8b766a9f3e04cb5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _player: {fileID: 0}
 --- !u!114 &1334109576
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -23860,6 +23949,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6ab119ba0cd4ba43af3c4855ea41c64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _timeCountdown: 10
+  _timeRoundActive: 300
+  _totalRound: 1
+  _counterPrefabs:
+  - {fileID: 1755209026461867047, guid: 4c32bd28be3694d43ac62fe48a51c8bf, type: 3}
+  - {fileID: 6513359472276026290, guid: 7357413047294c04a82a58d879899f3a, type: 3}
+  - {fileID: 8501947750616462417, guid: b031fdb4aa2d23440b6b46abaf3204ed, type: 3}
+  _terroristPrefabs:
+  - {fileID: 7538658992837610764, guid: b3c0a687fa2289b46b638f4f20dba651, type: 3}
+  - {fileID: 4635509284504501643, guid: 4747a591945ed344f9e529434db96513, type: 3}
+  - {fileID: 7653659289620235230, guid: a7f021e834719004984c5213c4df7c02, type: 3}
+  - {fileID: 4710494832922726410, guid: 5f530ff56c386d04bbc3b0d2a018c5a7, type: 3}
+  _zombiePrefabs: {fileID: 1502081433993844570, guid: 7f11390f266b6124c9f375b6c9aaa968, type: 3}
+  _spawnPoint: {fileID: 755800565}
+  _zombiesPerWave: 10
+  _distanceBetweenWaves: 50
+  _initialDistanceFromPlayer: 20
+  _playerController: {fileID: 0}
+  _playerInventory: {fileID: 0}
+  _playerHealth: {fileID: 0}
+  _playerTeam: {fileID: 0}
+  _playerAnimationEvents: {fileID: 0}
+  _player: {fileID: 0}
+  _currentGameState: 0
+  _playerKilled: 0
 --- !u!1 &1517173886
 GameObject:
   m_ObjectHideFlags: 0
@@ -36403,67 +36517,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7e96953c6d797104689bb56d701012f4, type: 3}
---- !u!1001 &6330018660403340792
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 779256800714235369, guid: 7f11390f266b6124c9f375b6c9aaa968, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 130
-      objectReference: {fileID: 0}
-    - target: {fileID: 779256800714235369, guid: 7f11390f266b6124c9f375b6c9aaa968, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -22
-      objectReference: {fileID: 0}
-    - target: {fileID: 779256800714235369, guid: 7f11390f266b6124c9f375b6c9aaa968, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 500
-      objectReference: {fileID: 0}
-    - target: {fileID: 779256800714235369, guid: 7f11390f266b6124c9f375b6c9aaa968, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 779256800714235369, guid: 7f11390f266b6124c9f375b6c9aaa968, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 779256800714235369, guid: 7f11390f266b6124c9f375b6c9aaa968, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 779256800714235369, guid: 7f11390f266b6124c9f375b6c9aaa968, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 779256800714235369, guid: 7f11390f266b6124c9f375b6c9aaa968, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 779256800714235369, guid: 7f11390f266b6124c9f375b6c9aaa968, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 779256800714235369, guid: 7f11390f266b6124c9f375b6c9aaa968, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1502081433993844570, guid: 7f11390f266b6124c9f375b6c9aaa968, type: 3}
-      propertyPath: m_Name
-      value: Zombie
-      objectReference: {fileID: 0}
-    - target: {fileID: 3194984190207708326, guid: 7f11390f266b6124c9f375b6c9aaa968, type: 3}
-      propertyPath: m_ApplyRootMotion
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 7f11390f266b6124c9f375b6c9aaa968, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -36478,4 +36531,3 @@ SceneRoots:
   - {fileID: 325077543}
   - {fileID: 1514107714}
   - {fileID: 1532716838}
-  - {fileID: 6330018660403340792}

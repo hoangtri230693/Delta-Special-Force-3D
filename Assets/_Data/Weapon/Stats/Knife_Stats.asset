@@ -14,14 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponName: Knife
   weaponPrefab: {fileID: 782299240580983448, guid: 856099d289e58a1459a8122b779eb79c, type: 3}
+  weaponID: 0
   itemType: 3
-  price: 0
+  cash: 0
+  gold: 0
   targetMask:
     serializedVersion: 2
-    m_Bits: 7799
+    m_Bits: 7795
   maxDistance: 0
-  explosionForce: 0
-  upwardForce: 0
+  shootForce: 0
   damage: 10
   attackRadius: 0
   ammoPerMag: 1
@@ -31,6 +32,7 @@ MonoBehaviour:
   recoilAmount: 0
   shakeIntensity: 0.05
   throwForce: 0
+  armorHealth: 0
   muzzleFlash: {fileID: 0}
   fireSmoke: {fileID: 0}
   bulletImpact: {fileID: 0}

@@ -151,7 +151,6 @@ public class UITeamDeathMatch : MonoBehaviour
         _selectedSceneName = data.mapName;
         _isSelectedMap = true;
 
-        PlayerPrefs.SetInt("SelectedMapID", index);
         AudioManager.instance.PlaySfx(SFXType.MetalClick);
     }
 

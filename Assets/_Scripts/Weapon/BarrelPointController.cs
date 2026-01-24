@@ -13,6 +13,7 @@ public class BarrelPointController : MonoBehaviour
     public Vector3 _targetPosition;
     public Quaternion _targetRotation;
     public PlayerHealth _playerHealth;
+    public RaycastHit _lastHit;
 
 
     private void Start()
@@ -48,7 +49,8 @@ public class BarrelPointController : MonoBehaviour
 
         if (Physics.Raycast(barrelRay, out RaycastHit hit, _weaponStats.maxDistance, _weaponStats.targetMask))
         {
-            _playerHealth = hit.collider.GetComponent<PlayerHealth>();
+            _lastHit = hit;
+            _playerHealth = hit.collider.GetComponentInParent<PlayerHealth>();
             _targetPosition = hit.point + hit.normal * _crosshairOffset;
             _targetRotation = Quaternion.LookRotation(hit.normal);
             if (_playerHealth != null)
@@ -57,6 +59,7 @@ public class BarrelPointController : MonoBehaviour
         }
         else
         {
+            _lastHit = new RaycastHit();
             _playerHealth = null;
             _targetPosition = barrelRay.GetPoint(_weaponStats.maxDistance);
             _targetRotation = Quaternion.LookRotation(aimDirection);

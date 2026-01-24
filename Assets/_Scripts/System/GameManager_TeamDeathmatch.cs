@@ -25,12 +25,14 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
     [SerializeField] private Transform[] _patrolTerrorist;
     [SerializeField] private List<GameObject> _allBotCharacter;
 
+    [Header("Player Component References")]
     public PlayerController _playerController;
     public PlayerInventory _playerInventory;
     public PlayerHealth _playerHealth;
     public PlayerTeam _playerTeam;
     public PlayerAnimationEvents _playerAnimationEvents;
 
+    [Header("Game Manager")]
     public GameObject _player;
     public TeamType _teamType;
     public int _cTSpawn = 5;
@@ -198,6 +200,8 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
             _playerController.ResetPlayerState();
             _playerHealth.ResetHealth();
         }
+
+        MiniMap.instance.SetupPlayerTransform(_player.transform);
 
         if (_teamType == TeamType.CounterTerrorist)
         {

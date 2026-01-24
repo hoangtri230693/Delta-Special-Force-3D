@@ -15,6 +15,7 @@ public class UIGameManager_ZombieSurvival : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _time;
     [SerializeField] private TextMeshProUGUI _cash;
     [SerializeField] private TextMeshProUGUI _buy;
+    [SerializeField] private TextMeshProUGUI _kill;
     [SerializeField] private GameObject _tableBuyItem;
     [SerializeField] private GameObject _panelMatchEnd;
     [SerializeField] private Image _victoryMatch, _drawMatch, _defeatMatch;
@@ -41,6 +42,11 @@ public class UIGameManager_ZombieSurvival : MonoBehaviour
     private void Awake()
     {
         instance = this;
+    }
+
+    public void UpdateKilledCount(int killedCount)
+    {
+        _kill.text = killedCount.ToString();
     }
 
     public void ShowUIResultMatch()
@@ -106,7 +112,7 @@ public class UIGameManager_ZombieSurvival : MonoBehaviour
     {
         bool isUnlocked = PlayerDataManager.instance.playerSaveData.UnlockedWeaponIDs.Contains(_currentWeaponIndex);
         if (isUnlocked)
-            GameManager_TeamDeathmatch.instance.BuyWeapon(_currentWeaponIndex, GameManager_TeamDeathmatch.instance._playerController, GameManager_TeamDeathmatch.instance._playerInventory, GameManager_TeamDeathmatch.instance._playerHealth);
+            GameManager_ZombieSurvival.instance.BuyWeapon(_currentWeaponIndex, GameManager_ZombieSurvival.instance._playerController, GameManager_ZombieSurvival.instance._playerInventory, GameManager_ZombieSurvival.instance._playerHealth);
 
         AudioManager.instance.PlaySfx(SFXType.MetalClick);
         StartCoroutine(FlashAndFadeColor(_buy));
@@ -131,11 +137,11 @@ public class UIGameManager_ZombieSurvival : MonoBehaviour
         int minutes = Mathf.FloorToInt(timeCount / 60);
         int seconds = Mathf.FloorToInt(timeCount % 60);
 
-        if (GameManager_TeamDeathmatch.instance._currentGameState == GameState.Countdown)
+        if (GameManager_ZombieSurvival.instance._currentGameState == GameState.Countdown)
         {
             _time.text = $"<color=#FF0000>{minutes:00} : {seconds:00}</color>";
         }
-        else if (GameManager_TeamDeathmatch.instance._currentGameState == GameState.RoundActive)
+        else if (GameManager_ZombieSurvival.instance._currentGameState == GameState.RoundActive)
         {
             _time.text = $"{minutes:00} : {seconds:00}";
         }
@@ -148,13 +154,13 @@ public class UIGameManager_ZombieSurvival : MonoBehaviour
 
     public void UpdateUIArmorHealth(float currentArmorHealth, PlayerHealth playerHealth)
     {
-        if (playerHealth == GameManager_TeamDeathmatch.instance._playerHealth)
+        if (playerHealth == GameManager_ZombieSurvival.instance._playerHealth)
             _armor.text = currentArmorHealth.ToString();
     }
 
     public void UpdateUIPlayerHealth(float currentHealth, PlayerHealth playerHealth)
     {
-        if (playerHealth == GameManager_TeamDeathmatch.instance._playerHealth)
+        if (playerHealth == GameManager_ZombieSurvival.instance._playerHealth)
             _health.text = currentHealth.ToString();
     }
 

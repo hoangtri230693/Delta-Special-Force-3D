@@ -1,6 +1,5 @@
+using System;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
-using System.Threading.Tasks;
 
 
 public class GameManager_ZombieSurvival : MonoBehaviour
@@ -13,23 +12,35 @@ public class GameManager_ZombieSurvival : MonoBehaviour
     [SerializeField] private int _totalRound;
 
     [Header("Gameplay Data")]
-    [SerializeField] private TeamMenu _teamMenu;
+    [SerializeField] private GameObject[] _counterPrefabs;
+    [SerializeField] private GameObject[] _terroristPrefabs;
+    [SerializeField] private GameObject _zombiePrefabs;
     [SerializeField] private Transform _spawnPoint;
 
+    [Header("Zombie Settings")]
+    [SerializeField] private int _zombiesPerWave = 10;
+    [SerializeField] private float _distanceBetweenWaves = 50f;
+    [SerializeField] private float _initialDistanceFromPlayer = 30f;
+
+    [Header("Player Component References")]
     public PlayerController _playerController;
     public PlayerInventory _playerInventory;
     public PlayerHealth _playerHealth;
     public PlayerTeam _playerTeam;
     public PlayerAnimationEvents _playerAnimationEvents;
 
+    [Header("Game Manager")]
     public GameObject _player;
-    public TeamType _teamType;
     public GameState _currentGameState = GameState.Setup;
 
     private float _timeCount;
     private int _currentRound;
     private bool _isMatchEnded = false;
     public int _playerKilled = 0;
+
+    private Vector3 _baseSpawnDirection;
+    private Vector3 _initialSpawnPoint;
+    private int _spawnWaveCount = 0;
 
 
     private void Awake()
@@ -43,9 +54,11 @@ public class GameManager_ZombieSurvival : MonoBehaviour
         _currentRound = 1;
     }
 
-    private async void Start()
+    private void Start()
     {
-        await StartNewRound();
+        SpawnTeams();
+        SpawnZombie();
+        UIGameManager_ZombieSurvival.instance.UpdateUICash(_playerController._currentCash);
     }
 
     private void Update()
@@ -54,89 +67,6 @@ public class GameManager_ZombieSurvival : MonoBehaviour
         UpdateMatch();
         UpdateTime();
     }
-
-    #region Core Spawn Logic (Optimized with Addressables)
-
-    private async Task StartNewRound()
-    {
-        await SpawnPlayer();
-        UIGameManager_TeamDeathmatch.instance.UpdateUIResultRound();
-        UIGameManager_TeamDeathmatch.instance.UpdateUICash(_playerController._currentCash);
-    }
-
-    private async Task SpawnPlayer()
-    {
-        int selectedTeamID = PlayerPrefs.GetInt("SelectedTeamID", 0);
-        int selectedCharID = PlayerPrefs.GetInt("SelectedCharacterID", 0);
-        _teamType = (selectedTeamID == 0) ? TeamType.CounterTerrorist : TeamType.Terrorist;
-
-        CharacterData pData = GetCharacterData(selectedTeamID, selectedCharID);
-
-        var handle = pData.characterPlayerPrefab.InstantiateAsync(_spawnPoint.position, _spawnPoint.rotation);
-        await handle.Task;
-
-        _player = handle.Result;
-        _player.AddComponent<PlayerLocal>();
-
-        SetupPlayerComponents(_player);
-    }
-
-
-    #endregion
-
-    #region Helper Functions
-
-    private CharacterData GetCharacterData(int teamID, int charID)
-    {
-        foreach (var team in _teamMenu._menuTeam)
-        {
-            if (team.teamID == teamID)
-            {
-                foreach (var c in team.characterData)
-                {
-                    if (c.characterID == charID) return c;
-                }
-            }
-        }
-        return _teamMenu._menuTeam[0].characterData[0];
-    }
-
-    private void SetupPlayerComponents(GameObject playerObj)
-    {
-        _playerController = _player.GetComponent<PlayerController>();
-        _playerInventory = _player.GetComponent<PlayerInventory>();
-        _playerHealth = _player.GetComponent<PlayerHealth>();
-        _playerAnimationEvents = _player.GetComponent<PlayerAnimationEvents>();
-        _playerTeam = _player.GetComponent<PlayerTeam>();
-        _playerTeam._playerID = 0;
-
-        MiniMap.instance.SetupPlayerTransform(_player.transform);
-        UIGameManager_TeamDeathmatch.instance.UpdateUIPlayerHealth(_playerHealth._currentHealth, _playerHealth);
-        UIGameManager_TeamDeathmatch.instance.UpdateUIArmorHealth(_playerHealth._currentArmorHealth, _playerHealth);
-    }
-
-    private void ClearOldBots()
-    {
-        if (_playerHealth != null && _playerHealth._isDead)
-        {
-            Addressables.ReleaseInstance(_player);
-            _player = null;
-        }
-    }
-
-    private void CalculateMatchRewards()
-    {
-        string resultMatch = "WIN";
-        int bonusGoldPerKill = GameplayDataManager.instance.GetBonusGoldPerKill();
-        int rewardKills = _playerKilled * GameplayDataManager.instance.GetBonusGoldPerKill();
-        bool isPlayerCT = (_teamType == TeamType.CounterTerrorist);
-
-        int rewardMatch = GameplayDataManager.instance.GetBonusGoldByMatchResult(resultMatch);
-        int totalReward = rewardMatch + rewardKills;
-        PlayerDataManager.instance.AddPlayerGold(totalReward);
-    }
-
-    #endregion
 
     public void UpdatePlayerKilled(PlayerController player)
     {
@@ -172,7 +102,7 @@ public class GameManager_ZombieSurvival : MonoBehaviour
                 playerHealth._currentArmorHealth = WeaponDataManager.instance.weaponStats[weaponIndex].armorHealth;
                 if (playerHealth == _playerHealth)
                 {
-                    UIGameManager_TeamDeathmatch.instance.UpdateUIArmorHealth(playerHealth._currentArmorHealth, playerHealth);
+                    UIGameManager_ZombieSurvival.instance.UpdateUIArmorHealth(playerHealth._currentArmorHealth, playerHealth);
                 }
             }
 
@@ -199,9 +129,55 @@ public class GameManager_ZombieSurvival : MonoBehaviour
 
             if (playerController == _playerController)
             {
-                UIGameManager_TeamDeathmatch.instance.UpdateUICash(playerController._currentCash);
+                UIGameManager_ZombieSurvival.instance.UpdateUICash(playerController._currentCash);
             }
         }
+    }
+
+    private void SpawnTeams()
+    {
+        int selectedTeamID = PlayerPrefs.GetInt("SelectedTeamID", 0);
+        int selectedCharacterID = PlayerPrefs.GetInt("SelectedCharacterID", 0);
+
+        if (selectedTeamID == 0)
+        {
+            _player = Instantiate(_counterPrefabs[selectedCharacterID], _spawnPoint.position, _spawnPoint.rotation);
+        }
+        if (selectedTeamID == 1)
+        {
+            _player = Instantiate(_terroristPrefabs[selectedCharacterID], _spawnPoint.position, _spawnPoint.rotation);                                             
+        }
+
+        _player.AddComponent<PlayerLocal>();
+
+        _playerController = _player.GetComponent<PlayerController>();
+        _playerInventory = _player.GetComponent<PlayerInventory>();
+        _playerHealth = _player.GetComponent<PlayerHealth>();
+        _playerAnimationEvents = _player.GetComponent<PlayerAnimationEvents>();
+        _playerTeam = _player.GetComponent<PlayerTeam>();
+        _playerTeam._playerID = 0;
+
+        MiniMap.instance.SetupPlayerTransform(_player.transform);
+    }
+
+    private void SpawnZombie()
+    {
+        if (_spawnWaveCount == 0)
+        {
+            _baseSpawnDirection = _spawnPoint.transform.forward;
+            _initialSpawnPoint = _spawnPoint.transform.position + (_baseSpawnDirection * _initialDistanceFromPlayer);
+        }
+
+        Vector3 waveSpawnPosition = _initialSpawnPoint + (_baseSpawnDirection * _distanceBetweenWaves * _spawnWaveCount);
+        waveSpawnPosition.y = _spawnPoint.position.y;
+
+        for (int i = 0; i <_zombiesPerWave; i++)
+        {
+            Vector3 randomOffset = new Vector3(UnityEngine.Random.Range(-10f, 10f), 0, UnityEngine.Random.Range(-10f, 10f));
+            Instantiate(_zombiePrefabs, waveSpawnPosition + randomOffset, Quaternion.identity);
+        }
+
+        _spawnWaveCount++;
     }
 
     private void UpdateTime()
@@ -212,7 +188,7 @@ public class GameManager_ZombieSurvival : MonoBehaviour
             _timeCount = Mathf.Clamp(_timeCount, 0, Mathf.Infinity);
             if (_currentGameState == GameState.RoundActive || _currentGameState == GameState.Countdown)
             {
-                UIGameManager_TeamDeathmatch.instance.UpdateUITime(_timeCount);
+                UIGameManager_ZombieSurvival.instance.UpdateUITime(_timeCount);
             }
         }
     }
@@ -234,9 +210,6 @@ public class GameManager_ZombieSurvival : MonoBehaviour
                 _currentGameState = GameState.RoundEnd;
                 _timeCount = 5f;
                 _playerController.OnCharacterController(false);
-
-                UIGameManager_TeamDeathmatch.instance.UpdateUIResultRound();
-                UIGameManager_TeamDeathmatch.instance.OpenResultMenu(true);
             }
         }
     }
@@ -249,8 +222,6 @@ public class GameManager_ZombieSurvival : MonoBehaviour
             {
                 if (_currentRound < _totalRound)
                 {
-                    UIGameManager_TeamDeathmatch.instance.OpenResultMenu(false);
-                    PrepareNextRound();
                     _currentRound++;
                     _currentGameState = GameState.Countdown;
                     _timeCount = _timeCountdown;
@@ -262,16 +233,21 @@ public class GameManager_ZombieSurvival : MonoBehaviour
                         _isMatchEnded = true;
                         _currentGameState = GameState.MatchEnd;
                         CalculateMatchRewards();
-                        UIGameManager_TeamDeathmatch.instance.ShowUIResultMatch();
+                        UIGameManager_ZombieSurvival.instance.ShowUIResultMatch();
                     }
                 }
             }
         }
     }
 
-    private async void PrepareNextRound()
+    private void CalculateMatchRewards()
     {
-        ClearOldBots();
-        await StartNewRound();
+        string resultMatch = "WIN";
+        int bonusGoldPerKill = GameplayDataManager.instance.GetBonusGoldPerKill();
+        int rewardKills = _playerKilled * GameplayDataManager.instance.GetBonusGoldPerKill();
+
+        int rewardMatch = GameplayDataManager.instance.GetBonusGoldByMatchResult(resultMatch);
+        int totalReward = rewardMatch + rewardKills;
+        PlayerDataManager.instance.AddPlayerGold(totalReward);
     }
 }

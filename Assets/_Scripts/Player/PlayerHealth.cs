@@ -20,8 +20,17 @@ public class PlayerHealth : MonoBehaviour
 
     private void Start()
     {
-        UIGameManager_TeamDeathmatch.instance.UpdateUIArmorHealth(_currentArmorHealth, this);
-        UIGameManager_TeamDeathmatch.instance.UpdateUIPlayerHealth(_currentHealth, this);
+        if (UIGameManager_TeamDeathmatch.instance != null)
+        {
+            UIGameManager_TeamDeathmatch.instance.UpdateUIArmorHealth(_currentArmorHealth, this);
+            UIGameManager_TeamDeathmatch.instance.UpdateUIPlayerHealth(_currentHealth, this);
+        }
+        
+        if (UIGameManager_ZombieSurvival.instance != null)
+        {
+            UIGameManager_ZombieSurvival.instance.UpdateUIArmorHealth(_currentArmorHealth, this);
+            UIGameManager_ZombieSurvival.instance.UpdateUIPlayerHealth(_currentHealth, this);
+        }
     }
 
     public void UpdateHealth(float damage, ItemType itemType)
@@ -32,49 +41,52 @@ public class PlayerHealth : MonoBehaviour
         {
             _currentArmorHealth -= damage;
             _currentArmorHealth = Mathf.Clamp(_currentArmorHealth, 0, _characterStats.health);
-            UIGameManager_TeamDeathmatch.instance.UpdateUIArmorHealth(_currentArmorHealth, this);
+            UIGameManager_TeamDeathmatch.instance?.UpdateUIArmorHealth(_currentArmorHealth, this);
+            UIGameManager_ZombieSurvival.instance?.UpdateUIArmorHealth(_currentArmorHealth, this);
         }
         else
         {
             _currentHealth -= damage;
             _currentHealth = Mathf.Clamp(_currentHealth, 0, _characterStats.health);
-            UIGameManager_TeamDeathmatch.instance.UpdateUIPlayerHealth(_currentHealth, this);
+            UIGameManager_TeamDeathmatch.instance?.UpdateUIPlayerHealth(_currentHealth, this);
+            UIGameManager_ZombieSurvival.instance?.UpdateUIPlayerHealth(_currentHealth, this);   
         }
             
         if (_currentHealth <= _characterStats.health / 2)
         {
-            _playerController._shouldDefend = true;
+            if (_playerController != null) _playerController._shouldDefend = true;
         }
 
         if (_currentHealth <= 0)
         {
             if (itemType == ItemType.PrimaryItem || itemType == ItemType.SecondaryItem)
             {
-                _playerController._lifeState = LifeState.DeathShoot;
+                if (_playerController != null) _playerController._lifeState = LifeState.DeathShoot;
             }
             if (itemType == ItemType.MeleeItem)
             {
-                _playerController._lifeState = LifeState.DeathMelee;
+                if (_playerController != null) _playerController._lifeState = LifeState.DeathMelee;
             }
             if (itemType == ItemType.ThrowItem)
             {
-                _playerController._lifeState = LifeState.DeathThrow;
+                if (_playerController != null) _playerController._lifeState = LifeState.DeathThrow;
             }
 
             _isDead = true;
         }
         else
         {
-            _playerController._lifeState = LifeState.Hit;
+            if (_playerController != null) _playerController._lifeState = LifeState.Hit;
         }
-   
-        
+
+        Debug.Log("Update Health: " + _currentHealth);
     }
 
     public void ResetHealth()
     {
         _currentHealth = _characterStats.health;
         _isDead = false;
-        UIGameManager_TeamDeathmatch.instance.UpdateUIPlayerHealth(_currentHealth, this);
+        UIGameManager_TeamDeathmatch.instance?.UpdateUIPlayerHealth(_currentHealth, this);
+        UIGameManager_ZombieSurvival.instance?.UpdateUIPlayerHealth(_currentHealth, this);
     }
 }

@@ -30,7 +30,8 @@ public class WeaponShootController : MonoBehaviour
 
         if (_weaponManager._playerLocal != null)
         {
-            UIGameManager_TeamDeathmatch.instance.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
+            UIGameManager_TeamDeathmatch.instance?.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
+            UIGameManager_ZombieSurvival.instance?.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
         }
     }
 
@@ -38,7 +39,8 @@ public class WeaponShootController : MonoBehaviour
     {
         if (_weaponManager._playerLocal != null)
         {
-            UIGameManager_TeamDeathmatch.instance.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
+            UIGameManager_TeamDeathmatch.instance?.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
+            UIGameManager_ZombieSurvival.instance?.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
         }
     }
 
@@ -85,7 +87,10 @@ public class WeaponShootController : MonoBehaviour
         _weaponAudio.PlayAudioCock();
         if (_weaponManager._playerLocal != null)
         {
-            UIGameManager_TeamDeathmatch.instance.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
+            if (UIGameManager_TeamDeathmatch.instance != null)
+                UIGameManager_TeamDeathmatch.instance.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
+            if (UIGameManager_ZombieSurvival.instance != null)
+                UIGameManager_ZombieSurvival.instance.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
         }
     }
 
@@ -232,21 +237,32 @@ public class WeaponShootController : MonoBehaviour
 
     private void HandleHitTarget()
     {
-        if (_barrelPointController._playerHealth != null)
+        RaycastHit hit = _barrelPointController._lastHit;
+        PlayerHealth health = _barrelPointController._playerHealth;
+
+        if (health != null && !health._isDead)
         {
-            if (_barrelPointController._playerHealth._isDead) return;
+            float damage = _weaponManager._weaponStats.damage;
+            health.UpdateHealth(damage, _weaponManager._weaponStats.itemType);
 
-            float baseDamage = _weaponManager._weaponStats.damage;
-            //float maxDistance = _weaponManager._weaponStats.maxDistance;
-            //float actualDistance = Vector3.Distance(_barrelPoint.position, _barrelPointController._targetPosition);
-            //float damageMultiplier = Mathf.Clamp01(1 - (actualDistance / maxDistance));
-            //float finalDamage = baseDamage * Mathf.Max(0.1f, damageMultiplier);
-
-            _barrelPointController._playerHealth.UpdateHealth(baseDamage, _weaponManager._weaponStats.itemType);
-            if (_barrelPointController._playerHealth._currentHealth <= 0)
+            if (health._currentHealth <= 0)
             {
+                var characterController = health.GetComponent<CharacterController>();
+                if (characterController != null) characterController.enabled = false;
+
+                var switcher = health.GetComponent<RagdollSwitcher>();
+                if (switcher != null) switcher.EnableRagdolls();
+
+                Rigidbody rb = hit.collider.GetComponent<Rigidbody>();
+
+                if (rb != null)
+                {
+                    Vector3 forceDir = (hit.point - _barrelPoint.position).normalized;
+                    float shootForce = _weaponManager._weaponStats.shootForce;
+                    rb.AddForceAtPosition(forceDir * shootForce, hit.point, ForceMode.Impulse);
+                }
                 _weaponManager._playerController.IncrementKillCount();
-                _barrelPointController._playerHealth._isDead = true;
+                health._isDead = true;
             }
         }
     }
@@ -257,7 +273,8 @@ public class WeaponShootController : MonoBehaviour
         Mathf.Clamp(_currentAmmo, 0, _weaponManager._weaponStats.ammoPerMag);
         if (_weaponManager._playerLocal != null)
         {
-            UIGameManager_TeamDeathmatch.instance.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
+            UIGameManager_TeamDeathmatch.instance?.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
+            UIGameManager_ZombieSurvival.instance?.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
         }
     }
 

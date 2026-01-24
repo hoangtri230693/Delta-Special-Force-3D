@@ -12,10 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a83cb5bd83910745ae0d77a4325b28e, type: 3}
   m_Name: GameplayData
   m_EditorClassIdentifier: 
-  timeCountdown: 10
-  timeRoundActive: 300
-  totalRound: 1
-  bonusGoldWinGame: 300
-  bonusGoldDrawGame: 200
-  bonusGoldLoseGame: 100
+  bonusGoldWinGame: 1000
+  bonusGoldDrawGame: 700
+  bonusGoldLoseGame: 500
   bonusGoldPerKill: 10
+  useGoldPerMatch: 20
