@@ -222,8 +222,8 @@ Rigidbody:
   m_GameObject: {fileID: 6110689301951878486}
   serializedVersion: 4
   m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
+  m_Drag: 0.1
+  m_AngularDrag: 0.1
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -275,12 +275,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f858dd0f94225443a6dd270dea01021, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _playerController: {fileID: 0}
-  _playerInventory: {fileID: 0}
-  _playerAnimationEvents: {fileID: 0}
-  _playerRig: {fileID: 0}
-  _playerHealth: {fileID: 0}
-  _playerLocal: {fileID: 0}
+  _playerOwner: {fileID: 0}
   _weaponStats: {fileID: 11400000, guid: c3dd8a1a1ec3bda41b383057747119d1, type: 2}
   _weaponRigData: {fileID: 11400000, guid: 668e0f7ebd032af418680a8d5b2a4cb8, type: 2}
   _weaponRigController: {fileID: 8803008147986855224}
@@ -290,6 +285,11 @@ MonoBehaviour:
   _weaponCollision: {fileID: 5704940420186021113}
   _weaponAudio: {fileID: 4514959644581625649}
   _rigidbody: {fileID: 432338981122965871}
+  _playerController: {fileID: 0}
+  _playerRig: {fileID: 0}
+  _playerAnimationEvents: {fileID: 0}
+  _playerLocal: {fileID: 0}
+  _botController: {fileID: 0}
 --- !u!114 &8803008147986855224
 MonoBehaviour:
   m_ObjectHideFlags: 0

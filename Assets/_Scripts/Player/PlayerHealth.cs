@@ -1,10 +1,11 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class PlayerHealth : MonoBehaviour
 {
     [SerializeField] private CharacterStatsSO _characterStats;
     
     private PlayerController _playerController;
+    private BotController _botController;
 
     public float _currentHealth;
     public float _currentArmorHealth;
@@ -16,6 +17,7 @@ public class PlayerHealth : MonoBehaviour
         _currentHealth = _characterStats.health;
         _currentArmorHealth = 0;
         _playerController = GetComponent<PlayerController>();
+        _botController = GetComponent<BotController>();
     }
 
     private void Start()
@@ -54,7 +56,7 @@ public class PlayerHealth : MonoBehaviour
             
         if (_currentHealth <= _characterStats.health / 2)
         {
-            if (_playerController != null) _playerController._shouldDefend = true;
+            if (_botController != null) _botController.SetShouldDefend(true);
         }
 
         if (_currentHealth <= 0)
@@ -63,13 +65,17 @@ public class PlayerHealth : MonoBehaviour
             {
                 if (_playerController != null) _playerController._lifeState = LifeState.DeathShoot;
             }
-            if (itemType == ItemType.MeleeItem)
+            else if (itemType == ItemType.MeleeItem)
             {
                 if (_playerController != null) _playerController._lifeState = LifeState.DeathMelee;
             }
-            if (itemType == ItemType.ThrowItem)
+            else if (itemType == ItemType.ThrowItem)
             {
                 if (_playerController != null) _playerController._lifeState = LifeState.DeathThrow;
+            }
+            else if (itemType == ItemType.None)
+            {
+                if (_playerController != null) _playerController._lifeState = LifeState.DeathMelee;
             }
 
             _isDead = true;
@@ -79,7 +85,7 @@ public class PlayerHealth : MonoBehaviour
             if (_playerController != null) _playerController._lifeState = LifeState.Hit;
         }
 
-        Debug.Log("Update Health: " + _currentHealth);
+        Debug.Log("Current Health: " + _currentHealth);
     }
 
     public void ResetHealth()

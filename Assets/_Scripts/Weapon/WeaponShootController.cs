@@ -1,5 +1,7 @@
-﻿using Unity.Cinemachine;
+﻿using Unity.Behavior;
+using Unity.Cinemachine;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class WeaponShootController : MonoBehaviour
 {   
@@ -22,35 +24,29 @@ public class WeaponShootController : MonoBehaviour
     {
         if (_weaponManager._playerController == null) return;
 
-        if (_weaponManager._playerController._isSwitchItem == true)
-        {
-            _weaponAudio.PlayAudioCock();
-            _weaponManager._playerController._isSwitchItem = false;
-        }
+        _weaponAudio.PlayAudioCock();
 
-        if (_weaponManager._playerLocal != null)
-        {
-            UIGameManager_TeamDeathmatch.instance?.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
-            UIGameManager_ZombieSurvival.instance?.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
-        }
+        RefreshUI();
     }
 
-    private void Start()
+    private void Start() => RefreshUI();
+
+    private void RefreshUI()
     {
         if (_weaponManager._playerLocal != null)
         {
-            UIGameManager_TeamDeathmatch.instance?.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
-            UIGameManager_ZombieSurvival.instance?.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
+            if (UIGameManager_TeamDeathmatch.instance != null)
+                UIGameManager_TeamDeathmatch.instance.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
+            if (UIGameManager_ZombieSurvival.instance != null)
+                UIGameManager_ZombieSurvival.instance.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
         }
     }
 
     private void Update()
     {
-        if (_weaponManager._playerController == null)
-            return;
+        if (_weaponManager._playerController == null) return;
 
         CheckActionShoot();
-        CheckCanReload();
     }
 
     public void InitializeAmmo()
@@ -85,13 +81,7 @@ public class WeaponShootController : MonoBehaviour
         _currentAmmo += ammoToLoad;
         _currentReverse -= ammoToLoad;
         _weaponAudio.PlayAudioCock();
-        if (_weaponManager._playerLocal != null)
-        {
-            if (UIGameManager_TeamDeathmatch.instance != null)
-                UIGameManager_TeamDeathmatch.instance.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
-            if (UIGameManager_ZombieSurvival.instance != null)
-                UIGameManager_ZombieSurvival.instance.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
-        }
+        RefreshUI();
     }
 
     private void CheckActionShoot()
@@ -104,7 +94,7 @@ public class WeaponShootController : MonoBehaviour
             if (Time.time >= _nextAttackTime)
             {
                 Shoot();
-                float fireDelay = 60f / _weaponManager._weaponStats.attackRate;
+                float fireDelay = 60f / _weaponManager._weaponStats.fireRate;
                 _nextAttackTime = Time.time + fireDelay;
                 GenerateFireSmoke();
             }
@@ -114,7 +104,7 @@ public class WeaponShootController : MonoBehaviour
             if (Time.time >= _nextAttackTime)
             {
                 Shoot();
-                float fireDelay = 60f / _weaponManager._weaponStats.attackRate;
+                float fireDelay = 60f / _weaponManager._weaponStats.fireRate;
                 _nextAttackTime = Time.time + fireDelay;
                 _weaponManager._playerController._actionState = ActionState.None;
                 GenerateFireSmoke();
@@ -146,6 +136,10 @@ public class WeaponShootController : MonoBehaviour
         else
         {
             _weaponAudio.PlayAudioDryFire();
+            if (_currentReverse <= 0 && _weaponManager._botController != null)
+                _currentReverse = _weaponManager._weaponStats.ammoReverse;
+            if (_weaponManager._botController != null)
+                _weaponManager._playerController.ReloadAmmo();
         }
     }
 
@@ -158,7 +152,7 @@ public class WeaponShootController : MonoBehaviour
 
         Vector3 recoilVector = _gunRecoilController.ApplyRecoil(recoilValue) * aimMultiplier;
         Vector3 impulseForce = new Vector3(0f, Mathf.Abs(recoilVector.x), Mathf.Abs(recoilVector.z)) * 0.03f;
-        if (_recoilCamera != null && _weaponManager._playerLocal != null)
+        if (_recoilCamera != null && _weaponManager._playerOwner.GetComponent<PlayerLocal>() != null)
         {
             _recoilCamera.GenerateImpulse(impulseForce);
         }
@@ -250,12 +244,18 @@ public class WeaponShootController : MonoBehaviour
                 var characterController = health.GetComponent<CharacterController>();
                 if (characterController != null) characterController.enabled = false;
 
+                var navAgent = health.GetComponent<NavMeshAgent>();
+                if (navAgent != null) navAgent.enabled = false;
+
+                var behaviorAgent = health.GetComponent<BehaviorGraphAgent>();
+                if (behaviorAgent != null) behaviorAgent.enabled = false;
+
                 var switcher = health.GetComponent<RagdollSwitcher>();
                 if (switcher != null) switcher.EnableRagdolls();
 
                 Rigidbody rb = hit.collider.GetComponent<Rigidbody>();
 
-                if (rb != null)
+                if (rb != null && hit.collider.CompareTag("Zombie"))
                 {
                     Vector3 forceDir = (hit.point - _barrelPoint.position).normalized;
                     float shootForce = _weaponManager._weaponStats.shootForce;
@@ -271,27 +271,6 @@ public class WeaponShootController : MonoBehaviour
     {
         _currentAmmo -= 1;
         Mathf.Clamp(_currentAmmo, 0, _weaponManager._weaponStats.ammoPerMag);
-        if (_weaponManager._playerLocal != null)
-        {
-            UIGameManager_TeamDeathmatch.instance?.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
-            UIGameManager_ZombieSurvival.instance?.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
-        }
-    }
-
-    private void CheckCanReload()
-    {
-        if (_currentAmmo == _weaponManager._weaponStats.ammoPerMag || _currentReverse == 0)
-        {
-            _weaponManager._playerController._canReload = false;
-        }
-        else if (_currentAmmo == 0 && _currentReverse != 0 && _weaponManager._playerController._canAction == true)
-        {
-            _weaponManager._playerController._actionState = ActionState.Reload;
-            _weaponManager._playerController._canAction = false;
-        }
-        else
-        {
-            _weaponManager._playerController._canReload = true;
-        }
+        RefreshUI();
     }
 }

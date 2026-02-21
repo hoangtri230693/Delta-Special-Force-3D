@@ -1,13 +1,17 @@
 using UnityEngine;
 
+public enum WeaponType { Pistol, Shotgun, SMG, Rifle, Sniper, Throwable, Armor, Melee  }
 
 [CreateAssetMenu(fileName = "WeaponStatsSO", menuName = "Scriptable Objects/WeaponStatsSO")]
 public class WeaponStatsSO : ScriptableObject
 {
     [Header("Basic Info")]
-    public string weaponName;
-    public GameObject weaponPrefab;
     public int weaponID;
+    public string weaponName;
+    public string weaponShortName;
+    public GameObject weaponPrefab;
+    public GameObject weaponModel;
+    public WeaponType weaponType;
     public ItemType itemType;
     public int cash;
     public int gold;
@@ -16,6 +20,7 @@ public class WeaponStatsSO : ScriptableObject
     public LayerMask targetMask;
     public float maxDistance;
     public float shootForce;
+    public float explosionForce;
 
     [Header("Range & Damage")]
     public float damage;
@@ -24,7 +29,7 @@ public class WeaponStatsSO : ScriptableObject
     [Header("Handling & Control")]
     public int ammoPerMag;
     public int ammoReverse;
-    public float attackRate;  
+    public float fireRate;  
     public float reloadTime;
     public float recoilAmount;  
     public float shakeIntensity;

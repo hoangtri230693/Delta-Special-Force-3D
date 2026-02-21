@@ -12,23 +12,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d42184fb2b892024bb27fef82e8a385c, type: 3}
   m_Name: DesertEagle_Stats
   m_EditorClassIdentifier: 
-  weaponName: DesertEagle
-  weaponPrefab: {fileID: 7548666581388900521, guid: 5986f25703440544bbe03098b8877656, type: 3}
   weaponID: 3
+  weaponName: IMI Desert Eagle
+  weaponShortName: Desert Eagle
+  weaponPrefab: {fileID: 7548666581388900521, guid: 5986f25703440544bbe03098b8877656, type: 3}
+  weaponModel: {fileID: 6723504281773594524, guid: b8d7ba4065a375643b2a16cc2eb73e46, type: 3}
+  weaponType: 0
   itemType: 2
   cash: 700
   gold: 3500
   targetMask:
     serializedVersion: 2
-    m_Bits: 7795
+    m_Bits: 15987
   maxDistance: 60
   shootForce: 50
+  explosionForce: 0
   damage: 50
   attackRadius: 0
   ammoPerMag: 7
   ammoReverse: 28
-  attackRate: 250
-  reloadTime: 2
+  fireRate: 250
+  reloadTime: 2.5
   recoilAmount: 3
   shakeIntensity: 0
   throwForce: 0

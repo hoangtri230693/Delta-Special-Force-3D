@@ -12,24 +12,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d42184fb2b892024bb27fef82e8a385c, type: 3}
   m_Name: Glock17_Stats
   m_EditorClassIdentifier: 
-  weaponName: Glock17
-  weaponPrefab: {fileID: 6208910163461141657, guid: 694a54724d4f115499d31d8bce5052fa, type: 3}
   weaponID: 1
+  weaponName: Glock 17
+  weaponShortName: Glock17
+  weaponPrefab: {fileID: 6208910163461141657, guid: 694a54724d4f115499d31d8bce5052fa, type: 3}
+  weaponModel: {fileID: 1534206181488834816, guid: abae01a918e6a0345a3d232fca7324d6, type: 3}
+  weaponType: 0
   itemType: 2
   cash: 300
   gold: 1000
   targetMask:
     serializedVersion: 2
-    m_Bits: 7795
+    m_Bits: 15987
   maxDistance: 50
   shootForce: 30
+  explosionForce: 0
   damage: 20
   attackRadius: 0
   ammoPerMag: 17
   ammoReverse: 68
-  attackRate: 450
+  fireRate: 450
   reloadTime: 1.8
-  recoilAmount: 1.5
+  recoilAmount: 1
   shakeIntensity: 0
   throwForce: 0
   armorHealth: 0

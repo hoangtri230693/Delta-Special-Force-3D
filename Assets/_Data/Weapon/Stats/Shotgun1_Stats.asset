@@ -12,22 +12,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d42184fb2b892024bb27fef82e8a385c, type: 3}
   m_Name: Shotgun1_Stats
   m_EditorClassIdentifier: 
-  weaponName: Shotgun1
-  weaponPrefab: {fileID: 6698832762075789148, guid: 1a47535478b5d884688688ea3097758f, type: 3}
   weaponID: 4
+  weaponName: Winchester 1873
+  weaponShortName: Shotgun 1
+  weaponPrefab: {fileID: 6698832762075789148, guid: 1a47535478b5d884688688ea3097758f, type: 3}
+  weaponModel: {fileID: 2596887304067006971, guid: 38236c9ba100bf44bb5fe92185014811, type: 3}
+  weaponType: 1
   itemType: 1
   cash: 1700
   gold: 7500
   targetMask:
     serializedVersion: 2
-    m_Bits: 7795
+    m_Bits: 15987
   maxDistance: 25
   shootForce: 100
+  explosionForce: 0
   damage: 100
   attackRadius: 0
   ammoPerMag: 8
   ammoReverse: 32
-  attackRate: 80
+  fireRate: 80
   reloadTime: 3.5
   recoilAmount: 5
   shakeIntensity: 0

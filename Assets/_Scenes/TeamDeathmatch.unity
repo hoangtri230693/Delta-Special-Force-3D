@@ -262,7 +262,7 @@ GameObject:
   - component: {fileID: 105740278}
   - component: {fileID: 105740277}
   m_Layer: 5
-  m_Name: AlphaTeam
+  m_Name: AlphaGroup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -750,7 +750,7 @@ GameObject:
   - component: {fileID: 229088072}
   - component: {fileID: 229088071}
   m_Layer: 5
-  m_Name: TerroristD_Text (TMP)
+  m_Name: TerroristShadowDawn_Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -961,7 +961,7 @@ GameObject:
   - component: {fileID: 338724556}
   - component: {fileID: 338724555}
   m_Layer: 5
-  m_Name: DeltaTeam_Text (TMP)
+  m_Name: DeltaGroup_Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1100,7 +1100,7 @@ GameObject:
   - component: {fileID: 341985722}
   - component: {fileID: 341985721}
   m_Layer: 5
-  m_Name: TerroristA
+  m_Name: TerroristRedFang
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2822,7 +2822,7 @@ GameObject:
   - component: {fileID: 1168634163}
   - component: {fileID: 1168634162}
   m_Layer: 5
-  m_Name: DeltaTeam
+  m_Name: DeltaGroup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3017,7 +3017,7 @@ GameObject:
   - component: {fileID: 1173509728}
   - component: {fileID: 1173509727}
   m_Layer: 5
-  m_Name: TerroristB
+  m_Name: TerroristBlackViper
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3212,7 +3212,7 @@ GameObject:
   - component: {fileID: 1223717376}
   - component: {fileID: 1223717375}
   m_Layer: 5
-  m_Name: TerroristC
+  m_Name: TerroristIronBlood
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3542,7 +3542,7 @@ GameObject:
   - component: {fileID: 1327150241}
   - component: {fileID: 1327150240}
   m_Layer: 5
-  m_Name: TerroristC_Text (TMP)
+  m_Name: TerroristIronBlood_Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3873,7 +3873,7 @@ GameObject:
   - component: {fileID: 1415928348}
   - component: {fileID: 1415928347}
   m_Layer: 5
-  m_Name: BravoTeam_Text (TMP)
+  m_Name: BravoGroup_Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4532,7 +4532,7 @@ GameObject:
   - component: {fileID: 1599513660}
   - component: {fileID: 1599513659}
   m_Layer: 5
-  m_Name: TerroristA_Text (TMP)
+  m_Name: TerroristRedFang_Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5061,7 +5061,7 @@ GameObject:
   - component: {fileID: 1812984490}
   - component: {fileID: 1812984489}
   m_Layer: 5
-  m_Name: BravoTeam
+  m_Name: BravoGroup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5467,7 +5467,7 @@ GameObject:
   - component: {fileID: 1947802981}
   - component: {fileID: 1947802980}
   m_Layer: 5
-  m_Name: TerroristD
+  m_Name: TerroristShadowDawn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5659,7 +5659,7 @@ GameObject:
   - component: {fileID: 2034017816}
   - component: {fileID: 2034017815}
   m_Layer: 5
-  m_Name: TerroristB_Text (TMP)
+  m_Name: TerroristBlackViper_Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5795,7 +5795,7 @@ GameObject:
   - component: {fileID: 2090411812}
   - component: {fileID: 2090411811}
   m_Layer: 5
-  m_Name: AlphaTeam_Text (TMP)
+  m_Name: AlphaGroup_Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

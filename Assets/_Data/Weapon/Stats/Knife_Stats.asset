@@ -12,22 +12,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d42184fb2b892024bb27fef82e8a385c, type: 3}
   m_Name: Knife_Stats
   m_EditorClassIdentifier: 
+  weaponID: 100
   weaponName: Knife
+  weaponShortName: 
   weaponPrefab: {fileID: 782299240580983448, guid: 856099d289e58a1459a8122b779eb79c, type: 3}
-  weaponID: 0
+  weaponModel: {fileID: 0}
+  weaponType: 7
   itemType: 3
   cash: 0
   gold: 0
   targetMask:
     serializedVersion: 2
-    m_Bits: 7795
+    m_Bits: 15987
   maxDistance: 0
   shootForce: 0
+  explosionForce: 0
   damage: 10
   attackRadius: 0
   ammoPerMag: 1
   ammoReverse: 0
-  attackRate: 30
+  fireRate: 30
   reloadTime: 0
   recoilAmount: 0
   shakeIntensity: 0.05

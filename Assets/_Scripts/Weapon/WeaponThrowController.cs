@@ -1,36 +1,37 @@
 ﻿using System.Collections;
+using Unity.Behavior;
 using Unity.Cinemachine;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class WeaponThrowController : MonoBehaviour
 {
     [SerializeField] private WeaponManager _weaponManager;
     [SerializeField] private CinemachineImpulseSource _shakeCamera;
     [SerializeField] private WeaponAudio _weaponAudio;
-    
+
     private Camera _playerCamera;
-    private Transform _playerOwner;
 
     public int _currentAmmo;
     public int _currentReverse;
 
-    private void OnEnable()
-    {
-        if (_weaponManager._playerLocal != null)
-        {
-            UIGameManager_TeamDeathmatch.instance?.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
-            UIGameManager_ZombieSurvival.instance?.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
-        }
-    }
+    private void OnEnable() => RefreshUI();
+
     private void Start()
     {
         _playerCamera = Camera.main;
-        _playerOwner = transform.root;
 
+        RefreshUI();
+    }
+
+    private void RefreshUI()
+    {
         if (_weaponManager._playerLocal != null)
         {
-            UIGameManager_TeamDeathmatch.instance?.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
-            UIGameManager_ZombieSurvival.instance?.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
+            if (UIGameManager_TeamDeathmatch.instance != null)
+                UIGameManager_TeamDeathmatch.instance.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
+            if (UIGameManager_ZombieSurvival.instance != null)
+                UIGameManager_ZombieSurvival.instance.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
         }
     }
 
@@ -55,18 +56,20 @@ public class WeaponThrowController : MonoBehaviour
         HandleAmmo();
 
         Vector3 cameraForward = _playerCamera.transform.forward;
-        Vector3 throwDirection = (cameraForward + _playerCamera.transform.up * 0.2f + _playerCamera.transform.right * 0.1f).normalized;
+        Vector3 throwDirection = (cameraForward + _playerCamera.transform.up * 0.3f).normalized;
 
-        float safeDistance = 0.3f;
+        float safeDistance = 0.5f;
         transform.position += throwDirection * safeDistance;
 
-        transform.parent = null;
+        transform.SetParent(null);
 
         Rigidbody rb = GetComponent<Rigidbody>();
-        rb.useGravity = true;
         rb.isKinematic = false;
+        rb.useGravity = true;
+        rb.linearVelocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
 
-        rb.AddForce(throwDirection * _weaponManager._weaponStats.throwForce, ForceMode.VelocityChange);
+        rb.AddForce(throwDirection * _weaponManager._weaponStats.throwForce, ForceMode.Impulse);
         rb.AddTorque(Random.insideUnitSphere * 5f, ForceMode.Impulse);
 
         StartCoroutine(ExplosionGrenadeAfter());
@@ -96,38 +99,68 @@ public class WeaponThrowController : MonoBehaviour
     {
         Vector3 explosionPosition = transform.position;
         float radius = _weaponManager._weaponStats.attackRadius;
+        float fullDamageRadius = 10f;
         float baseDamage = _weaponManager._weaponStats.damage;
+        float explosionForce = _weaponManager._weaponStats.explosionForce;
         LayerMask raycastMask = _weaponManager._weaponStats.targetMask;
 
         Collider[] colliders = Physics.OverlapSphere(explosionPosition, radius);
 
         foreach (Collider hitCollider in colliders)
         {
-            float distance = Vector3.Distance(explosionPosition, hitCollider.transform.position);
-            
-            float fallOffMultiplier = 1 - (distance / radius);
-            fallOffMultiplier = Mathf.Clamp01(fallOffMultiplier);
-
             PlayerHealth playerHealth = hitCollider.GetComponent<PlayerHealth>();
+            if (playerHealth == null) continue;
 
-            if (playerHealth != null)
+            float distance = Vector3.Distance(explosionPosition, hitCollider.bounds.center);
+            float fallOffMultiplier = 1f;
+
+            if (distance <= fullDamageRadius)
             {
-                float finalDamage = baseDamage * fallOffMultiplier;
-                Vector3 directionToTarget = (hitCollider.bounds.center - explosionPosition).normalized;
-                float distanceToTarget = Vector3.Distance(explosionPosition, hitCollider.bounds.center);
-                if (Physics.Raycast(explosionPosition, directionToTarget, out RaycastHit hit, distanceToTarget, raycastMask))
-                {
-                    if (hit.collider != hitCollider)
-                    {
-                        finalDamage = 0f;
-                    }
-                }
-                if (finalDamage > 0f)
-                {
-                    finalDamage = Mathf.RoundToInt(finalDamage);
-                    playerHealth.UpdateHealth(finalDamage, _weaponManager._weaponStats.itemType);
-                }                 
+                fallOffMultiplier = 1f;
             }
+            else
+            {
+                float distBeyondFullDamage = distance - fullDamageRadius;
+                float fallOffRange = radius - fullDamageRadius;
+                fallOffMultiplier = Mathf.Clamp01(1 - (distBeyondFullDamage / fallOffRange));
+            }
+
+            Vector3 directionToTarget = (hitCollider.bounds.center - explosionPosition).normalized;
+            if (Physics.Raycast(explosionPosition, directionToTarget, out RaycastHit hit, distance, raycastMask))
+            {
+                if (hit.collider != hitCollider) continue;
+            }
+
+            if (playerHealth != null && !playerHealth._isDead)
+            {
+                float finalDamage = Mathf.RoundToInt(baseDamage * fallOffMultiplier);
+                playerHealth.UpdateHealth(finalDamage, _weaponManager._weaponStats.itemType);
+
+                if (playerHealth._currentHealth <= 0)
+                {
+                    playerHealth._isDead = true;
+
+                    var characterController = playerHealth.GetComponent<CharacterController>();
+                    if (characterController != null) characterController.enabled = false;
+
+                    var navAgent = playerHealth.GetComponent<NavMeshAgent>();
+                    if (navAgent != null) navAgent.enabled = false;
+
+                    var behaviorAgent = playerHealth.GetComponent<BehaviorGraphAgent>();
+                    if (behaviorAgent != null) behaviorAgent.enabled = false;
+
+                    var switcher = playerHealth.GetComponent<RagdollSwitcher>();
+                    if (switcher != null) switcher.EnableRagdolls();
+
+                    Rigidbody[] childrenRbs = playerHealth.GetComponentsInChildren<Rigidbody>();
+                    foreach (Rigidbody rb in childrenRbs)
+                    {
+                        rb.AddExplosionForce(explosionForce, explosionPosition, radius, 1f, ForceMode.Impulse);
+                    }
+
+                    _weaponManager._playerController.IncrementKillCount();
+                }
+            }          
         }
     }
 
@@ -149,7 +182,7 @@ public class WeaponThrowController : MonoBehaviour
 
     private void HandleShakeCamera()
     {
-        float distance = Vector3.Distance(_playerOwner.position, transform.position);
+        float distance = Vector3.Distance(_weaponManager._playerOwner.transform.position, transform.position);
         if (distance > _weaponManager._weaponStats.attackRadius) return;
 
         float falloffMultiplier = 1 - (distance / _weaponManager._weaponStats.attackRadius);
@@ -167,11 +200,7 @@ public class WeaponThrowController : MonoBehaviour
     { 
         _currentAmmo -= 1;
         Mathf.Clamp(_currentAmmo, 0, _weaponManager._weaponStats.ammoPerMag);
-        if (_weaponManager._playerLocal != null)
-        {
-            UIGameManager_TeamDeathmatch.instance?.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
-            UIGameManager_ZombieSurvival.instance?.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
-        }
+        RefreshUI();
     }
     #endregion
 }

@@ -12,22 +12,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d42184fb2b892024bb27fef82e8a385c, type: 3}
   m_Name: GrenadeAttack_Stats
   m_EditorClassIdentifier: 
-  weaponName: Grenade Attack
-  weaponPrefab: {fileID: 6110689301951878486, guid: 7e9a40111c64d7d4e9e2c22e0b4df279, type: 3}
   weaponID: 14
+  weaponName: M67 Fragmentation Grenade
+  weaponShortName: Grenade Attack
+  weaponPrefab: {fileID: 6110689301951878486, guid: 7e9a40111c64d7d4e9e2c22e0b4df279, type: 3}
+  weaponModel: {fileID: 1570545171925403915, guid: 339ece45b8ef3fc4a9d604a67387457b, type: 3}
+  weaponType: 5
   itemType: 4
   cash: 300
   gold: 500
   targetMask:
     serializedVersion: 2
-    m_Bits: 7795
+    m_Bits: 4294967295
   maxDistance: 0
   shootForce: 0
+  explosionForce: 20
   damage: 100
   attackRadius: 20
   ammoPerMag: 1
   ammoReverse: 0
-  attackRate: 0
+  fireRate: 0
   reloadTime: 0
   recoilAmount: 0
   shakeIntensity: 1.5

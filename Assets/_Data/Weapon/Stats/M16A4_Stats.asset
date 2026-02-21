@@ -12,24 +12,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d42184fb2b892024bb27fef82e8a385c, type: 3}
   m_Name: M16A4_Stats
   m_EditorClassIdentifier: 
-  weaponName: M16A4
-  weaponPrefab: {fileID: 6765469895054675972, guid: f3ebeb54058ad3646955ccf433cd8aa2, type: 3}
   weaponID: 9
+  weaponName: Rifle M16A4
+  weaponShortName: M16A4
+  weaponPrefab: {fileID: 6765469895054675972, guid: f3ebeb54058ad3646955ccf433cd8aa2, type: 3}
+  weaponModel: {fileID: 2874101480449735450, guid: d3f9cfe36e207cf4eab1b3acf8cf4d09, type: 3}
+  weaponType: 3
   itemType: 1
   cash: 2500
   gold: 18000
   targetMask:
     serializedVersion: 2
-    m_Bits: 7795
+    m_Bits: 15987
   maxDistance: 120
   shootForce: 60
+  explosionForce: 0
   damage: 35
   attackRadius: 0
   ammoPerMag: 30
   ammoReverse: 120
-  attackRate: 800
+  fireRate: 800
   reloadTime: 2.5
-  recoilAmount: 2.5
+  recoilAmount: 2
   shakeIntensity: 0
   throwForce: 0
   armorHealth: 0

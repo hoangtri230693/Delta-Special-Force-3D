@@ -12,24 +12,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d42184fb2b892024bb27fef82e8a385c, type: 3}
   m_Name: MK23_Stats
   m_EditorClassIdentifier: 
-  weaponName: MK23
-  weaponPrefab: {fileID: 4037803993630423775, guid: 053b257e043744e4a83e04f817ccf5a9, type: 3}
   weaponID: 0
+  weaponName: Heckler & Koch Mark 23
+  weaponShortName: MK23
+  weaponPrefab: {fileID: 4037803993630423775, guid: 053b257e043744e4a83e04f817ccf5a9, type: 3}
+  weaponModel: {fileID: 810218410922243603, guid: 38e1b37a6c62c1a4986c948b804728d4, type: 3}
+  weaponType: 0
   itemType: 2
   cash: 400
   gold: 1000
   targetMask:
     serializedVersion: 2
-    m_Bits: 7795
+    m_Bits: 15987
   maxDistance: 60
   shootForce: 30
+  explosionForce: 0
   damage: 25
   attackRadius: 0
   ammoPerMag: 12
   ammoReverse: 48
-  attackRate: 300
+  fireRate: 300
   reloadTime: 2.1
-  recoilAmount: 1.7
+  recoilAmount: 1
   shakeIntensity: 0
   throwForce: 0
   armorHealth: 0

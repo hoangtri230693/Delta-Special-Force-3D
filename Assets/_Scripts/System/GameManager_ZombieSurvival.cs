@@ -1,4 +1,4 @@
-using System;
+﻿using Unity.Behavior;
 using UnityEngine;
 
 
@@ -14,13 +14,14 @@ public class GameManager_ZombieSurvival : MonoBehaviour
     [Header("Gameplay Data")]
     [SerializeField] private GameObject[] _counterPrefabs;
     [SerializeField] private GameObject[] _terroristPrefabs;
-    [SerializeField] private GameObject _zombiePrefabs;
+    [SerializeField] private GameObject[] _zombiePrefabs;
     [SerializeField] private Transform _spawnPoint;
 
     [Header("Zombie Settings")]
     [SerializeField] private int _zombiesPerWave = 10;
-    [SerializeField] private float _distanceBetweenWaves = 50f;
-    [SerializeField] private float _initialDistanceFromPlayer = 30f;
+    [SerializeField] private int _incrementZombiesPerWave = 10;
+    [SerializeField] private float _distanceBetweenWaves = 30f;
+    [SerializeField] private float _initialDistanceFromPlayer = 60f;
 
     [Header("Player Component References")]
     public PlayerController _playerController;
@@ -32,15 +33,16 @@ public class GameManager_ZombieSurvival : MonoBehaviour
     [Header("Game Manager")]
     public GameObject _player;
     public GameState _currentGameState = GameState.Setup;
+    public int _playerKilled = 0;
 
     private float _timeCount;
     private int _currentRound;
     private bool _isMatchEnded = false;
-    public int _playerKilled = 0;
-
+    
     private Vector3 _baseSpawnDirection;
     private Vector3 _initialSpawnPoint;
     private int _spawnWaveCount = 0;
+    private int _zombieWaveCount = 0;
 
 
     private void Awake()
@@ -58,7 +60,6 @@ public class GameManager_ZombieSurvival : MonoBehaviour
     {
         SpawnTeams();
         SpawnZombie();
-        UIGameManager_ZombieSurvival.instance.UpdateUICash(_playerController._currentCash);
     }
 
     private void Update()
@@ -68,69 +69,42 @@ public class GameManager_ZombieSurvival : MonoBehaviour
         UpdateTime();
     }
 
-    public void UpdatePlayerKilled(PlayerController player)
+    public void PauseMenu(bool isOpen)
     {
-        if (player == _playerController)
-            _playerKilled++;
+        if (isOpen)
+        {
+            Time.timeScale = 0f;
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+            UIGameManager_ZombieSurvival.instance.OpenPauseMenu(true);
+        }
+        else
+        {
+            Time.timeScale = 1f;
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+            UIGameManager_ZombieSurvival.instance.OpenPauseMenu(false);
+        }
     }
 
-    public void BuyWeapon(int weaponIndex, PlayerController playerController, PlayerInventory playerInventory, PlayerHealth playerHealth)
+    public void UpdatePlayerKilled()
     {
-        if (playerController._currentCash < WeaponDataManager.instance.weaponStats[weaponIndex].cash) return;
-
-        if (weaponIndex >= 0 && weaponIndex < WeaponDataManager.instance.weaponStats.Length)
+        _playerKilled++;
+        _zombieWaveCount--;
+        if (_zombieWaveCount <= 0)
         {
-            Transform inventory = null;
+            SpawnZombie();
+        }
+    }
 
-            if (WeaponDataManager.instance.weaponStats[weaponIndex].itemType == ItemType.PrimaryItem)
-            {
-                inventory = playerInventory._primaryItem.transform;
-                playerController._currentItem = ItemType.PrimaryItem;
-            }
-            else if (WeaponDataManager.instance.weaponStats[weaponIndex].itemType == ItemType.SecondaryItem)
-            {
-                inventory = playerInventory._secondaryItem.transform;
-                playerController._currentItem = ItemType.SecondaryItem;
-            }
-            else if (WeaponDataManager.instance.weaponStats[weaponIndex].itemType == ItemType.ThrowItem)
-            {
-                inventory = playerInventory._throwItem.transform;
-                playerController._currentItem = ItemType.ThrowItem;
-            }
-            else if (WeaponDataManager.instance.weaponStats[weaponIndex].itemType == ItemType.ArmorItem)
-            {
-                playerHealth._currentArmorHealth = WeaponDataManager.instance.weaponStats[weaponIndex].armorHealth;
-                if (playerHealth == _playerHealth)
-                {
-                    UIGameManager_ZombieSurvival.instance.UpdateUIArmorHealth(playerHealth._currentArmorHealth, playerHealth);
-                }
-            }
-
-            if (inventory != null && inventory.childCount > 0)
-            {
-                for (int i = 0; i < inventory.childCount; i++)
-                {
-                    WeaponManager weaponManager = inventory.GetChild(i).GetComponent<WeaponManager>();
-                    if (weaponManager != null)
-                    {
-                        weaponManager.DropWeapon(inventory.GetChild(i));
-                    }
-                }
-            }
-
-            if (inventory != null)
-            {
-                GameObject weaponPrefab = Instantiate(WeaponDataManager.instance.weaponStats[weaponIndex].weaponPrefab);
-                weaponPrefab.transform.SetParent(inventory);
-                playerController._actionState = ActionState.SwitchItem;
-            }
-
-            playerController._currentCash -= WeaponDataManager.instance.weaponStats[weaponIndex].cash;
-
-            if (playerController == _playerController)
-            {
-                UIGameManager_ZombieSurvival.instance.UpdateUICash(playerController._currentCash);
-            }
+    public void UpdatePlayerDeath()
+    {
+        if (_playerHealth._isDead && !_isMatchEnded)
+        {
+            _isMatchEnded = true;
+            _currentGameState = GameState.MatchEnd;
+            CalculateMatchRewards();
+            UIGameManager_ZombieSurvival.instance.ShowUIResultMatch();
         }
     }
 
@@ -149,7 +123,6 @@ public class GameManager_ZombieSurvival : MonoBehaviour
         }
 
         _player.AddComponent<PlayerLocal>();
-
         _playerController = _player.GetComponent<PlayerController>();
         _playerInventory = _player.GetComponent<PlayerInventory>();
         _playerHealth = _player.GetComponent<PlayerHealth>();
@@ -171,10 +144,19 @@ public class GameManager_ZombieSurvival : MonoBehaviour
         Vector3 waveSpawnPosition = _initialSpawnPoint + (_baseSpawnDirection * _distanceBetweenWaves * _spawnWaveCount);
         waveSpawnPosition.y = _spawnPoint.position.y;
 
-        for (int i = 0; i <_zombiesPerWave; i++)
+        int zombieCountThisWave = _zombiesPerWave + (_incrementZombiesPerWave * _spawnWaveCount);
+        for (int i = 0; i < zombieCountThisWave; i++)
         {
-            Vector3 randomOffset = new Vector3(UnityEngine.Random.Range(-10f, 10f), 0, UnityEngine.Random.Range(-10f, 10f));
-            Instantiate(_zombiePrefabs, waveSpawnPosition + randomOffset, Quaternion.identity);
+            Vector3 randomOffset = new Vector3(Random.Range(-5f, 5f), 0, Random.Range(-5f, 5f));
+            Vector3 finalSpawnPos = GetGroundPosition(waveSpawnPosition + randomOffset);
+            int randomIndexPrefabs = Random.Range(0, _zombiePrefabs.Length);
+            GameObject zombie = Instantiate(_zombiePrefabs[randomIndexPrefabs], finalSpawnPos, Quaternion.identity);
+            _zombieWaveCount++;
+
+            if (zombie.TryGetComponent<BehaviorGraphAgent>(out var behaviorAgent))
+            {
+                behaviorAgent.BlackboardReference.SetVariableValue("Target", _player);
+            }
         }
 
         _spawnWaveCount++;
@@ -209,7 +191,6 @@ public class GameManager_ZombieSurvival : MonoBehaviour
             {
                 _currentGameState = GameState.RoundEnd;
                 _timeCount = 5f;
-                _playerController.OnCharacterController(false);
             }
         }
     }
@@ -242,12 +223,35 @@ public class GameManager_ZombieSurvival : MonoBehaviour
 
     private void CalculateMatchRewards()
     {
-        string resultMatch = "WIN";
+        string resultMatch = null;
+        if (_timeCount <= 0 && !_player.GetComponent<PlayerHealth>()._isDead) resultMatch = "WIN";
+        if (_player.GetComponent<PlayerHealth>()._isDead) resultMatch = "LOSE";
+
         int bonusGoldPerKill = GameplayDataManager.instance.GetBonusGoldPerKill();
         int rewardKills = _playerKilled * GameplayDataManager.instance.GetBonusGoldPerKill();
 
         int rewardMatch = GameplayDataManager.instance.GetBonusGoldByMatchResult(resultMatch);
         int totalReward = rewardMatch + rewardKills;
         PlayerDataManager.instance.AddPlayerGold(totalReward);
+    }
+
+    private Vector3 GetGroundPosition(Vector3 spawnPos)
+    {
+        Ray ray = new Ray(spawnPos + Vector3.up * 100f, Vector3.down);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit, 200f))
+        {
+            return hit.point;
+        }
+
+        return spawnPos;
+    }
+
+    public bool IsPlayerVictorious()
+    {
+        if (_timeCount <= 0 && !_playerHealth._isDead)
+            return true;
+        return false;
     }
 }

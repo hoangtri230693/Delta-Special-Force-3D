@@ -6,13 +6,19 @@ public class WeaponCollision : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.layer == LayerMask.NameToLayer("Counter") || 
-            collision.gameObject.layer == LayerMask.NameToLayer("Terrorist"))
+        if (IsValidTarget(collision.collider))
         {
             PlayerController player = collision.gameObject.GetComponent<PlayerController>();
             if (player == null) return;
             _weaponManager.AssignToPlayer(player.transform);
             Debug.Log("Weapon picked up by player.");
         }
+    }
+
+    private bool IsValidTarget(Collider other)
+    {
+        return other.CompareTag("AlphaTeam") || other.CompareTag("BravoTeam") ||
+               other.CompareTag("DeltaTeam") || other.CompareTag("Terrorist") ||
+               other.CompareTag("Zombie");
     }
 }

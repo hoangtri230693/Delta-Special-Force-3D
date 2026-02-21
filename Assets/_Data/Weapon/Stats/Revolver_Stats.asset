@@ -12,24 +12,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d42184fb2b892024bb27fef82e8a385c, type: 3}
   m_Name: Revolver_Stats
   m_EditorClassIdentifier: 
-  weaponName: Revolver
-  weaponPrefab: {fileID: 4075533929737310989, guid: a90db50e150ce22439c47e334e713dfe, type: 3}
   weaponID: 2
+  weaponName: Magnum Revolver .357
+  weaponShortName: Revolver
+  weaponPrefab: {fileID: 4075533929737310989, guid: a90db50e150ce22439c47e334e713dfe, type: 3}
+  weaponModel: {fileID: 838790503581735960, guid: 1d4204e2f125a70429fec2ffd8aec1ba, type: 3}
+  weaponType: 0
   itemType: 2
   cash: 650
   gold: 2500
   targetMask:
     serializedVersion: 2
-    m_Bits: 7795
+    m_Bits: 15987
   maxDistance: 70
   shootForce: 50
+  explosionForce: 0
   damage: 60
   attackRadius: 0
   ammoPerMag: 6
   ammoReverse: 30
-  attackRate: 60
+  fireRate: 60
   reloadTime: 2.8
-  recoilAmount: 3
+  recoilAmount: 2.5
   shakeIntensity: 0
   throwForce: 0
   armorHealth: 0

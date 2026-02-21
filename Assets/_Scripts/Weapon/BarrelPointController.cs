@@ -1,15 +1,15 @@
 ﻿using UnityEngine;
 
+
 public class BarrelPointController : MonoBehaviour
 {
+    [SerializeField] private WeaponManager _weaponManager;
     [SerializeField] private float _crosshairOffset = 0.01f;
     [SerializeField] private RectTransform _crosshair;
     [SerializeField] private RectTransform _scopeCrosshair;
     [SerializeField] private Camera _aimScopeCamera;
     [SerializeField] private WeaponStatsSO _weaponStats;
-
-    private WeaponManager _weaponManager;
-    
+   
     public Vector3 _targetPosition;
     public Quaternion _targetRotation;
     public PlayerHealth _playerHealth;
@@ -18,8 +18,6 @@ public class BarrelPointController : MonoBehaviour
 
     private void Start()
     {
-        _weaponManager = transform.GetComponentInParent<WeaponManager>();
-
         DisableCrosshair();
     }
 
@@ -53,8 +51,8 @@ public class BarrelPointController : MonoBehaviour
             _playerHealth = hit.collider.GetComponentInParent<PlayerHealth>();
             _targetPosition = hit.point + hit.normal * _crosshairOffset;
             _targetRotation = Quaternion.LookRotation(hit.normal);
-            if (_playerHealth != null)
-                _weaponManager._playerController._canShoot = true;
+            if (_playerHealth != null && _weaponManager._botController != null)
+                _weaponManager._botController.SetCanShoot(true);
             Debug.DrawLine(barrelRay.origin, hit.point, Color.red);
         }
         else
@@ -63,9 +61,11 @@ public class BarrelPointController : MonoBehaviour
             _playerHealth = null;
             _targetPosition = barrelRay.GetPoint(_weaponStats.maxDistance);
             _targetRotation = Quaternion.LookRotation(aimDirection);
-            if (_playerHealth == null)
-                _weaponManager._playerController._canShoot = false;             
-            Debug.DrawLine(barrelRay.origin, _targetPosition, Color.yellow);
+            if (_weaponManager._botController != null)
+            {
+                _weaponManager._botController.SetCanShoot(false);
+            }
+            Debug.DrawLine(barrelRay.origin, _targetPosition, Color.green);
         }
     }
 

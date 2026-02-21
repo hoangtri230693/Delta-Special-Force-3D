@@ -12,6 +12,7 @@ TagManager:
   - RigSecondary
   - FxTemporaire
   - Ground
+  - Zombie
   layers:
   - Default
   - TransparentFX
@@ -26,7 +27,7 @@ TagManager:
   - Obstacle
   - Terrorist
   - Counter
-  - Weapon
+  - Zombie
   - 
   - 
   - 

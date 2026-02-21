@@ -12,24 +12,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d42184fb2b892024bb27fef82e8a385c, type: 3}
   m_Name: AUG_Stats
   m_EditorClassIdentifier: 
-  weaponName: AUG
-  weaponPrefab: {fileID: 2790849852225643442, guid: 4e23bbdb7ae60da4b8774e62724b6eb7, type: 3}
   weaponID: 11
+  weaponName: Steyr AUG
+  weaponShortName: AUG
+  weaponPrefab: {fileID: 2790849852225643442, guid: 4e23bbdb7ae60da4b8774e62724b6eb7, type: 3}
+  weaponModel: {fileID: 3658838075267541986, guid: 15c454a9bdc2caf4c8bb833a2fcd6d59, type: 3}
+  weaponType: 3
   itemType: 1
   cash: 2300
   gold: 15000
   targetMask:
     serializedVersion: 2
-    m_Bits: 7795
+    m_Bits: 15987
   maxDistance: 100
   shootForce: 50
+  explosionForce: 0
   damage: 30
   attackRadius: 0
   ammoPerMag: 30
   ammoReverse: 120
-  attackRate: 750
+  fireRate: 750
   reloadTime: 2.4
-  recoilAmount: 2.5
+  recoilAmount: 2
   shakeIntensity: 0
   throwForce: 0
   armorHealth: 0

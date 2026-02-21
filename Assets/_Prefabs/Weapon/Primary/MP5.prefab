@@ -44,6 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3c971dbb13da7546a85a00be8625390, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _weaponManager: {fileID: -9077932249139318047}
   _crosshairOffset: 0.01
   _crosshair: {fileID: 2479599037062873020}
   _scopeCrosshair: {fileID: 0}
@@ -531,12 +532,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f858dd0f94225443a6dd270dea01021, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _playerController: {fileID: 0}
-  _playerInventory: {fileID: 0}
-  _playerAnimationEvents: {fileID: 0}
-  _playerRig: {fileID: 0}
-  _playerHealth: {fileID: 0}
-  _playerLocal: {fileID: 0}
+  _playerOwner: {fileID: 0}
   _weaponStats: {fileID: 11400000, guid: afd8f806dfd8e854c8c78276d54b6ed7, type: 2}
   _weaponRigData: {fileID: 11400000, guid: a36959382050e2d429bc188b5734186b, type: 2}
   _weaponRigController: {fileID: 3319923394104676813}
@@ -546,6 +542,11 @@ MonoBehaviour:
   _weaponCollision: {fileID: 1767106406645782015}
   _weaponAudio: {fileID: 3560061932952811704}
   _rigidbody: {fileID: 279531578966666975}
+  _playerController: {fileID: 0}
+  _playerRig: {fileID: 0}
+  _playerAnimationEvents: {fileID: 0}
+  _playerLocal: {fileID: 0}
+  _botController: {fileID: 0}
 --- !u!114 &3319923394104676813
 MonoBehaviour:
   m_ObjectHideFlags: 0

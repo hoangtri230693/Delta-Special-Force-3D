@@ -16,6 +16,6 @@ MonoBehaviour:
   walkSpeed: 2
   runSpeed: 5
   jumpForce: 5
-  throwForce: 15
-  minPitch: -30
-  maxPitch: 30
+  throwForce: 200
+  minPitch: -60
+  maxPitch: 60

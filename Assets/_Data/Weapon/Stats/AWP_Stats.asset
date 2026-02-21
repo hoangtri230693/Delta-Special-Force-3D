@@ -12,22 +12,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d42184fb2b892024bb27fef82e8a385c, type: 3}
   m_Name: AWP_Stats
   m_EditorClassIdentifier: 
-  weaponName: AWP
-  weaponPrefab: {fileID: 2828079787997164249, guid: b2475acbdc88a37409139dbf4548bde5, type: 3}
   weaponID: 13
+  weaponName: Arctic Warfare Police
+  weaponShortName: AWP
+  weaponPrefab: {fileID: 2828079787997164249, guid: b2475acbdc88a37409139dbf4548bde5, type: 3}
+  weaponModel: {fileID: 233925560979381229, guid: 1e3c1c32f5beaaf409455867ee6569d1, type: 3}
+  weaponType: 4
   itemType: 1
   cash: 4750
   gold: 50000
   targetMask:
     serializedVersion: 2
-    m_Bits: 7795
+    m_Bits: 15987
   maxDistance: 800
   shootForce: 100
+  explosionForce: 0
   damage: 100
   attackRadius: 0
   ammoPerMag: 10
   ammoReverse: 40
-  attackRate: 40
+  fireRate: 40
   reloadTime: 0
   recoilAmount: 4
   shakeIntensity: 0

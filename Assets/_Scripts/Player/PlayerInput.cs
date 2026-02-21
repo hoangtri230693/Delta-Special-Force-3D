@@ -14,7 +14,8 @@ public class PlayerInput : MonoBehaviour
     [SerializeField] private InputActionReference _switchItemAction;
     [SerializeField] private InputActionReference _reloadAction;
     [SerializeField] private InputActionReference _dropAction;
-    
+    [SerializeField] private InputActionReference _pauseAction;
+
     [Header("Buy Menu Actions")]
     [SerializeField] private InputActionReference _openBuyTableAction;
     [SerializeField] private InputActionReference _selectBuyItemAction;
@@ -54,6 +55,7 @@ public class PlayerInput : MonoBehaviour
         bool isSelectedItem = _selectBuyItemAction.action.triggered;
         bool isBuying = _buyAction.action.triggered;
         bool isOpeningResultTable = _openResultTableAction.action.triggered;
+        bool isPausing = _pauseAction.action.triggered;
 
         // ----- Pass To Controller -----
         _playerController.UpdateInputs(
@@ -71,5 +73,7 @@ public class PlayerInput : MonoBehaviour
             isSelectedItem,
             isBuying,
             isOpeningResultTable);
+
+        _playerController.HandlePauseMenu(isPausing);
     }
 }

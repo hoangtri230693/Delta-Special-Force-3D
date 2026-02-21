@@ -31,6 +31,7 @@ public class PlayerRig : MonoBehaviour
     public Transform _meleeRightHandTarget;
     public Transform _throwRightHandTarget;
 
+
     public void UpdateRigWeight(ItemType currentItem)
     {
         _rigPrimaryItem.weight = 0f;

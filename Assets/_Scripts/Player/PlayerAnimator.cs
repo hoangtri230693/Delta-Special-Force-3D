@@ -27,9 +27,7 @@ public class PlayerAnimator : MonoBehaviour
     private void Update()
     {
         UpdateMovementState();
-        UpdateActionState();
-        UpdateItemType();
-        UpdateLifeState();
+        UpdateHit();
     }
                                
     private void UpdateMovementState()
@@ -60,72 +58,69 @@ public class PlayerAnimator : MonoBehaviour
     }
 
 
-    private void UpdateActionState()
-    {
-        if (_playerController._actionState == ActionState.Melee)
+    public void UpdateActionState(ActionState actionState, StanceState stanceState)
+    {        
+        if (actionState == ActionState.Melee)
         {
             _animator.SetTrigger("Stabbing");
-            _playerController._actionState = ActionState.None;
         }
 
-        if (_playerController._actionState == ActionState.Throw)
+        if (actionState == ActionState.Throw)
         {
             _animator.SetTrigger("Throwing");
-            _playerController._actionState = ActionState.None;
         }
 
-        if (_playerController._actionState == ActionState.Reload)
+        if (actionState == ActionState.Reload)
         {
-            if (_playerController._stanceState == StanceState.Standing)
+            if (stanceState == StanceState.Standing)
             {
                 _animator.SetTrigger("ReloadOS");
-                _playerController._actionState = ActionState.None;
             }
-            else if (_playerController._stanceState == StanceState.Crouching)
+            else if (stanceState == StanceState.Crouching)
             {
                 _animator.SetTrigger("ReloadOC");
-                _playerController._actionState = ActionState.None;
             }          
         }
     }
     
-    private void UpdateItemType()
+    public void UpdateItemType(ItemType itemType)
     {
-        if (_playerController._actionState == ActionState.SwitchItem)
-        {
-            bool isPrimaryItem = _playerController._currentItem == ItemType.PrimaryItem;
-            bool isMeleeItem = _playerController._currentItem == ItemType.MeleeItem;
-            bool isThrowableItem = _playerController._currentItem == ItemType.ThrowItem;
+        bool isPrimaryItem = itemType == ItemType.PrimaryItem;
+        bool isMeleeItem = itemType == ItemType.MeleeItem;
+        bool isThrowableItem = itemType == ItemType.ThrowItem;
 
-            _animator.SetLayerWeight(_primaryItemLayerIndex, isPrimaryItem ? 1f : 0f);
-            _animator.SetLayerWeight(_meleeLayerIndex, isMeleeItem ? 1f : 0f);
-            _animator.SetLayerWeight(_throwItemLayerIndex, isThrowableItem ? 1f : 0f);
-
-            _playerController._actionState = ActionState.None;
-        }          
+        _animator.SetLayerWeight(_primaryItemLayerIndex, isPrimaryItem ? 1f : 0f);
+        _animator.SetLayerWeight(_meleeLayerIndex, isMeleeItem ? 1f : 0f);
+        _animator.SetLayerWeight(_throwItemLayerIndex, isThrowableItem ? 1f : 0f);
     }
 
-    private void UpdateLifeState()
+    public void UpdateHit()
     {
         if (_playerController._lifeState == LifeState.Hit)
         {
             _animator.SetTrigger("Hit");
             _playerController._lifeState = LifeState.Alive;
-        }
-        if (_playerController._lifeState == LifeState.DeathShoot)
+        }       
+    }
+
+    public void UpdateDeath(LifeState lifeState)
+    {
+        if (lifeState == LifeState.DeathShoot)
         {
             _animator.SetTrigger("DeathShoot");
             _playerController._lifeState = LifeState.None;
         }
-        if (_playerController._lifeState == LifeState.DeathMelee)
+        if (lifeState == LifeState.DeathMelee)
         {
             _animator.SetTrigger("DeathMelee");
             _playerController._lifeState = LifeState.None;
         }
-        if (_playerController._lifeState == LifeState.DeathThrow)
+        if (lifeState == LifeState.DeathThrow)
         {
             _animator.SetTrigger("DeathThrow");
             _playerController._lifeState = LifeState.None;
         }
+
+        this.enabled = false;
     }
 }

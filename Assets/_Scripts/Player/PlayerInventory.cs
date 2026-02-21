@@ -7,60 +7,28 @@ public class PlayerInventory : MonoBehaviour
     public GameObject _secondaryItem;
     public GameObject _meleeItem;
     public GameObject _throwItem;
-    
-    private PlayerController _playerController;
-    private PlayerRig _playerRig;
 
-    private ItemType _lastItemType;
-    private StanceState _lastStanceState;
 
-    private void Awake()
+    public void UpdateItem(ItemType itemType)
     {
-        _playerController = GetComponent<PlayerController>();
-        _playerRig = GetComponent<PlayerRig>();
+        _primaryItem.SetActive(itemType == ItemType.PrimaryItem);
+        _secondaryItem.SetActive(itemType == ItemType.SecondaryItem);
+        _meleeItem.SetActive(itemType == ItemType.MeleeItem);
+        _throwItem.SetActive(itemType == ItemType.ThrowItem);
     }
 
-    private void Start()
+    public void DropCurrentItem(ItemType itemType)
     {
-        _lastItemType = _playerController._currentItem;
-        _lastStanceState = _playerController._stanceState;
-        UpdateItem();
-        UpdateRigState();
-    }
-
-
-    private void LateUpdate()
-    {
-        if (_playerController._currentItem != _lastItemType || _playerController._actionState == ActionState.SwitchItem)
+        switch (itemType)
         {
-            UpdateItem();
-            UpdateRigState();    
-            _lastItemType = _playerController._currentItem;
+            case ItemType.PrimaryItem:
+                var weaponPrimary = _primaryItem.GetComponentInChildren<WeaponManager>();
+                weaponPrimary.DropWeapon();
+                break;
+            case ItemType.SecondaryItem:
+                var weaponSecondary = _secondaryItem.GetComponentInChildren<WeaponManager>();
+                weaponSecondary.DropWeapon();
+                break;
         }
-
-        if (_playerController._stanceState != _lastStanceState)
-        {
-            _lastStanceState = _playerController._stanceState;
-            UpdateOffsetBody();
-        }
-    }
-    
-    private void UpdateItem()
-    {
-        _primaryItem.SetActive(_playerController._currentItem == ItemType.PrimaryItem);
-        _secondaryItem.SetActive(_playerController._currentItem == ItemType.SecondaryItem);
-        _meleeItem.SetActive(_playerController._currentItem == ItemType.MeleeItem);
-        _throwItem.SetActive(_playerController._currentItem == ItemType.ThrowItem);
-    }
-
-    private void UpdateRigState()
-    {
-        _playerRig.UpdateRigWeight(_playerController._currentItem);
-        _playerRig.UpdateBodyOffset(_playerController._currentItem, _playerController._stanceState);
-    }
-
-    private void UpdateOffsetBody()
-    {
-        _playerRig.UpdateBodyOffset(_playerController._currentItem, _playerController._stanceState);
     }
 }

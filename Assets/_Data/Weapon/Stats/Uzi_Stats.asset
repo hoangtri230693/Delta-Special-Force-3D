@@ -12,24 +12,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d42184fb2b892024bb27fef82e8a385c, type: 3}
   m_Name: Uzi_Stats
   m_EditorClassIdentifier: 
-  weaponName: Uzi
-  weaponPrefab: {fileID: 1362351565752272519, guid: 51eab598888471d4b86bb33a71b9b3d1, type: 3}
   weaponID: 7
+  weaponName: IMI Uzi
+  weaponShortName: Uzi
+  weaponPrefab: {fileID: 1362351565752272519, guid: 51eab598888471d4b86bb33a71b9b3d1, type: 3}
+  weaponModel: {fileID: 6247181270836582897, guid: 123679042d5edfd4b8261e2b5147aa22, type: 3}
+  weaponType: 2
   itemType: 1
   cash: 1200
   gold: 5000
   targetMask:
     serializedVersion: 2
-    m_Bits: 7795
+    m_Bits: 15987
   maxDistance: 40
   shootForce: 40
+  explosionForce: 0
   damage: 18
   attackRadius: 0
   ammoPerMag: 32
   ammoReverse: 160
-  attackRate: 900
+  fireRate: 900
   reloadTime: 2.1
-  recoilAmount: 3
+  recoilAmount: 2
   shakeIntensity: 0
   throwForce: 0
   armorHealth: 0

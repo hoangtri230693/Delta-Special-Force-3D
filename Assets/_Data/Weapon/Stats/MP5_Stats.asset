@@ -12,24 +12,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d42184fb2b892024bb27fef82e8a385c, type: 3}
   m_Name: MP5_Stats
   m_EditorClassIdentifier: 
-  weaponName: MP5
-  weaponPrefab: {fileID: 7497603253075232822, guid: 6e735cc949d31754298c8cfe76cf29aa, type: 3}
   weaponID: 6
+  weaponName: Heckler & Koch MP5
+  weaponShortName: MP5
+  weaponPrefab: {fileID: 7497603253075232822, guid: 6e735cc949d31754298c8cfe76cf29aa, type: 3}
+  weaponModel: {fileID: 2752552763547753679, guid: 8ac2d9a899ba2a54cba6ca8146409c98, type: 3}
+  weaponType: 2
   itemType: 1
   cash: 1500
   gold: 6500
   targetMask:
     serializedVersion: 2
-    m_Bits: 7795
+    m_Bits: 15987
   maxDistance: 60
   shootForce: 50
+  explosionForce: 0
   damage: 22
   attackRadius: 0
   ammoPerMag: 30
   ammoReverse: 150
-  attackRate: 800
+  fireRate: 800
   reloadTime: 2.2
-  recoilAmount: 2
+  recoilAmount: 1.5
   shakeIntensity: 0
   throwForce: 0
   armorHealth: 0

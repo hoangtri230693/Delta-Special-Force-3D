@@ -67,7 +67,7 @@ public class AudioManager : MonoBehaviour
         {
             _musicCoroutine = StartCoroutine(PlayMusicTracks());
         }
-        else if (sceneName == "PlayGame" || sceneName == "SinglePlayer" || sceneName == "MultiPlayer")
+        else if (sceneName == "PlayGame" || sceneName == "TeamDeathmatch" || sceneName == "ZombieSurvival")
         {
             PlayMusic(_musicBackground, true);
         }

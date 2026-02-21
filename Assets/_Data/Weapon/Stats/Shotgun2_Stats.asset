@@ -12,22 +12,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d42184fb2b892024bb27fef82e8a385c, type: 3}
   m_Name: Shotgun2_Stats
   m_EditorClassIdentifier: 
-  weaponName: Shotgun2
-  weaponPrefab: {fileID: 3056054879541076570, guid: ca835a4292228124e8803acc8efa649c, type: 3}
   weaponID: 5
+  weaponName: Remington 870
+  weaponShortName: Shotgun 2
+  weaponPrefab: {fileID: 3056054879541076570, guid: ca835a4292228124e8803acc8efa649c, type: 3}
+  weaponModel: {fileID: 1681967199989931629, guid: e2f2b5125b51b5942bba2b061dde0f8a, type: 3}
+  weaponType: 1
   itemType: 1
   cash: 2000
   gold: 9000
   targetMask:
     serializedVersion: 2
-    m_Bits: 7795
+    m_Bits: 15987
   maxDistance: 25
   shootForce: 100
+  explosionForce: 0
   damage: 80
   attackRadius: 0
   ammoPerMag: 8
   ammoReverse: 32
-  attackRate: 120
+  fireRate: 120
   reloadTime: 3
   recoilAmount: 4.5
   shakeIntensity: 0

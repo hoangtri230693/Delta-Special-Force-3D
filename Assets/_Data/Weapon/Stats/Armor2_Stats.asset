@@ -12,9 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d42184fb2b892024bb27fef82e8a385c, type: 3}
   m_Name: Armor2_Stats
   m_EditorClassIdentifier: 
-  weaponName: Armor 2
-  weaponPrefab: {fileID: 0}
   weaponID: 17
+  weaponName: Heavy Tactical Armor
+  weaponShortName: Armor 2
+  weaponPrefab: {fileID: 0}
+  weaponModel: {fileID: 8695518286536651373, guid: 6db94c8b28f01ef42a212e780623f997, type: 3}
+  weaponType: 6
   itemType: 5
   cash: 800
   gold: 1000
@@ -27,7 +30,7 @@ MonoBehaviour:
   attackRadius: 0
   ammoPerMag: 0
   ammoReverse: 0
-  attackRate: 0
+  fireRate: 0
   reloadTime: 0
   recoilAmount: 0
   shakeIntensity: 0

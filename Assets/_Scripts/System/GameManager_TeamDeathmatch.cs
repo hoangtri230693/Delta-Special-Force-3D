@@ -66,7 +66,6 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
     {
         SpawnTeams();
         UIGameManager_TeamDeathmatch.instance.UpdateUIResultRound();
-        UIGameManager_TeamDeathmatch.instance.UpdateUICash(_playerController._currentCash);
     }
 
     private void Update()
@@ -76,70 +75,28 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
         UpdateTime();
     }
 
+    public void PauseMenu(bool isOpen)
+    {
+        if (isOpen)
+        {
+            Time.timeScale = 0f;
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+            UIGameManager_TeamDeathmatch.instance.OpenPauseMenu(true);
+        }
+        else
+        {
+            Time.timeScale = 1f;
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+            UIGameManager_TeamDeathmatch.instance.OpenPauseMenu(false);
+        }
+    }
+
     public void UpdatePlayerKilled(PlayerController player)
     {
         if (player == _playerController)
             _playerKilled++;
-    }
-
-    public void BuyWeapon(int weaponIndex, PlayerController playerController, PlayerInventory playerInventory, PlayerHealth playerHealth)
-    {
-        if (playerController._currentCash < WeaponDataManager.instance.weaponStats[weaponIndex].cash) return;
-
-        if (weaponIndex >= 0 && weaponIndex < WeaponDataManager.instance.weaponStats.Length)
-        {
-            Transform inventory = null;
-
-            if (WeaponDataManager.instance.weaponStats[weaponIndex].itemType == ItemType.PrimaryItem)
-            {
-                inventory = playerInventory._primaryItem.transform;
-                playerController._currentItem = ItemType.PrimaryItem;
-            }
-            else if (WeaponDataManager.instance.weaponStats[weaponIndex].itemType == ItemType.SecondaryItem)
-            {
-                inventory = playerInventory._secondaryItem.transform;
-                playerController._currentItem = ItemType.SecondaryItem;
-            }
-            else if (WeaponDataManager.instance.weaponStats[weaponIndex].itemType == ItemType.ThrowItem)
-            {
-                inventory = playerInventory._throwItem.transform;
-                playerController._currentItem = ItemType.ThrowItem;
-            }
-            else if (WeaponDataManager.instance.weaponStats[weaponIndex].itemType == ItemType.ArmorItem)
-            {
-                playerHealth._currentArmorHealth = WeaponDataManager.instance.weaponStats[weaponIndex].armorHealth;
-                if (playerHealth == _playerHealth)
-                {
-                    UIGameManager_TeamDeathmatch.instance.UpdateUIArmorHealth(playerHealth._currentArmorHealth, playerHealth);
-                }
-            }
-
-            if (inventory != null && inventory.childCount > 0)
-            {
-                for (int i = 0; i < inventory.childCount; i++)
-                {
-                    WeaponManager weaponManager = inventory.GetChild(i).GetComponent<WeaponManager>();
-                    if (weaponManager != null)
-                    {
-                        weaponManager.DropWeapon(inventory.GetChild(i));
-                    }
-                }
-            }
-
-            if (inventory != null)
-            {
-                GameObject weaponPrefab = Instantiate(WeaponDataManager.instance.weaponStats[weaponIndex].weaponPrefab);
-                weaponPrefab.transform.SetParent(inventory);
-                playerController._actionState = ActionState.SwitchItem;
-            }
-
-            playerController._currentCash -= WeaponDataManager.instance.weaponStats[weaponIndex].cash;
-
-            if (playerController == _playerController)
-            {
-                UIGameManager_TeamDeathmatch.instance.UpdateUICash(playerController._currentCash);
-            }
-        }
     }
 
     public void UpdateTeamCount(TeamType teamType)
@@ -156,6 +113,9 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
 
     private void SpawnTeams()
     {
+        _teamCTCount = 0;
+        _teamTerroristCount = 0;
+
         ShuffleTransform(_spawnCounter);
         ShuffleTransform(_spawnTerrorist);
 
@@ -180,8 +140,7 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
                 _teamTerroristCount++;
             }
                 
-            _player.AddComponent<PlayerLocal>(); 
-
+            _player.AddComponent<PlayerLocal>();
             _playerController = _player.GetComponent<PlayerController>();
             _playerInventory = _player.GetComponent<PlayerInventory>();
             _playerHealth = _player.GetComponent<PlayerHealth>();
@@ -196,7 +155,7 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
             _player.transform.rotation = pSpawn.rotation;
             if (_teamType == TeamType.CounterTerrorist) _teamCTCount++;
             else _teamTerroristCount++;
-            _playerController.OnCharacterController(true);
+
             _playerController.ResetPlayerState();
             _playerHealth.ResetHealth();
         }
@@ -335,7 +294,6 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
 
                 _currentGameState = GameState.RoundEnd;
                 _timeCount = 5f;
-                _playerController.OnCharacterController(false);
 
                 UIGameManager_TeamDeathmatch.instance.UpdateUIResultRound();
                 UIGameManager_TeamDeathmatch.instance.OpenResultMenu(true);
@@ -379,7 +337,7 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
 
     private void ClearOldBots()
     {
-        if (_playerHealth._isDead)
+        if (_player.GetComponent<PlayerHealth>()?._isDead == true)
         {
             Destroy(_player);
             _player = null;

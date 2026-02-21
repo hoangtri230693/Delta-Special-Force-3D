@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 
 public enum MovementState { Idle, Walk, Run, JumpOI, JumpOM, Fall }
 public enum StanceState { Standing, Crouching }
-public enum ActionState { None, ManualShoot, AutomaticShoot, Melee, Throw, SwitchItem, Reload, Drop }
+public enum ActionState { None, ManualShoot, AutomaticShoot, Melee, Throw, Reload, Drop }
 public enum ItemType { None, PrimaryItem, SecondaryItem, MeleeItem, ThrowItem, ArmorItem }
 public enum LifeState { None, Alive, Hit, DeathShoot, DeathMelee, DeathThrow }
 public enum TeamType { None, CounterTerrorist, Terrorist }
@@ -15,16 +15,19 @@ public class PlayerController : MonoBehaviour
     [Header("References")]
     [SerializeField] private CharacterController _characterController;
     [SerializeField] private CharacterStatsSO _characterStats;
-    [SerializeField] private Transform _cameraThirdPerson;   
+    [SerializeField] private Transform _cameraThirdPerson;
     [SerializeField] private Transform _yawTarget;
     [SerializeField] private Rig _rigAim;
 
+    private PlayerAnimator _playerAnimator;
+    private PlayerInventory _playerInventory;
+    private PlayerRig _playerRig;
     private PlayerCamera _playerCamera;
     private PlayerAudio _playerAudio;
     private PlayerTeam _playerTeam;
+    
     private Vector3 _velocity = Vector3.zero;
     private Vector3 _moveDirection = Vector3.zero;
-
     private int _killedCount = 0;
     private int _deathCount = 0;
 
@@ -34,29 +37,35 @@ public class PlayerController : MonoBehaviour
     public bool _isOpeningResultTable = false;
     public bool _isSelectedItem = false;
     public bool _canAction = true;
-    public bool _isSwitchItem = false;
     public bool _canReload = false;
-    public bool _canShoot = false;
-    public bool _shouldDefend = false;
+    public bool _isPausing = false;
 
     public MovementState _movementState = MovementState.Idle;
     public StanceState _stanceState = StanceState.Standing;
     public ActionState _actionState = ActionState.None;
-    public ItemType _currentItem = ItemType.SecondaryItem;
+    public ItemType _itemType = ItemType.SecondaryItem;
     public LifeState _lifeState = LifeState.Alive;
     public float _currentSpeed = 0;
     public float _currentDirection = 0;
     public int _currentCash = 10000;
 
-    
+
     private void Awake()
     {
+        _playerAnimator = GetComponent<PlayerAnimator>();
+        _playerInventory = GetComponent<PlayerInventory>();
+        _playerRig = GetComponent<PlayerRig>();
         _playerCamera = GetComponent<PlayerCamera>();
         _playerAudio = GetComponent<PlayerAudio>();
-        _playerTeam = GetComponent<PlayerTeam>();
+        _playerTeam = GetComponent<PlayerTeam>();     
 
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
+    }
+
+    private void Start()
+    {
+        SwitchItem();
     }
 
     private void Update()
@@ -66,8 +75,7 @@ public class PlayerController : MonoBehaviour
             if (GameManager_TeamDeathmatch.instance != null)
                 GameManager_TeamDeathmatch.instance.UpdateTeamCount(_playerTeam._playerTeam);
 
-            _isAiming = false;
-            _rigAim.weight = 0f;
+            HandleDeath();
             IncrementDeadCount();
         }
 
@@ -82,7 +90,28 @@ public class PlayerController : MonoBehaviour
             _characterController.enabled = false;
             this.enabled = false;
             return;
-        }    
+        }
+    }
+
+    public void ReloadAmmo()
+    {
+        if (_itemType == ItemType.PrimaryItem || _itemType == ItemType.SecondaryItem)
+        {
+            _playerAudio.ZoomSound();
+            if (_playerCamera != null) _playerCamera.ExitAimMode();
+            _canAction = false;
+            _actionState = ActionState.Reload;
+            _playerAnimator.UpdateActionState(_actionState, _stanceState);
+        }
+    }
+
+    public void SwitchItem()
+    {
+        _playerAudio.SwitchItemSound();
+        _playerAnimator.UpdateItemType(_itemType);
+        _playerInventory.UpdateItem(_itemType);
+        _playerRig.UpdateRigWeight(_itemType);
+        _playerRig.UpdateBodyOffset(_itemType, _stanceState);
     }
 
     public void ResetPlayerState()
@@ -96,21 +125,13 @@ public class PlayerController : MonoBehaviour
         _isOpeningBuyTable = false;
         _isOpeningResultTable = false;
         _isSelectedItem = false;
-        _isSwitchItem = false;
         _canReload = false;
-        _canShoot = false;
-        _shouldDefend = false;
         _movementState = MovementState.Idle;
         _stanceState = StanceState.Standing;
         _actionState = ActionState.None;
-        _currentItem = ItemType.SecondaryItem;
+        _itemType = ItemType.SecondaryItem;
         _currentSpeed = 0;
         _currentDirection = 0;
-    }
-
-    public void OnCharacterController(bool isOn)
-    {
-        _characterController.enabled = isOn;
     }
 
     public void IncrementKillCount()
@@ -122,11 +143,11 @@ public class PlayerController : MonoBehaviour
             UIGameManager_TeamDeathmatch.instance.UpdateKilledCount(_playerTeam._playerTeam, _playerTeam._playerID, _killedCount);
             GameManager_TeamDeathmatch.instance.UpdatePlayerKilled(this);
         }
-        
+
         if (UIGameManager_ZombieSurvival.instance != null && GameManager_ZombieSurvival.instance != null)
         {
             UIGameManager_ZombieSurvival.instance.UpdateKilledCount(_killedCount);
-            GameManager_ZombieSurvival.instance.UpdatePlayerKilled(this);
+            GameManager_ZombieSurvival.instance.UpdatePlayerKilled();
         }
     }
 
@@ -137,16 +158,23 @@ public class PlayerController : MonoBehaviour
     }
 
     public void UpdateInputs(Vector2 moveInput, bool isSprinting, bool isJumping, bool isCrouching,
-                            bool isAiming, bool isManualAttacking, bool isAutomaticAttacking, 
-                            bool isSwitchingItem, bool isReloading, bool isDropping, 
+                            bool isAiming, bool isManualAttacking, bool isAutomaticAttacking,
+                            bool isSwitchingItem, bool isReloading, bool isDropping,
                             bool isOpeningBuyTable, bool isSelectedItem, bool isBuying,
                             bool isOpeningResultTable)
     {
         if (_lifeState == LifeState.None) return;
+        if (_isPausing) return;
 
-        bool isRoundActive = GameManager_TeamDeathmatch.instance?._currentGameState == GameState.RoundActive ||
-                                GameManager_ZombieSurvival.instance?._currentGameState == GameState.RoundActive;
-
+        bool isRoundActive = false;
+        if (GameManager_TeamDeathmatch.instance != null)
+        {
+            isRoundActive = GameManager_TeamDeathmatch.instance?._currentGameState == GameState.RoundActive;
+        }
+        else if (GameManager_ZombieSurvival.instance != null)
+        {
+            isRoundActive = GameManager_ZombieSurvival.instance?._currentGameState == GameState.RoundActive;
+        }
 
         if (isRoundActive)
         {
@@ -184,9 +212,52 @@ public class PlayerController : MonoBehaviour
             HandleSelectedItem(isSelectedItem);
             HandleBuyWeapon(isBuying);
             HandleOpeningResultTable(isOpeningResultTable);
+        }
+    }
+
+    public void HandlePauseMenu(bool isPausing)
+    {
+        if (!isPausing || _isOpeningBuyTable || _isOpeningResultTable) return;
+
+        if (isPausing && !_isPausing)
+        {
+            _isPausing = true;
+            if (GameManager_TeamDeathmatch.instance != null)
+                GameManager_TeamDeathmatch.instance.PauseMenu(true);
+            if (GameManager_ZombieSurvival.instance != null)
+                GameManager_ZombieSurvival.instance.PauseMenu(true);
+        }
+        else if (isPausing && _isPausing)
+        {
+            _isPausing = false;
+            if (GameManager_TeamDeathmatch.instance != null)
+                GameManager_TeamDeathmatch.instance.PauseMenu(false);
+            if (GameManager_ZombieSurvival.instance != null)
+                GameManager_ZombieSurvival.instance.PauseMenu(false);
         }       
     }
 
+    private void HandleDeath()
+    {
+        _velocity = Vector3.zero;
+        _moveDirection = Vector3.zero;
+        _currentSpeed = 0;
+        _currentDirection = 0;
+        _characterController.Move(_velocity * Time.deltaTime);
+
+        _actionState = ActionState.None;
+        _itemType = ItemType.None;
+
+        _playerAnimator.UpdateItemType(_itemType);
+        _playerInventory.UpdateItem(_itemType);
+        _playerInventory.DropCurrentItem(_itemType);
+        _playerRig.UpdateRigWeight(_itemType);
+        _playerRig.UpdateBodyOffset(_itemType, _stanceState);
+        _playerAnimator.UpdateDeath(_lifeState);
+
+        _lifeState = LifeState.None;
+    }
+    
     private void HandleMovement(Vector2 input, bool isSprinting)
     {
         _currentDirection = input.y;
@@ -272,6 +343,7 @@ public class PlayerController : MonoBehaviour
             _velocity.y += Physics.gravity.y * Time.deltaTime;
         }
     }
+
     private void HandleCrouching(bool isCrouching)
     {
         if (isCrouching && !_isCrouching)
@@ -285,7 +357,7 @@ public class PlayerController : MonoBehaviour
             _stanceState = StanceState.Standing;
         }           
     }
-    
+
     private void HandleAiming(bool isAiming, Vector2 input)
     {
         if (isAiming && !_isAiming)
@@ -323,37 +395,38 @@ public class PlayerController : MonoBehaviour
 
     private void HandleAttack(bool isManualAttacking, bool isAutomaticAttacking)
     {
-        if (!_isAiming)
-        {
-            _actionState = ActionState.None;
-            return;
-        }
+        if (_actionState == ActionState.Reload) return;
+        if (_isAiming == false) return;
 
         if (isManualAttacking)
         {
-            if (_currentItem == ItemType.MeleeItem)
+            if (_itemType == ItemType.MeleeItem)
             {
                 _actionState = ActionState.Melee;
+                _playerAnimator.UpdateActionState(_actionState, _stanceState);
+                _canAction = false;
             }
-            else if (_currentItem == ItemType.ThrowItem)
+            else if (_itemType == ItemType.ThrowItem)
             {
                 _actionState = ActionState.Throw;
+                _playerAnimator.UpdateActionState(_actionState, _stanceState);
+                _canAction = false;
             }
-            else if (_currentItem == ItemType.SecondaryItem)
+            else if (_itemType == ItemType.SecondaryItem)
             {
                 _actionState = ActionState.ManualShoot;
             }
-            else if (_currentItem == ItemType.PrimaryItem)
+            else if (_itemType == ItemType.PrimaryItem)
             {
                 _actionState = ActionState.ManualShoot;
-            }
+            }         
         }
         else if (isAutomaticAttacking)
         {
-            if (_currentItem == ItemType.PrimaryItem)
+            if (_itemType == ItemType.PrimaryItem)
             {
                 _actionState = ActionState.AutomaticShoot;
-            }
+            }         
         }
         else
         {
@@ -369,35 +442,40 @@ public class PlayerController : MonoBehaviour
 
         var keyboard = Keyboard.current;
 
-        if (keyboard.digit1Key.wasPressedThisFrame) _currentItem = ItemType.PrimaryItem;         
-        else if (keyboard.digit2Key.wasPressedThisFrame) _currentItem = ItemType.SecondaryItem;        
-        else if (keyboard.digit3Key.wasPressedThisFrame) _currentItem = ItemType.MeleeItem;        
-        else if (keyboard.digit4Key.wasPressedThisFrame) _currentItem = ItemType.ThrowItem;
+        if (keyboard.digit1Key.wasPressedThisFrame) _itemType = ItemType.PrimaryItem;         
+        else if (keyboard.digit2Key.wasPressedThisFrame) _itemType = ItemType.SecondaryItem;        
+        else if (keyboard.digit3Key.wasPressedThisFrame) _itemType = ItemType.MeleeItem;        
+        else if (keyboard.digit4Key.wasPressedThisFrame) _itemType = ItemType.ThrowItem;
 
         _playerAudio.SwitchItemSound();
-
-        _isSwitchItem = true;
-
-        _actionState = ActionState.SwitchItem;
+        _playerAnimator.UpdateItemType(_itemType);
+        _playerInventory.UpdateItem(_itemType);
+        _playerRig.UpdateRigWeight(_itemType);
+        _playerRig.UpdateBodyOffset(_itemType, _stanceState);
     }
 
     private void HandleReloading(bool isReloading)
     {
-        if (!isReloading) return;
-        if (!_canReload) return;
-
-        if (_currentItem == ItemType.PrimaryItem || _currentItem == ItemType.SecondaryItem)
+        if (isReloading)
         {
-            _actionState = ActionState.Reload;
-            _canAction = false;
-        }           
+            if (_itemType == ItemType.PrimaryItem || _itemType == ItemType.SecondaryItem)
+            {
+                _playerAudio.ZoomSound();
+                _isAiming = false;
+                _rigAim.weight = 0f;
+                _playerCamera.ExitAimMode();
+                _canAction = false;
+                _actionState = ActionState.Reload;
+                _playerAnimator.UpdateActionState(_actionState, _stanceState);
+            }
+        }
     }
 
     private void HandleDropping(bool isDropping)
     {
         if (!isDropping) return;
       
-        _actionState = ActionState.Drop;
+        _playerInventory.DropCurrentItem(_itemType);
     }
 
     private void HandleOpeningResultTable(bool isOpeningResultTable)
@@ -423,8 +501,15 @@ public class PlayerController : MonoBehaviour
         {
             _canAction = false;
             _isOpeningBuyTable = true;
-            UIGameManager_TeamDeathmatch.instance?.OpenMenuItem(true);
-            UIGameManager_ZombieSurvival.instance?.OpenMenuItem(true);
+            if (UIGameManager_TeamDeathmatch.instance != null)
+                UIGameManager_TeamDeathmatch.instance.OpenMenuItem(true);
+
+            if (UIGameManager_ZombieSurvival.instance != null)
+                UIGameManager_ZombieSurvival.instance.OpenMenuItem(true);
+
+            if (UIShopInGame.instance != null)
+                UIShopInGame.instance.OnEnableTable();
+            UIShopInGame.instance.OnEnableTable();
             Cursor.visible = true;
             Cursor.lockState = CursorLockMode.None;
         }
@@ -432,8 +517,11 @@ public class PlayerController : MonoBehaviour
         {
             _canAction = true;
             _isOpeningBuyTable = false;
-            UIGameManager_TeamDeathmatch.instance?.OpenMenuItem(false);
-            UIGameManager_ZombieSurvival.instance?.OpenMenuItem(false);
+            if (UIGameManager_TeamDeathmatch.instance != null)
+                UIGameManager_TeamDeathmatch.instance.OpenMenuItem(false);
+
+            if (UIGameManager_ZombieSurvival.instance != null)
+                UIGameManager_ZombieSurvival.instance.OpenMenuItem(false);
             Cursor.visible = false;
             Cursor.lockState = CursorLockMode.Locked;
         }
@@ -441,122 +529,22 @@ public class PlayerController : MonoBehaviour
 
     private void HandleSelectedItem(bool isBuyingItem)
     {
-        if (!isBuyingItem) return;
+        if (!isBuyingItem || !_isOpeningBuyTable) return;
 
-        int indexWeaponListOpen = -1;
+        var keyboard = Keyboard.current;
+        if (keyboard == null) return;
 
-        if (UIGameManager_TeamDeathmatch.instance != null)
-            indexWeaponListOpen = UIGameManager_TeamDeathmatch.instance._indexWeaponListOpen;
-        if (UIGameManager_ZombieSurvival.instance != null)
-            indexWeaponListOpen = UIGameManager_ZombieSurvival.instance._indexWeaponListOpen;
-
-        if (_isOpeningBuyTable && indexWeaponListOpen > -1)
+        if (keyboard.escapeKey.wasPressedThisFrame)
         {
-            var keyboard = Keyboard.current;
-
-            if (keyboard.digit1Key.wasPressedThisFrame)
-            {
-                UIGameManager_TeamDeathmatch.instance?.OnShowWeapon(0);
-                UIGameManager_ZombieSurvival.instance?.OnShowWeapon(0);
-            }
-            else if (keyboard.digit2Key.wasPressedThisFrame)
-            {
-                UIGameManager_TeamDeathmatch.instance?.OnShowWeapon(1);
-                UIGameManager_ZombieSurvival.instance?.OnShowWeapon(1);
-            }
-            else if (keyboard.digit3Key.wasPressedThisFrame)
-            {
-                UIGameManager_TeamDeathmatch.instance?.OnShowWeapon(2);
-                UIGameManager_ZombieSurvival.instance?.OnShowWeapon(2);
-            }
-            else if (keyboard.digit4Key.wasPressedThisFrame)
-            {
-                UIGameManager_TeamDeathmatch.instance?.OnShowWeapon(3);
-                UIGameManager_ZombieSurvival.instance?.OnShowWeapon(3);
-            }
-            else if (keyboard.digit5Key.wasPressedThisFrame)
-            {
-                UIGameManager_TeamDeathmatch.instance?.OnShowWeapon(4);
-                UIGameManager_ZombieSurvival.instance?.OnShowWeapon(4);
-            }
-            else if (keyboard.digit6Key.wasPressedThisFrame)
-            {
-                UIGameManager_TeamDeathmatch.instance?.OnShowWeapon(5);
-                UIGameManager_ZombieSurvival.instance?.OnShowWeapon(5);
-            }
-            else if (keyboard.digit7Key.wasPressedThisFrame)
-            {
-                UIGameManager_TeamDeathmatch.instance?.OnShowWeapon(6);
-                UIGameManager_ZombieSurvival.instance?.OnShowWeapon(6);
-            }
-            else if (keyboard.digit8Key.wasPressedThisFrame)
-            {
-                UIGameManager_TeamDeathmatch.instance?.OnShowWeapon(7);
-                UIGameManager_ZombieSurvival.instance?.OnShowWeapon(7);
-            }
-            else if (keyboard.digit9Key.wasPressedThisFrame)
-            {
-                UIGameManager_TeamDeathmatch.instance?.OnShowWeapon(8);
-                UIGameManager_ZombieSurvival.instance?.OnShowWeapon(8);
-            }
-            else if (keyboard.escapeKey.wasPressedThisFrame)
-            {
-                UIGameManager_TeamDeathmatch.instance?.HideAllMenuWeapon();
-                UIGameManager_ZombieSurvival.instance?.HideAllMenuWeapon();
-            }
-
-            _isSelectedItem = true;
+            UIShopInGame.instance.OnEscape();
+            return;
         }
-        else if (_isOpeningBuyTable)
-        {
-            var keyboard = Keyboard.current;
 
-            if (keyboard.digit1Key.wasPressedThisFrame)
-            {
-                UIGameManager_TeamDeathmatch.instance?.OnShowWeaponList(0);
-                UIGameManager_ZombieSurvival.instance?.OnShowWeaponList(0);
-            }
-            else if (keyboard.digit2Key.wasPressedThisFrame)
-            {
-                UIGameManager_TeamDeathmatch.instance?.OnShowWeaponList(1);
-                UIGameManager_ZombieSurvival.instance?.OnShowWeaponList(1);
-            }
-            else if (keyboard.digit3Key.wasPressedThisFrame)
-            {
-                UIGameManager_TeamDeathmatch.instance?.OnShowWeaponList(2);
-                UIGameManager_ZombieSurvival.instance?.OnShowWeaponList(2);
-            }
-            else if (keyboard.digit4Key.wasPressedThisFrame)
-            {
-                UIGameManager_TeamDeathmatch.instance?.OnShowWeaponList(3);
-                UIGameManager_ZombieSurvival.instance?.OnShowWeaponList(3);
-            }
-            else if (keyboard.digit5Key.wasPressedThisFrame)
-            {
-                UIGameManager_TeamDeathmatch.instance?.OnShowWeaponList(4);
-                UIGameManager_ZombieSurvival.instance?.OnShowWeaponList(4);
-            }
-            else if (keyboard.digit6Key.wasPressedThisFrame)
-            {
-                UIGameManager_TeamDeathmatch.instance?.OnShowWeaponList(5);
-                UIGameManager_ZombieSurvival.instance?.OnShowWeaponList(5);
-            }
-            else if (keyboard.digit7Key.wasPressedThisFrame)
-            {
-                UIGameManager_TeamDeathmatch.instance?.OnShowWeaponList(6);
-                UIGameManager_ZombieSurvival.instance?.OnShowWeaponList(6);
-            }
-            else if (keyboard.digit8Key.wasPressedThisFrame)
-            {
-                UIGameManager_TeamDeathmatch.instance?.OnShowWeaponList(7);
-                UIGameManager_ZombieSurvival.instance?.OnShowWeaponList(7);
-            }
-            else if (keyboard.digit9Key.wasPressedThisFrame)
-            {
-                UIGameManager_TeamDeathmatch.instance?.OnShowWeaponList(8);
-                UIGameManager_ZombieSurvival.instance?.OnShowWeaponList(8);
-            }
-        }       
+        int index = GetNumberKeyPressed();
+        if (index < 0) return;
+
+        UIShopInGame.instance.OnNumberInput(index);
+        _isSelectedItem = true;
     }
 
     private void HandleBuyWeapon(bool isBuying)
@@ -565,8 +553,26 @@ public class PlayerController : MonoBehaviour
 
         if (_isSelectedItem)
         {
-            UIGameManager_TeamDeathmatch.instance?.OnBuyWeapon();
-            UIGameManager_ZombieSurvival.instance?.OnBuyWeapon();  
+            UIShopInGame.instance.OnClickBuy();
+            UIShopInGame.instance.UpdateCash();
+            _playerInventory.UpdateItem(_itemType);
+            _playerRig.UpdateRigWeight(_itemType);
+            _playerRig.UpdateBodyOffset(_itemType, _stanceState);                  
         }
+    }
+
+    private int GetNumberKeyPressed()
+    {
+        var k = Keyboard.current;
+        if (k.digit1Key.wasPressedThisFrame) return 0;
+        if (k.digit2Key.wasPressedThisFrame) return 1;
+        if (k.digit3Key.wasPressedThisFrame) return 2;
+        if (k.digit4Key.wasPressedThisFrame) return 3;
+        if (k.digit5Key.wasPressedThisFrame) return 4;
+        if (k.digit6Key.wasPressedThisFrame) return 5;
+        if (k.digit7Key.wasPressedThisFrame) return 6;
+        if (k.digit8Key.wasPressedThisFrame) return 7;
+        if (k.digit9Key.wasPressedThisFrame) return 8;
+        return -1;
     }
 }

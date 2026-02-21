@@ -17,8 +17,6 @@ public class WeaponRigController : MonoBehaviour
         _leftHandTarget = null;
         _rightHandTarget = null;
         _currentTeam = NameTeam.None;
-
-        transform.SetParent(null);
     }
 
     public void InitializeRig(PlayerRig playerRig)

@@ -5,12 +5,7 @@ using UnityEngine;
 public class WeaponManager : MonoBehaviour
 {
     [Header("Component Dynamic")]
-    public PlayerController _playerController;
-    public PlayerInventory _playerInventory;
-    public PlayerAnimationEvents _playerAnimationEvents;
-    public PlayerRig _playerRig;
-    public PlayerHealth _playerHealth;
-    public PlayerLocal _playerLocal;
+    public GameObject _playerOwner;
 
     [Header("Component Static")]
     public WeaponStatsSO _weaponStats;
@@ -25,20 +20,23 @@ public class WeaponManager : MonoBehaviour
     [SerializeField] private WeaponAudio _weaponAudio;
     [SerializeField] private Rigidbody _rigidbody;
 
+    public PlayerController _playerController;
+    public PlayerRig _playerRig;
+    public PlayerAnimationEvents _playerAnimationEvents;
+    public PlayerLocal _playerLocal;
+    public BotController _botController;
+
 
     private void Start()
     {
-        _playerController = GetComponentInParent<PlayerController>();
-        _playerInventory = GetComponentInParent<PlayerInventory>();
-        _playerAnimationEvents = GetComponentInParent<PlayerAnimationEvents>();
-        _playerRig = GetComponentInParent<PlayerRig>();
-        _playerHealth = GetComponentInParent<PlayerHealth>();
-        _playerLocal = GetComponentInParent<PlayerLocal>();
+        _playerOwner = transform.root.gameObject;
+        _playerController = _playerOwner.GetComponent<PlayerController>();
+        _playerRig = _playerOwner.GetComponent<PlayerRig>();
+        _playerAnimationEvents = _playerOwner.GetComponent<PlayerAnimationEvents>();
+        _playerLocal = _playerOwner.GetComponent<PlayerLocal>();
+        _botController = _playerOwner.GetComponent<BotController>();
 
-        if (_playerRig != null)
-        {
-            _weaponRigController.InitializeRig(_playerRig);
-        }
+        _weaponRigController.InitializeRig(_playerRig);
 
         if (_weaponShootController != null)
         {
@@ -65,28 +63,13 @@ public class WeaponManager : MonoBehaviour
         }
     }
 
-    private void Update()
+    public void DropWeapon()
     {
-        if (_playerController == null) return;
-
-        if (_playerController._actionState == ActionState.Drop || _playerController._lifeState == LifeState.None)
-        {
-            DropWeapon(transform);
-        }
-    }
-
-    public void DropWeapon(Transform weapon)
-    {
-        if (_weaponStats.itemType == ItemType.MeleeItem || _weaponStats.itemType == ItemType.ThrowItem) return;
-
         if (_weaponRigController != null)
             _weaponRigController.ResetRig();
 
-        weapon.SetParent(null);
-        weapon.position += _playerController.transform.forward * 0.8f + Vector3.up * 0.3f;
-
-        _playerController._currentItem = _weaponStats.itemType;
-        _playerController._actionState = ActionState.SwitchItem;
+        transform.SetParent(null);
+        transform.position += _playerController.transform.forward * 0.8f + Vector3.up * 0.3f;
 
         _rigidbody.isKinematic = false;
         _rigidbody.useGravity = true;
@@ -109,32 +92,30 @@ public class WeaponManager : MonoBehaviour
 
         Physics.IgnoreCollision(weaponCol, playerCol, true);
         StartCoroutine(EnableCollisionAfterDelay(weaponCol, playerCol, 0.3f));
-        
+
+        _playerOwner = null;
         _playerController = null;
-        _playerInventory = null;
-        _playerAnimationEvents = null;
         _playerRig = null;
-        _playerHealth = null;
+        _playerAnimationEvents = null;
         _playerLocal = null;
+        _botController = null;
 
-        if (_weaponCollision != null) _weaponCollision.enabled = true;
-
-        Debug.Log("Drop Weapon");
+        _weaponCollision.enabled = true;
     }
 
     public void AssignToPlayer(Transform newPlayer)
     {
-        _playerInventory = newPlayer.GetComponent<PlayerInventory>();
-        _playerLocal = newPlayer.GetComponent<PlayerLocal>();
+        var playerInventory = newPlayer.GetComponent<PlayerInventory>();
+        var playerLocal = newPlayer.GetComponent<PlayerLocal>();
 
         Transform inventory = null;
-        if (_weaponStats.itemType == ItemType.PrimaryItem && _playerLocal != null)
+        if (_weaponStats.itemType == ItemType.PrimaryItem)
         {
-            inventory = _playerInventory._primaryItem.transform;
+            inventory = playerInventory._primaryItem.transform;
         }
-        else if (_weaponStats.itemType == ItemType.SecondaryItem && _playerLocal != null)
+        else if (_weaponStats.itemType == ItemType.SecondaryItem)
         {
-            inventory = _playerInventory._secondaryItem.transform;
+            inventory = playerInventory._secondaryItem.transform;
         }
 
         int weaponCount = 0;
@@ -144,12 +125,8 @@ public class WeaponManager : MonoBehaviour
             if (weaponManager != null) weaponCount++;
         }
 
-        if (weaponCount > 0)
-        {
-            _playerInventory = null;
-            _playerLocal = null;
-            return;
-        }
+        if (weaponCount > 0) return;
+
         _rigidbody.useGravity = false;
         _rigidbody.isKinematic = true;
 
@@ -157,18 +134,16 @@ public class WeaponManager : MonoBehaviour
         transform.localPosition = Vector3.zero;
         transform.localRotation = Quaternion.identity;
 
-        _playerController = newPlayer.GetComponent<PlayerController>();    
-        _playerAnimationEvents = newPlayer.GetComponent<PlayerAnimationEvents>();
+        _playerOwner = newPlayer.gameObject;
+        _playerController = newPlayer.GetComponent<PlayerController>();
         _playerRig = newPlayer.GetComponent<PlayerRig>();
-        _playerHealth = newPlayer.GetComponent<PlayerHealth>();
+        _playerAnimationEvents = newPlayer.GetComponent<PlayerAnimationEvents>();
         _playerLocal = newPlayer.GetComponent<PlayerLocal>();
+        _botController = newPlayer.GetComponent<BotController>();
 
         _weaponCollision.enabled = false;
 
-        if (_playerRig != null)
-        {
-            _weaponRigController.InitializeRig(_playerRig);
-        }
+        _weaponRigController.InitializeRig(_playerRig);
 
         if (_weaponShootController != null)
         {
@@ -176,9 +151,8 @@ public class WeaponManager : MonoBehaviour
             _weaponAudio.PlayAudioCock();
         }
 
-        _playerController._currentItem = _weaponStats.itemType;
-        _playerController._actionState = ActionState.SwitchItem;
-        Debug.Log("Weapon Assigned to Player");
+        _playerController._itemType = _weaponStats.itemType;
+        _playerController.SwitchItem();
     }
 
     private IEnumerator EnableCollisionAfterDelay(Collider weaponCol, Collider playerCol, float delay)

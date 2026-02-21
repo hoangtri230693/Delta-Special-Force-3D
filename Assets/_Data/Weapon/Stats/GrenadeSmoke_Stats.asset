@@ -12,22 +12,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d42184fb2b892024bb27fef82e8a385c, type: 3}
   m_Name: GrenadeSmoke_Stats
   m_EditorClassIdentifier: 
-  weaponName: Grenade Smoke
-  weaponPrefab: {fileID: 1221578968898106040, guid: de8cb6e0282d0284cb18ec4c4569af4a, type: 3}
   weaponID: 15
+  weaponName: M18 Smoke Grenade
+  weaponShortName: Grenade Smoke
+  weaponPrefab: {fileID: 1221578968898106040, guid: de8cb6e0282d0284cb18ec4c4569af4a, type: 3}
+  weaponModel: {fileID: 5201524818862135833, guid: 63f06e1d65c747c4395affaf6d40979b, type: 3}
+  weaponType: 5
   itemType: 4
   cash: 300
   gold: 500
   targetMask:
     serializedVersion: 2
-    m_Bits: 7795
+    m_Bits: 4294967295
   maxDistance: 0
   shootForce: 0
+  explosionForce: 0
   damage: 0
   attackRadius: 10
   ammoPerMag: 1
   ammoReverse: 0
-  attackRate: 0
+  fireRate: 0
   reloadTime: 0
   recoilAmount: 0
   shakeIntensity: 1.5
