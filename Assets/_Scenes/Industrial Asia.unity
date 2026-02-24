@@ -6535,7 +6535,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 2051293455}
         m_TargetAssemblyTypeName: UIShopInGame, Assembly-CSharp
         m_MethodName: OnClickBuy
         m_Mode: 1
@@ -17072,7 +17072,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _timeCountdown: 10
   _timeRoundActive: 300
-  _totalRound: 3
+  _totalRound: 2
   _counterPrefabs:
   - {fileID: 1755209026461867047, guid: 4c32bd28be3694d43ac62fe48a51c8bf, type: 3}
   - {fileID: 6513359472276026290, guid: 7357413047294c04a82a58d879899f3a, type: 3}

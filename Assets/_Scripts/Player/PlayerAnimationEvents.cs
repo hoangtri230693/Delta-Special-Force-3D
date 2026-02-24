@@ -77,7 +77,7 @@ public class PlayerAnimationEvents : MonoBehaviour
         this.enabled = false;
 
         if (GameManager_ZombieSurvival.instance != null)
-            GameManager_ZombieSurvival.instance.UpdatePlayerDeath();
+            StartCoroutine(GameManager_ZombieSurvival.instance.UpdatePlayerDeath());
     }
 
     public void ReloadingEvent()
@@ -106,9 +106,6 @@ public class PlayerAnimationEvents : MonoBehaviour
             _secondaryIKTargetWeight = 1f;
             _secondaryShootController.HandleReload1();
         }
-
-        _playerController._actionState = ActionState.None;
-        _playerController._canAction = true;
     }
 
     public void ThrowGrenadeEvent()
@@ -127,7 +124,6 @@ public class PlayerAnimationEvents : MonoBehaviour
     public void ThrowGrenadeEvent2()
     {
         _throwIKTargetWeight = 1f;
-        _playerController._canAction = true;
     }
 
     public void StabbingKnifeEvent()
@@ -143,6 +139,5 @@ public class PlayerAnimationEvents : MonoBehaviour
     public void StabbingKnifeEvent2()
     {
         _meleeIKTargetWeight = 1f;
-        _playerController._canAction = true;
     }
 }

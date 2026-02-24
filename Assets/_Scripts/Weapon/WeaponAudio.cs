@@ -5,6 +5,10 @@ public class WeaponAudio : MonoBehaviour
     [SerializeField] private WeaponManager _weaponManager;
     [SerializeField] private AudioSource _audioSource;
 
+    private void Start()
+    {
+        _audioSource.volume = PlayerPrefs.GetFloat("SFXVolume", 1f);
+    }
 
     public void PlayAudioFire()
     {

@@ -79,7 +79,7 @@ public class PlayerAnimator : MonoBehaviour
             else if (stanceState == StanceState.Crouching)
             {
                 _animator.SetTrigger("ReloadOC");
-            }          
+            }
         }
     }
     

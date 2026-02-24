@@ -7,7 +7,6 @@ public enum SFXType
     MetalClick,
     RadioBeep,
     DefaultClick,
-    SwatDead,
 }
 
 public class AudioManager : MonoBehaviour
@@ -24,11 +23,20 @@ public class AudioManager : MonoBehaviour
 
     [Header("Effect Sounds")]
     [SerializeField] private AudioClip[] _sfxClips;
+    [SerializeField] private AudioClip[] _radioReadyMissionTeam;
+    [SerializeField] private AudioClip[] _radioReadyMissionZombie;
+    [SerializeField] private AudioClip[] _radioStartMissionTeam;
+    [SerializeField] private AudioClip[] _radioStartMissionZombie;
+    [SerializeField] private AudioClip[] _radioEndWinMissionTeam;
+    [SerializeField] private AudioClip[] _radioEndWinMissionZombie;
+    [SerializeField] private AudioClip[] _radioEndLoseMissionTeam;
+    [SerializeField] private AudioClip[] _radioEndLoseMissionZombie;
 
     private int _currentMusicTracksIndex = 0;
     private Coroutine _musicCoroutine;
+    private Coroutine _radioCoroutine;
 
-    
+
 
     private void Awake()
     {
@@ -75,6 +83,17 @@ public class AudioManager : MonoBehaviour
         {
             _musicSounds.Stop();
         }
+
+        if (_radioCoroutine != null)
+        {
+            StopCoroutine(_radioCoroutine);
+            _radioCoroutine = null;
+        }
+
+        if (_sfxSounds.isPlaying)
+        {
+            _sfxSounds.Stop();
+        }
     }
 
     #region Volume and Mute
@@ -115,6 +134,16 @@ public class AudioManager : MonoBehaviour
     #endregion
 
     #region Effect Sounds
+    private IEnumerator PlayRadioSequence(AudioClip[] clips)
+    {
+        foreach (AudioClip clip in clips)
+        {
+            _sfxSounds.PlayOneShot(clip);
+            yield return new WaitForSeconds(clip.length);
+        }
+        _radioCoroutine = null;
+    }
+
     public void PlaySfx(SFXType _sfxType)
     {
         if (_sfxClips.Length > (int)_sfxType)
@@ -122,5 +151,56 @@ public class AudioManager : MonoBehaviour
             _sfxSounds.PlayOneShot(_sfxClips[(int)_sfxType]);
         }
     }
+
+    public void PlayRadioOnReadyMission()
+    {
+        if (GameManager_TeamDeathmatch.instance != null)
+        {
+            _radioCoroutine = StartCoroutine(PlayRadioSequence(_radioReadyMissionTeam));
+        }
+        else if (GameManager_ZombieSurvival.instance != null)
+        {
+            _radioCoroutine = StartCoroutine(PlayRadioSequence(_radioReadyMissionZombie));
+        }     
+    }
+
+    public void PlayRadioOnStartMission()
+    {       
+        if (GameManager_TeamDeathmatch.instance != null)
+        {
+            _radioCoroutine = StartCoroutine(PlayRadioSequence(_radioStartMissionTeam));
+        }
+        else if (GameManager_ZombieSurvival.instance != null)
+        {
+            _radioCoroutine = StartCoroutine(PlayRadioSequence(_radioStartMissionZombie));
+        }
+    }
+
+    public void PlayRadioOnEndMission(string resultMatch)
+    {
+        if (resultMatch == "WIN")
+        {
+            if (GameManager_TeamDeathmatch.instance != null)
+            {
+                _radioCoroutine = StartCoroutine(PlayRadioSequence(_radioEndWinMissionTeam));
+            }
+            else if (GameManager_ZombieSurvival.instance != null)
+            {
+                _radioCoroutine = StartCoroutine(PlayRadioSequence(_radioEndWinMissionZombie));
+            }
+        }
+        else if (resultMatch == "LOSE")
+        {
+            if (GameManager_TeamDeathmatch.instance != null)
+            {
+                _radioCoroutine = StartCoroutine(PlayRadioSequence(_radioEndLoseMissionTeam));
+            }
+            else if (GameManager_ZombieSurvival.instance != null)
+            {
+                _radioCoroutine = StartCoroutine(PlayRadioSequence(_radioEndLoseMissionZombie));
+            }
+        }
+    }
+
     #endregion
 }

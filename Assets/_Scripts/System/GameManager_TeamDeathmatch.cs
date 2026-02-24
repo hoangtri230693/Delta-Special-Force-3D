@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using Unity.Behavior;
 using UnityEngine;
 
@@ -65,7 +66,9 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
     private void Start()
     {
         SpawnTeams();
+        PlayRadioVoiceReadyMission();
         UIGameManager_TeamDeathmatch.instance.UpdateUIResultRound();
+
     }
 
     private void Update()
@@ -73,6 +76,15 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
         UpdateRound();
         UpdateMatch();
         UpdateTime();
+    }
+
+    public IEnumerator UpdateResultMatch()
+    {
+        _isMatchEnded = true;
+        _currentGameState = GameState.MatchEnd;
+        CalculateMatchRewards();
+        yield return new WaitForSecondsRealtime(5f);
+        UIGameManager_TeamDeathmatch.instance.ShowUIResultMatch();
     }
 
     public void PauseMenu(bool isOpen)
@@ -109,6 +121,21 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
         {
             _teamTerroristCount--;
         }
+    }
+
+    private void PlayRadioVoiceReadyMission()
+    {
+        AudioManager.instance.PlayRadioOnReadyMission();
+    }
+
+    private void PlayRadioVoiceStartMission()
+    {
+        AudioManager.instance.PlayRadioOnStartMission();
+    }
+
+    private void PlayRadioVoiceEndMission(string resultMatch)
+    {
+        AudioManager.instance.PlayRadioOnEndMission(resultMatch);
     }
 
     private void SpawnTeams()
@@ -283,6 +310,7 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
             {
                 _currentGameState = GameState.RoundActive;
                 _timeCount = _timeRoundActive;
+                PlayRadioVoiceStartMission();
             }
         }
         else if (_currentGameState == GameState.RoundActive)
@@ -295,6 +323,18 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
                 _currentGameState = GameState.RoundEnd;
                 _timeCount = 5f;
 
+                _playerController.ResetPlayerState();
+                foreach (GameObject bot in _allBotCharacter)
+                {
+                    if (bot.TryGetComponent<BotController>(out var controller))
+                        controller.enabled = false;
+
+                    if (bot.TryGetComponent<BehaviorGraphAgent>(out var agent))
+                        agent.enabled = false;
+
+                    if (bot.TryGetComponent<CharacterController>(out var charCtrl))
+                        charCtrl.Move(Vector3.zero);
+                }
                 UIGameManager_TeamDeathmatch.instance.UpdateUIResultRound();
                 UIGameManager_TeamDeathmatch.instance.OpenResultMenu(true);
             }
@@ -319,10 +359,7 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
                 {
                     if (!_isMatchEnded)
                     {
-                        _isMatchEnded = true;
-                        _currentGameState = GameState.MatchEnd;
-                        CalculateMatchRewards();
-                        UIGameManager_TeamDeathmatch.instance.ShowUIResultMatch();
+                        StartCoroutine(UpdateResultMatch());
                     }
                 }
             }
@@ -337,7 +374,7 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
 
     private void ClearOldBots()
     {
-        if (_player.GetComponent<PlayerHealth>()?._isDead == true)
+        if (_playerHealth._isDead == true)
         {
             Destroy(_player);
             _player = null;
@@ -373,5 +410,6 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
         int rewardMatch = GameplayDataManager.instance.GetBonusGoldByMatchResult(resultMatch);
         int totalReward = rewardMatch + rewardKills;
         PlayerDataManager.instance.AddPlayerGold(totalReward);
+        PlayRadioVoiceEndMission(resultMatch);
     }
 }

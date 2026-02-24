@@ -1108,8 +1108,35 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 27344ae70df986649b8a0986fa25b323, type: 3}
   - {fileID: 8300000, guid: 1d58247c09a28fa43b3ce89c3df874a4, type: 3}
   - {fileID: 8300000, guid: aa6cb3ae67eb7bf469c5ed658020f7bf, type: 3}
-  - {fileID: 8300000, guid: 3308d60f9e41bb4428e72dcc0142e921, type: 3}
-  - {fileID: 8300000, guid: 0bd61e642c523ed44b89df8560738b5d, type: 3}
+  _radioReadyMissionTeam:
+  - {fileID: 8300000, guid: 2a7c3a00d7db0451caab0c673737213f, type: 3}
+  - {fileID: 8300000, guid: 9758224172b424363bc846a4d396ed41, type: 3}
+  - {fileID: 8300000, guid: a4cc8bcbf575842499e361f287ce7f1f, type: 3}
+  _radioReadyMissionZombie:
+  - {fileID: 8300000, guid: 2a7c3a00d7db0451caab0c673737213f, type: 3}
+  - {fileID: 8300000, guid: 773730ff3ecab49bb86f98e5306eebea, type: 3}
+  - {fileID: 8300000, guid: 7b66c2cee6a9647859198e44aec6cf3e, type: 3}
+  - {fileID: 8300000, guid: 5887c41b2875841aab2fb7c7afb6ed90, type: 3}
+  _radioStartMissionTeam:
+  - {fileID: 8300000, guid: 9415c29dee2e98d4ab72a8373bf810d5, type: 3}
+  - {fileID: 8300000, guid: 0da5a22bc53ba444b98fb0c2f6da80c5, type: 3}
+  _radioStartMissionZombie:
+  - {fileID: 8300000, guid: 9415c29dee2e98d4ab72a8373bf810d5, type: 3}
+  - {fileID: 8300000, guid: 90e7a41beed24be4288cb5fc4c528edf, type: 3}
+  _radioEndWinMissionTeam:
+  - {fileID: 8300000, guid: 2957cb8495b09468198706cfb1952d1e, type: 3}
+  - {fileID: 8300000, guid: 0a97c8a5b92724e8b948882d046ff656, type: 3}
+  - {fileID: 8300000, guid: 6437123c5fada4ccaafe42b11d9995c0, type: 3}
+  _radioEndWinMissionZombie:
+  - {fileID: 8300000, guid: 25149aab29cad40fa818d0ab83d65333, type: 3}
+  - {fileID: 8300000, guid: 35ae856ee72d042bf9c1df1aad9026d8, type: 3}
+  _radioEndLoseMissionTeam:
+  - {fileID: 8300000, guid: ef4bcb6765efc45c59e5f2e4e88dcab3, type: 3}
+  - {fileID: 8300000, guid: a02034dda14da4fa9b482c5165aaf52b, type: 3}
+  _radioEndLoseMissionZombie:
+  - {fileID: 8300000, guid: 36a050fa7b0a5e240999c434f679a28d, type: 3}
+  - {fileID: 8300000, guid: 9c8821e971472449dab6993d7a32a661, type: 3}
+  - {fileID: 8300000, guid: ef1128548d8314e16b90ae7a749b7017, type: 3}
 --- !u!4 &493209840
 Transform:
   m_ObjectHideFlags: 0

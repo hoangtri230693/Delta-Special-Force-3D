@@ -43,11 +43,11 @@ public class PlayerController : MonoBehaviour
     public MovementState _movementState = MovementState.Idle;
     public StanceState _stanceState = StanceState.Standing;
     public ActionState _actionState = ActionState.None;
-    public ItemType _itemType = ItemType.SecondaryItem;
+    public ItemType _itemType = ItemType.ThrowItem;
     public LifeState _lifeState = LifeState.Alive;
     public float _currentSpeed = 0;
     public float _currentDirection = 0;
-    public int _currentCash = 10000;
+    public int _currentCash = 20000;
 
 
     private void Awake()
@@ -117,10 +117,9 @@ public class PlayerController : MonoBehaviour
     public void ResetPlayerState()
     {
         _lifeState = LifeState.Alive;
-        _currentCash = 10000;
         _isAiming = false;
         _rigAim.weight = 0f;
-        _playerCamera.ExitAimMode();
+        if (_playerCamera != null) _playerCamera.ExitAimMode();
         _isCrouching = false;
         _isOpeningBuyTable = false;
         _isOpeningResultTable = false;
@@ -129,7 +128,6 @@ public class PlayerController : MonoBehaviour
         _movementState = MovementState.Idle;
         _stanceState = StanceState.Standing;
         _actionState = ActionState.None;
-        _itemType = ItemType.SecondaryItem;
         _currentSpeed = 0;
         _currentDirection = 0;
     }
@@ -153,8 +151,11 @@ public class PlayerController : MonoBehaviour
 
     public void IncrementDeadCount()
     {
-        _deathCount++;
-        UIGameManager_TeamDeathmatch.instance.UpdateDeathCount(_playerTeam._playerTeam, _playerTeam._playerID, _deathCount);
+        if (UIGameManager_TeamDeathmatch.instance != null)
+        {
+            _deathCount++;
+            UIGameManager_TeamDeathmatch.instance.UpdateDeathCount(_playerTeam._playerTeam, _playerTeam._playerID, _deathCount);
+        }      
     }
 
     public void UpdateInputs(Vector2 moveInput, bool isSprinting, bool isJumping, bool isCrouching,
@@ -239,6 +240,10 @@ public class PlayerController : MonoBehaviour
 
     private void HandleDeath()
     {
+        _isAiming = false;
+        _rigAim.weight = 0f;
+        if (_playerCamera != null) _playerCamera.ExitAimMode();
+
         _velocity = Vector3.zero;
         _moveDirection = Vector3.zero;
         _currentSpeed = 0;
@@ -395,7 +400,6 @@ public class PlayerController : MonoBehaviour
 
     private void HandleAttack(bool isManualAttacking, bool isAutomaticAttacking)
     {
-        if (_actionState == ActionState.Reload) return;
         if (_isAiming == false) return;
 
         if (isManualAttacking)
@@ -404,13 +408,11 @@ public class PlayerController : MonoBehaviour
             {
                 _actionState = ActionState.Melee;
                 _playerAnimator.UpdateActionState(_actionState, _stanceState);
-                _canAction = false;
             }
             else if (_itemType == ItemType.ThrowItem)
             {
                 _actionState = ActionState.Throw;
                 _playerAnimator.UpdateActionState(_actionState, _stanceState);
-                _canAction = false;
             }
             else if (_itemType == ItemType.SecondaryItem)
             {
@@ -464,7 +466,6 @@ public class PlayerController : MonoBehaviour
                 _isAiming = false;
                 _rigAim.weight = 0f;
                 _playerCamera.ExitAimMode();
-                _canAction = false;
                 _actionState = ActionState.Reload;
                 _playerAnimator.UpdateActionState(_actionState, _stanceState);
             }

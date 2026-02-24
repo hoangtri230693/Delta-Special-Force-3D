@@ -1,4 +1,6 @@
-﻿using Unity.Behavior;
+﻿using System.Collections;
+using System.Collections.Generic;
+using Unity.Behavior;
 using UnityEngine;
 
 
@@ -16,6 +18,7 @@ public class GameManager_ZombieSurvival : MonoBehaviour
     [SerializeField] private GameObject[] _terroristPrefabs;
     [SerializeField] private GameObject[] _zombiePrefabs;
     [SerializeField] private Transform _spawnPoint;
+    [SerializeField] private List<GameObject> _allBotCharacter;
 
     [Header("Zombie Settings")]
     [SerializeField] private int _zombiesPerWave = 10;
@@ -58,8 +61,9 @@ public class GameManager_ZombieSurvival : MonoBehaviour
 
     private void Start()
     {
-        SpawnTeams();
+        SpawnPlayer();
         SpawnZombie();
+        PlayRadioVoiceReadyMission();
     }
 
     private void Update()
@@ -97,18 +101,35 @@ public class GameManager_ZombieSurvival : MonoBehaviour
         }
     }
 
-    public void UpdatePlayerDeath()
+    public IEnumerator UpdatePlayerDeath()
     {
-        if (_playerHealth._isDead && !_isMatchEnded)
+        _isMatchEnded = true;
+        _currentGameState = GameState.MatchEnd;
+        foreach (var bot in _allBotCharacter)
         {
-            _isMatchEnded = true;
-            _currentGameState = GameState.MatchEnd;
-            CalculateMatchRewards();
-            UIGameManager_ZombieSurvival.instance.ShowUIResultMatch();
+            Destroy(bot);
         }
+        CalculateMatchRewards();
+        yield return new WaitForSecondsRealtime(5f);
+        UIGameManager_ZombieSurvival.instance.ShowUIResultMatch();
     }
 
-    private void SpawnTeams()
+    private void PlayRadioVoiceReadyMission()
+    {
+        AudioManager.instance.PlayRadioOnReadyMission();
+    }
+
+    private void PlayRadioVoiceStartMission()
+    {
+        AudioManager.instance.PlayRadioOnStartMission();
+    }
+
+    private void PlayRadioVoiceEndMission(string resultMatch)
+    {
+        AudioManager.instance.PlayRadioOnEndMission(resultMatch);
+    }
+
+    private void SpawnPlayer()
     {
         int selectedTeamID = PlayerPrefs.GetInt("SelectedTeamID", 0);
         int selectedCharacterID = PlayerPrefs.GetInt("SelectedCharacterID", 0);
@@ -123,12 +144,11 @@ public class GameManager_ZombieSurvival : MonoBehaviour
         }
 
         _player.AddComponent<PlayerLocal>();
+        _player.layer = LayerMask.NameToLayer("Player");
         _playerController = _player.GetComponent<PlayerController>();
         _playerInventory = _player.GetComponent<PlayerInventory>();
         _playerHealth = _player.GetComponent<PlayerHealth>();
         _playerAnimationEvents = _player.GetComponent<PlayerAnimationEvents>();
-        _playerTeam = _player.GetComponent<PlayerTeam>();
-        _playerTeam._playerID = 0;
 
         MiniMap.instance.SetupPlayerTransform(_player.transform);
     }
@@ -157,6 +177,8 @@ public class GameManager_ZombieSurvival : MonoBehaviour
             {
                 behaviorAgent.BlackboardReference.SetVariableValue("Target", _player);
             }
+
+            _allBotCharacter.Add(zombie);
         }
 
         _spawnWaveCount++;
@@ -183,6 +205,7 @@ public class GameManager_ZombieSurvival : MonoBehaviour
             {
                 _currentGameState = GameState.RoundActive;
                 _timeCount = _timeRoundActive;
+                PlayRadioVoiceStartMission();
             }
         }
         else if (_currentGameState == GameState.RoundActive)
@@ -211,10 +234,7 @@ public class GameManager_ZombieSurvival : MonoBehaviour
                 {
                     if (!_isMatchEnded)
                     {
-                        _isMatchEnded = true;
-                        _currentGameState = GameState.MatchEnd;
-                        CalculateMatchRewards();
-                        UIGameManager_ZombieSurvival.instance.ShowUIResultMatch();
+                        StartCoroutine(UpdatePlayerDeath());
                     }
                 }
             }
@@ -224,8 +244,8 @@ public class GameManager_ZombieSurvival : MonoBehaviour
     private void CalculateMatchRewards()
     {
         string resultMatch = null;
-        if (_timeCount <= 0 && !_player.GetComponent<PlayerHealth>()._isDead) resultMatch = "WIN";
-        if (_player.GetComponent<PlayerHealth>()._isDead) resultMatch = "LOSE";
+        if (IsPlayerVictorious()) resultMatch = "WIN";
+        else resultMatch = "LOSE";
 
         int bonusGoldPerKill = GameplayDataManager.instance.GetBonusGoldPerKill();
         int rewardKills = _playerKilled * GameplayDataManager.instance.GetBonusGoldPerKill();
@@ -233,6 +253,7 @@ public class GameManager_ZombieSurvival : MonoBehaviour
         int rewardMatch = GameplayDataManager.instance.GetBonusGoldByMatchResult(resultMatch);
         int totalReward = rewardMatch + rewardKills;
         PlayerDataManager.instance.AddPlayerGold(totalReward);
+        PlayRadioVoiceEndMission(resultMatch);
     }
 
     private Vector3 GetGroundPosition(Vector3 spawnPos)

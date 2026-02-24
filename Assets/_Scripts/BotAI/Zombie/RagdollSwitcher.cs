@@ -6,12 +6,13 @@ public class RagdollSwitcher : MonoBehaviour
     [SerializeField] private Rigidbody[] _rigids;
     [SerializeField] private Collider[] _colliders;
     [SerializeField] private Animator _animator;
+    [SerializeField] private ZombieAudio _zombieAudio;
+
 
     private void Awake()
     {
         CollectRagdolls();
     }
-
 
     [ContextMenu("Collect ragdolls")]
     private void CollectRagdolls()
@@ -27,12 +28,9 @@ public class RagdollSwitcher : MonoBehaviour
         {
             rigidbody.isKinematic = false;
         }
-        //foreach (var collider in _colliders)
-        //{
-        //    collider.enabled = false;
-        //}
 
         _animator.enabled = false;
+        _zombieAudio.PlayBodyFallSound();
 
         StartCoroutine(DisableRagdollsAfterTime());
     }
@@ -50,11 +48,16 @@ public class RagdollSwitcher : MonoBehaviour
 
     private IEnumerator DisableRagdollsAfterTime()
     {
-        yield return new WaitForSeconds(5f);
+        yield return new WaitForSeconds(10f);
 
         foreach (var rigidbody in _rigids)
         {
             rigidbody.isKinematic = true;
+        }
+
+        foreach (var collider in _colliders)
+        {
+            collider.enabled = false;
         }
     }
 }

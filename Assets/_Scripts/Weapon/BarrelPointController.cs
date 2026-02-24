@@ -23,7 +23,7 @@ public class BarrelPointController : MonoBehaviour
 
     private void Update()
     {
-        if (_weaponManager._playerController == null)
+        if (_weaponManager._playerOwner == null)
         {
             DisableCrosshair();
             return;

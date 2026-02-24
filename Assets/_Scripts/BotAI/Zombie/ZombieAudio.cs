@@ -4,26 +4,25 @@ public class ZombieAudio : MonoBehaviour
 {
     [Header("Audio Settings")]
     [SerializeField] private AudioClip[] _footStepSounds;
-    [SerializeField] private AudioClip _wave1Sounds;
-    [SerializeField] private AudioClip _wave2Sounds;
-    [SerializeField] private AudioClip _wave3Sounds;
-    [SerializeField] private AudioClip _wave4Sounds;
-    [SerializeField] private AudioClip _wave5Sounds;
-    [SerializeField] private AudioClip _attackSounds;
-    [SerializeField] private AudioClip _attackHitSounds;
+    [SerializeField] private AudioClip[] _growlSounds;
+    [SerializeField] private AudioClip[] _attackSounds;
+    [SerializeField] private AudioClip[] _attackHitSounds;
+    [SerializeField] private AudioClip[] _bodyFallSounds;
 
-    private float _walkStepVolume = 2.0f;
-    private float _runStepVolume = 4.0f;
     private float _stepCooldown = 0.2f;
     private float _lastStepTime = 0f;
 
-    private Animator _animator;
     private AudioSource _audioSource;
 
     private void Awake()
     {
-        _animator = GetComponent<Animator>();
         _audioSource = GetComponent<AudioSource>();
+    }
+
+    private void Start()
+    {
+        _audioSource.volume = PlayerPrefs.GetFloat("SFXVolume", 1f);
+       PlayGrowlSound();
     }
 
     public void FootStep()
@@ -31,13 +30,26 @@ public class ZombieAudio : MonoBehaviour
         if (Time.time - _lastStepTime < _stepCooldown) return;
         _lastStepTime = Time.time;
 
-        float speed = _animator.GetFloat("Speed");
-        if (speed < 0.1f) return;
-        if (speed < 2.5f)
-            _audioSource.volume = _walkStepVolume;
-        else
-            _audioSource.volume = _runStepVolume;
-
         _audioSource.PlayOneShot(_footStepSounds[Random.Range(0, _footStepSounds.Length)]);
+    }
+
+    public void PlayGrowlSound()
+    {
+        _audioSource.PlayOneShot(_growlSounds[Random.Range(0, _growlSounds.Length)]);
+    }
+
+    public void PlayAttackSound()
+    {
+        _audioSource.PlayOneShot(_attackSounds[Random.Range(0, _attackSounds.Length)]);
+    }
+
+    public void PlayAttackHitSound()
+    {
+        _audioSource.PlayOneShot(_attackHitSounds[Random.Range(0, _attackHitSounds.Length)]);
+    }
+
+    public void PlayBodyFallSound()
+    {
+        _audioSource.PlayOneShot(_bodyFallSounds[Random.Range(0, _bodyFallSounds.Length)]);
     }
 }

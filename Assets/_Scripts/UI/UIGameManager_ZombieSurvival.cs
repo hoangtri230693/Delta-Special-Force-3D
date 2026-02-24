@@ -82,13 +82,13 @@ public class UIGameManager_ZombieSurvival : MonoBehaviour
 
     public void UpdateUIArmorHealth(float currentArmorHealth, PlayerHealth playerHealth)
     {
-        if (playerHealth == GameManager_ZombieSurvival.instance._player.GetComponent<PlayerHealth>())
+        if (playerHealth == GameManager_ZombieSurvival.instance._playerHealth)
             _armor.text = currentArmorHealth.ToString();
     }
 
     public void UpdateUIPlayerHealth(float currentHealth, PlayerHealth playerHealth)
     {
-        if (playerHealth == GameManager_ZombieSurvival.instance._player.GetComponent<PlayerHealth>())
+        if (playerHealth == GameManager_ZombieSurvival.instance._playerHealth)
             _health.text = currentHealth.ToString();
     }
 

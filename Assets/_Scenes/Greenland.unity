@@ -3651,7 +3651,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 1767313390}
         m_TargetAssemblyTypeName: UIShopInGame, Assembly-CSharp
         m_MethodName: OnClickBuy
         m_Mode: 1
@@ -9601,9 +9601,7 @@ MonoBehaviour:
   - {fileID: 6260139100072783512, guid: ab6378773e08c57479f44ccc23a237d4, type: 3}
   - {fileID: 6605668723042304865, guid: d11fa0ee8b36c704cb3fde9c8cce497b, type: 3}
   _spawnPoint: {fileID: 850778014}
-  _patrolZombie:
-  - {fileID: 0}
-  - {fileID: 0}
+  _allBotCharacter: []
   _zombiesPerWave: 10
   _incrementZombiesPerWave: 10
   _distanceBetweenWaves: 30
@@ -9616,7 +9614,6 @@ MonoBehaviour:
   _player: {fileID: 0}
   _currentGameState: 0
   _playerKilled: 0
-  _isDetectingTarget: 0
 --- !u!4 &1743365432
 Transform:
   m_ObjectHideFlags: 0
@@ -10960,87 +10957,15 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3630718792768117431, guid: 31bcb669703482a4aa6a48aedc92c199, type: 3}
-      propertyPath: m_Layer
-      value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 3630718792768117431, guid: 31bcb669703482a4aa6a48aedc92c199, type: 3}
-      propertyPath: m_StaticEditorFlags
-      value: 2147483647
-      objectReference: {fileID: 0}
-    - target: {fileID: 5426105791693659972, guid: 31bcb669703482a4aa6a48aedc92c199, type: 3}
-      propertyPath: m_TreeDistance
-      value: 500
-      objectReference: {fileID: 0}
-    - target: {fileID: 5426105791693659972, guid: 31bcb669703482a4aa6a48aedc92c199, type: 3}
-      propertyPath: m_DrawInstanced
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5426105791693659972, guid: 31bcb669703482a4aa6a48aedc92c199, type: 3}
-      propertyPath: m_SplatMapDistance
-      value: 500
-      objectReference: {fileID: 0}
-    - target: {fileID: 5426105791693659972, guid: 31bcb669703482a4aa6a48aedc92c199, type: 3}
-      propertyPath: m_ShadowCastingMode
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5426105791693659972, guid: 31bcb669703482a4aa6a48aedc92c199, type: 3}
-      propertyPath: m_HeightmapPixelError
-      value: 20
-      objectReference: {fileID: 0}
     - target: {fileID: 5479636729888780810, guid: 31bcb669703482a4aa6a48aedc92c199, type: 3}
       propertyPath: m_Name
       value: Greenland_Map
       objectReference: {fileID: 0}
-    - target: {fileID: 6338205631915194108, guid: 31bcb669703482a4aa6a48aedc92c199, type: 3}
-      propertyPath: m_StaticEditorFlags
-      value: 2147483647
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 3630718792768117431, guid: 31bcb669703482a4aa6a48aedc92c199, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 4869451810484053344}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 31bcb669703482a4aa6a48aedc92c199, type: 3}
---- !u!1 &4869451810484053343 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3630718792768117431, guid: 31bcb669703482a4aa6a48aedc92c199, type: 3}
-  m_PrefabInstance: {fileID: 4869451810484053342}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &4869451810484053344
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4869451810484053343}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a5ac11cc976e418e8d13136b07e1f52, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SerializedVersion: 0
-  m_AgentTypeID: 0
-  m_CollectObjects: 0
-  m_Size: {x: 10, y: 10, z: 10}
-  m_Center: {x: 0, y: 2, z: 0}
-  m_LayerMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_UseGeometry: 0
-  m_DefaultArea: 0
-  m_GenerateLinks: 0
-  m_IgnoreNavMeshAgent: 1
-  m_IgnoreNavMeshObstacle: 1
-  m_OverrideTileSize: 0
-  m_TileSize: 256
-  m_OverrideVoxelSize: 0
-  m_VoxelSize: 0.16666667
-  m_MinRegionArea: 2
-  m_NavMeshData: {fileID: 23800000, guid: f1ac551f38d20754bb6117c5fcf4dd38, type: 2}
-  m_BuildHeightMesh: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

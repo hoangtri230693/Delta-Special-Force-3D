@@ -2,12 +2,18 @@
 
 public class ZombieAttack : MonoBehaviour
 {
-    public int damageAmount = 10;
+    private int damageAmount = 5;
     private GameObject targetPlayer;
+    private ZombieAudio _zombieAudio;
+
+    private void Awake()
+    {
+        _zombieAudio = GetComponentInParent<ZombieAudio>();
+    }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.gameObject.layer == LayerMask.NameToLayer("Player"))
         {
             targetPlayer = other.gameObject;
         }
@@ -15,10 +21,15 @@ public class ZombieAttack : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.gameObject.layer == LayerMask.NameToLayer("Player"))
         {
             targetPlayer = null;
         }
+    }
+
+    public void OnAttackStart()
+    {
+        _zombieAudio.PlayAttackSound();
     }
 
     public void OnAttackHit()
@@ -29,8 +40,8 @@ public class ZombieAttack : MonoBehaviour
 
             if (health != null)
             {
-                //health.UpdateHealth(damageAmount); // Giả sử script PlayerHealth của bạn có hàm TakeDamage
-                Debug.Log("Zombie đã vả Player một phát!");
+                health.UpdateHealth(damageAmount, ItemType.None);
+                _zombieAudio.PlayAttackHitSound();
             }
         }
     }

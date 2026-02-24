@@ -29,6 +29,11 @@ public class WeaponManager : MonoBehaviour
 
     private void Start()
     {
+        InitializeWeapon();
+    }
+
+    public void InitializeWeapon()
+    {
         _playerOwner = transform.root.gameObject;
         _playerController = _playerOwner.GetComponent<PlayerController>();
         _playerRig = _playerOwner.GetComponent<PlayerRig>();
