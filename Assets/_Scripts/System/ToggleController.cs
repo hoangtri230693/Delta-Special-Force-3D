@@ -29,7 +29,11 @@ public class ToggleController : MonoBehaviour
         }
 
         Vector2 _targetPosition = _toggle.isOn ? _onPosition : _offPosition;
-        _handleRectTransform.anchoredPosition = Vector2.Lerp(_handleRectTransform.anchoredPosition, _targetPosition, _speed * Time.deltaTime);
-        _backgroundToggle.color = Color.Lerp(_backgroundToggle.color, _toggle.isOn ? _onBackgroundColor : _offBackgroundColor, _speed * Time.deltaTime);
+        _handleRectTransform.anchoredPosition = Vector2.Lerp(_handleRectTransform.anchoredPosition, 
+                                                             _targetPosition, 
+                                                             _speed * Time.deltaTime);
+        _backgroundToggle.color = Color.Lerp(_backgroundToggle.color, 
+                                             _toggle.isOn ? _onBackgroundColor : _offBackgroundColor,
+                                             _speed * Time.deltaTime);
     }
 }

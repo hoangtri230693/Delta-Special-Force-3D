@@ -2,10 +2,16 @@ using UnityEngine;
 
 public class AutoRotate : MonoBehaviour
 {
-    public float speed = 45f;
+    [SerializeField] private float _rotationSpeed = 45f;
+    [SerializeField] private Vector3 _rotationAxis = Vector3.up;
 
-    void Update()
+    private void Update()
     {
-        transform.Rotate(Vector3.up * speed * Time.deltaTime);
+        RotateModel();
+    }
+
+    private void RotateModel()
+    {
+        transform.Rotate(_rotationAxis * _rotationSpeed * Time.deltaTime);
     }
 }

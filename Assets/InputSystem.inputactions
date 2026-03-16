@@ -124,7 +124,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "OpenBuyTable",
+                    "name": "OpenShopInGame",
                     "type": "Button",
                     "id": "77482862-4a5f-408c-b070-a22a2324c87d",
                     "expectedControlType": "",
@@ -142,7 +142,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Buy",
+                    "name": "BuyItem",
                     "type": "Button",
                     "id": "8b95b4ca-04df-4ac5-84cc-54c95e35ed74",
                     "expectedControlType": "",
@@ -694,7 +694,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "OpenBuyTable",
+                    "action": "OpenShopInGame",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -815,7 +815,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
-                    "action": "Buy",
+                    "action": "BuyItem",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

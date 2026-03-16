@@ -14,7 +14,7 @@ public class PlayerDataManager : MonoBehaviour
         {
             instance = this;
             DontDestroyOnLoad(gameObject);
-            savePath = Application.persistentDataPath + "/PlayerSave.json";
+            savePath = Application.persistentDataPath + "/Unlocked Weapon.json";
             LoadOrInitializeData();
         }
         else

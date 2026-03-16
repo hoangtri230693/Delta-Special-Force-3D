@@ -12,11 +12,11 @@ public partial class MoveAwayFromTargetAction : Action
     [SerializeReference] public BlackboardVariable<GameObject> Agent;
     [SerializeReference] public BlackboardVariable<GameObject> Target;
 
-    [SerializeReference] public BlackboardVariable<float> _fleeDistance = new BlackboardVariable<float> { Value = 10f };
-    [SerializeReference] public BlackboardVariable<float> _stopDistance = new BlackboardVariable<float> { Value = 1f };
+    [SerializeReference] public BlackboardVariable<float> DefendDistance = new BlackboardVariable<float> { Value = 10f };
+    [SerializeReference] public BlackboardVariable<float> StopDistance = new BlackboardVariable<float> { Value = 1f };
 
     private NavMeshAgent _agent;
-    private Vector3 _fleePosition;
+    private Vector3 _defendPosition;
 
     protected override Status OnStart()
     {
@@ -30,10 +30,10 @@ public partial class MoveAwayFromTargetAction : Action
         Vector3 direction = (Agent.Value.transform.position - Target.Value.transform.position).normalized;
         float randomAngle = UnityEngine.Random.Range(-60f, 60f);
         Vector3 randomDir = Quaternion.Euler(0, randomAngle, 0) * direction;
-        _fleePosition = Agent.Value.transform.position + direction * _fleeDistance.Value;
+        _defendPosition = Agent.Value.transform.position + direction * DefendDistance.Value;
 
         NavMeshHit hit;
-        if (NavMesh.SamplePosition(_fleePosition, out hit, 5f, NavMesh.AllAreas))
+        if (NavMesh.SamplePosition(_defendPosition, out hit, 5f, NavMesh.AllAreas))
         {
             _agent.isStopped = false;
             _agent.SetDestination(hit.position);
@@ -48,7 +48,7 @@ public partial class MoveAwayFromTargetAction : Action
         if (_agent == null)
             return Status.Failure;
 
-        if (!_agent.pathPending && _agent.remainingDistance <= _stopDistance.Value)
+        if (!_agent.pathPending && _agent.remainingDistance <= StopDistance.Value)
         {
             _agent.isStopped = true;
             return Status.Success;

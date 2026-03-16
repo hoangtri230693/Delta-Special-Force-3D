@@ -13,9 +13,26 @@ MonoBehaviour:
   m_Name: CharacterStats
   m_EditorClassIdentifier: 
   health: 100
-  walkSpeed: 2
-  runSpeed: 5
+  walkSpeed: 3
+  runSpeed: 6
   jumpForce: 5
-  throwForce: 200
-  minPitch: -60
-  maxPitch: 60
+  rotationSpeed: 5
+  footStepSound:
+  - {fileID: 8300000, guid: 86656c402cac0194792f2b0cf535c5f3, type: 3}
+  - {fileID: 8300000, guid: e0da95718e6eb7a418ea6a197ca8bd94, type: 3}
+  - {fileID: 8300000, guid: d0fa53ef2bd485843912e636168c36bb, type: 3}
+  - {fileID: 8300000, guid: 3d05f817c588ebd468a0f944d0cb94fa, type: 3}
+  - {fileID: 8300000, guid: a271b6a4e6cc18244a95dddf11f78428, type: 3}
+  - {fileID: 8300000, guid: 2c075dc64225db54398d2838f1c2ae85, type: 3}
+  - {fileID: 8300000, guid: bb7dd800c3ee36f498441bf6abd9f2ce, type: 3}
+  - {fileID: 8300000, guid: 621f42ffbe28e5e4d9bfc2f319c5bdd5, type: 3}
+  - {fileID: 8300000, guid: 2ac78cbafacbd08449f877405c602e53, type: 3}
+  - {fileID: 8300000, guid: fa36b547c480cc840af2f8bd3eb16ef4, type: 3}
+  landStepSound: {fileID: 8300000, guid: 96e7911eaca5c044c9e0379fdfa71c70, type: 3}
+  switchItemSound: {fileID: 8300000, guid: a1cc9150834784146bab5a65b1d68968, type: 3}
+  zoomSound: {fileID: 8300000, guid: 7989dcbd974f55a4cabfa440cf3cb2dd, type: 3}
+  hurtSound:
+  - {fileID: 8300000, guid: 9dcd13733ae1542fba4664e841eb4fff, type: 3}
+  - {fileID: 8300000, guid: 82807f118ec9b4a0dbbb5234dd645837, type: 3}
+  - {fileID: 8300000, guid: 85ab22c5a2fc24a6cbc2497bfb42c8de, type: 3}
+  deathSound: {fileID: 8300000, guid: 83c23797bfaf3eb4cb7746ba4d6b3a9c, type: 3}

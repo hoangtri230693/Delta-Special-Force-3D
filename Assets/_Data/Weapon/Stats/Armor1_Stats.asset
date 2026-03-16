@@ -26,6 +26,7 @@ MonoBehaviour:
     m_Bits: 0
   maxDistance: 0
   shootForce: 0
+  explosionForce: 0
   damage: 0
   attackRadius: 0
   ammoPerMag: 0
@@ -43,6 +44,10 @@ MonoBehaviour:
   shellCasing: {fileID: 0}
   cockSound: {fileID: 0}
   attackSound: {fileID: 0}
+  hitSound:
+  - {fileID: 8300000, guid: 9dcd13733ae1542fba4664e841eb4fff, type: 3}
+  - {fileID: 8300000, guid: 82807f118ec9b4a0dbbb5234dd645837, type: 3}
+  - {fileID: 8300000, guid: 85ab22c5a2fc24a6cbc2497bfb42c8de, type: 3}
   reloadSound: {fileID: 0}
   explosionSound: {fileID: 0}
   dryFireSound: {fileID: 0}

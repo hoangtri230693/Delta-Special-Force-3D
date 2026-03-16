@@ -27,12 +27,11 @@ MonoBehaviour:
   maxDistance: 70
   shootForce: 50
   explosionForce: 0
-  damage: 60
+  damage: 50
   attackRadius: 0
   ammoPerMag: 6
   ammoReverse: 30
-  fireRate: 60
-  reloadTime: 2.8
+  fireRate: 120
   recoilAmount: 2.5
   shakeIntensity: 0
   throwForce: 0
@@ -44,6 +43,10 @@ MonoBehaviour:
   shellCasing: {fileID: 8251667602902040775, guid: 83fb7cf04fe3e4442904a656e6be0541, type: 3}
   cockSound: {fileID: 8300000, guid: 5ace4e70b06ea484d93fdcc50606dd4a, type: 3}
   attackSound: {fileID: 8300000, guid: 06a0174a99568604691cfd6e95f4bd26, type: 3}
+  hitSound:
+  - {fileID: 8300000, guid: 9dcd13733ae1542fba4664e841eb4fff, type: 3}
+  - {fileID: 8300000, guid: 82807f118ec9b4a0dbbb5234dd645837, type: 3}
+  - {fileID: 8300000, guid: 85ab22c5a2fc24a6cbc2497bfb42c8de, type: 3}
   reloadSound: {fileID: 8300000, guid: 00458dc2b1f46274d982f7df6960b81d, type: 3}
   explosionSound: {fileID: 0}
   dryFireSound: {fileID: 8300000, guid: 42ba8db7efdd33a49a8e92d507029bd8, type: 3}

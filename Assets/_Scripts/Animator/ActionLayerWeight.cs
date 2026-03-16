@@ -8,11 +8,17 @@ public class ActionLayerWeight : StateMachineBehaviour
     [SerializeField] private int _actionLayerIndex = 4;
 
     private int _currentLayerIndex = 0;
+    private PlayerController _playerController;
 
 
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
+        if (_playerController == null)
+        {
+            _playerController = animator.GetComponent<PlayerController>();
+        }
+
         if (animator.GetLayerWeight(_primaryItemLayerIndex) > 0f) _currentLayerIndex = _primaryItemLayerIndex;
         if (animator.GetLayerWeight(_meleeItemLayerIndex) > 0f) _currentLayerIndex = _meleeItemLayerIndex;
         if (animator.GetLayerWeight(_throwableItemLayerIndex) > 0f) _currentLayerIndex = _throwableItemLayerIndex;
@@ -32,6 +38,11 @@ public class ActionLayerWeight : StateMachineBehaviour
     {    
         animator.SetLayerWeight(_actionLayerIndex, 0f);
         animator.SetLayerWeight(_currentLayerIndex, 1f);
+
+        if (_playerController != null)
+        {
+            _playerController._canAction = true;
+        }
     }
 
     // OnStateMove is called right after Animator.OnAnimatorMove()

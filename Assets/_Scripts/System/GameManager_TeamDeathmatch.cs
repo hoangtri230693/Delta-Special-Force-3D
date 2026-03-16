@@ -68,7 +68,6 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
         SpawnTeams();
         PlayRadioVoiceReadyMission();
         UIGameManager_TeamDeathmatch.instance.UpdateUIResultRound();
-
     }
 
     private void Update()
@@ -76,15 +75,6 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
         UpdateRound();
         UpdateMatch();
         UpdateTime();
-    }
-
-    public IEnumerator UpdateResultMatch()
-    {
-        _isMatchEnded = true;
-        _currentGameState = GameState.MatchEnd;
-        CalculateMatchRewards();
-        yield return new WaitForSecondsRealtime(5f);
-        UIGameManager_TeamDeathmatch.instance.ShowUIResultMatch();
     }
 
     public void PauseMenu(bool isOpen)
@@ -113,7 +103,7 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
 
     public void UpdateTeamCount(TeamType teamType)
     {
-        if (teamType == TeamType.CounterTerrorist)
+        if (teamType == TeamType.Counter)
         {
             _teamCTCount--;
         }
@@ -154,7 +144,7 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
             Transform pSpawn;
             if (selectedTeamID == 0)
             {
-                _teamType = TeamType.CounterTerrorist;
+                _teamType = TeamType.Counter;
                 pSpawn = _spawnCounter[0];
                 _player = Instantiate(_counterPrefabs[selectedCharacterID], pSpawn.position, pSpawn.rotation);
                 _teamCTCount++;
@@ -167,29 +157,29 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
                 _teamTerroristCount++;
             }
                 
-            _player.AddComponent<PlayerLocal>();
             _playerController = _player.GetComponent<PlayerController>();
             _playerInventory = _player.GetComponent<PlayerInventory>();
             _playerHealth = _player.GetComponent<PlayerHealth>();
             _playerAnimationEvents = _player.GetComponent<PlayerAnimationEvents>();
             _playerTeam = _player.GetComponent<PlayerTeam>();
             _playerTeam._playerID = 0;
+
+            MiniMap.instance.SetupPlayerTransform(_player.transform);
         }
         else
         {
-            Transform pSpawn = (_teamType == TeamType.CounterTerrorist) ? _spawnCounter[0] : _spawnTerrorist[0];
+            Transform pSpawn = (_teamType == TeamType.Counter) ? _spawnCounter[0] : _spawnTerrorist[0];
             _player.transform.position = pSpawn.position;
             _player.transform.rotation = pSpawn.rotation;
-            if (_teamType == TeamType.CounterTerrorist) _teamCTCount++;
+            if (_teamType == TeamType.Counter) _teamCTCount++;
             else _teamTerroristCount++;
 
             _playerController.ResetPlayerState();
             _playerHealth.ResetHealth();
         }
+    
 
-        MiniMap.instance.SetupPlayerTransform(_player.transform);
-
-        if (_teamType == TeamType.CounterTerrorist)
+        if (_teamType == TeamType.Counter)
         {
             SpawnCounterBots(_cTSpawn - 1, 1);
             SpawnTerroristBots(_terroristSpawn, 0);
@@ -317,16 +307,17 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
         {
             if (_timeCount <= 0 || _teamCTCount <= 0 || _teamTerroristCount <= 0)
             {
+                _playerController.ResetPlayerState();
+
                 if (_teamCTCount <= 0) _teamTerroristWin++;
                 else if (_teamTerroristCount <= 0) _teamCTWin++;
 
                 _currentGameState = GameState.RoundEnd;
                 _timeCount = 5f;
 
-                _playerController.ResetPlayerState();
                 foreach (GameObject bot in _allBotCharacter)
                 {
-                    if (bot.TryGetComponent<BotController>(out var controller))
+                    if (bot.TryGetComponent<BotAIController>(out var controller))
                         controller.enabled = false;
 
                     if (bot.TryGetComponent<BehaviorGraphAgent>(out var agent))
@@ -334,6 +325,9 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
 
                     if (bot.TryGetComponent<CharacterController>(out var charCtrl))
                         charCtrl.Move(Vector3.zero);
+
+                    if (bot.TryGetComponent<Animator>(out var animator))
+                        animator.SetFloat("Speed", 0f);                       
                 }
                 UIGameManager_TeamDeathmatch.instance.UpdateUIResultRound();
                 UIGameManager_TeamDeathmatch.instance.OpenResultMenu(true);
@@ -374,7 +368,7 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
 
     private void ClearOldBots()
     {
-        if (_playerHealth._isDead == true)
+        if (_playerHealth._currentHealth <= 0)
         {
             Destroy(_player);
             _player = null;
@@ -387,12 +381,21 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
         _allBotCharacter.Clear();
     }
 
+    public IEnumerator UpdateResultMatch()
+    {
+        _isMatchEnded = true;
+        _currentGameState = GameState.MatchEnd;
+        CalculateMatchRewards();
+        yield return new WaitForSecondsRealtime(5f);
+        UIGameManager_TeamDeathmatch.instance.ShowUIResultMatch();
+    }
+
     private void CalculateMatchRewards()
     {
-        string resultMatch;
+        string resultMatch = null;
         int bonusGoldPerKill = GameplayDataManager.instance.GetBonusGoldPerKill();
         int rewardKills = _playerKilled * GameplayDataManager.instance.GetBonusGoldPerKill();
-        bool isPlayerCT = (_teamType == TeamType.CounterTerrorist);
+        bool isPlayerCT = (_teamType == TeamType.Counter);
 
         if (_teamCTWin > _teamTerroristWin)
         {
@@ -401,10 +404,6 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
         else if (_teamTerroristWin > _teamCTWin)
         {
             resultMatch = !isPlayerCT ? "WIN" : "LOSE";
-        }
-        else
-        {
-            resultMatch = "DRAW";
         }
 
         int rewardMatch = GameplayDataManager.instance.GetBonusGoldByMatchResult(resultMatch);

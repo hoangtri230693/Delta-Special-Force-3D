@@ -4,12 +4,9 @@ using System.Linq;
 
 public class UIShop : MonoBehaviour
 {
-    [Header("Data")]
-    [SerializeField] private WeaponStatsSO[] _weaponStatsData;
-
     [Header("UI")]
-    [SerializeField] private TextMeshProUGUI _weaponName;
     [SerializeField] private Transform _weaponPreview;
+    [SerializeField] private TextMeshProUGUI _weaponName;   
     [SerializeField] private TextMeshProUGUI[] _weaponStats;
     [SerializeField] private TextMeshProUGUI[] _weaponData;
     [SerializeField] private GameObject _backgroundLocked;
@@ -19,13 +16,6 @@ public class UIShop : MonoBehaviour
     private GameObject _currentPreview;
 
     // =================== UNITY ===================
-    private void Awake()
-    {
-        // Sort theo weaponID để hiển thị đúng thứ tự
-        _weaponStatsData = _weaponStatsData
-            .OrderBy(w => w.weaponID)
-            .ToArray();
-    }
 
     private void OnEnable()
     {
@@ -37,7 +27,7 @@ public class UIShop : MonoBehaviour
     // =================== BUTTON ===================
     public void OnClickNext()
     {
-        _currentIndex = (_currentIndex + 1) % _weaponStatsData.Length;
+        _currentIndex = (_currentIndex + 1) % WeaponStatsManager.instance.weaponStats.Length;
         ShowWeaponByIndex(_currentIndex);
     }
 
@@ -45,14 +35,14 @@ public class UIShop : MonoBehaviour
     {
         _currentIndex--;
         if (_currentIndex < 0)
-            _currentIndex = _weaponStatsData.Length - 1;
+            _currentIndex = WeaponStatsManager.instance.weaponStats.Length - 1;
 
         ShowWeaponByIndex(_currentIndex);
     }
 
     public void OnClickPurchase()
     {
-        WeaponStatsSO weapon = _weaponStatsData[_currentIndex];
+        WeaponStatsSO weapon = WeaponStatsManager.instance.weaponStats[_currentIndex];
         int weaponID = weapon.weaponID;
 
         if (IsUnlocked(weaponID))
@@ -80,7 +70,7 @@ public class UIShop : MonoBehaviour
     // =================== CORE ===================
     private void ShowWeaponByIndex(int index)
     {
-        WeaponStatsSO weapon = _weaponStatsData[index];
+        WeaponStatsSO weapon = WeaponStatsManager.instance.weaponStats[index];
 
         _weaponName.text = weapon.weaponName;
 
@@ -129,8 +119,8 @@ public class UIShop : MonoBehaviour
             case WeaponType.Pistol:
             case WeaponType.Shotgun:
             case WeaponType.SMG:
-            case WeaponType.Rifle:
-            case WeaponType.Sniper:
+            case WeaponType.AssaultRifle:
+            case WeaponType.SniperRifle:
                 ShowGunStats(weapon);
                 break;
 

@@ -546,7 +546,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &3575183255782324469
 Transform:
   m_ObjectHideFlags: 0
@@ -1591,7 +1591,6 @@ GameObject:
   - component: {fileID: 7416895544616086800}
   - component: {fileID: 1032634832793299515}
   - component: {fileID: 5906266822623972642}
-  - component: {fileID: 5543330568442929500}
   m_Layer: 11
   m_Name: ThirdPersonAimCamera
   m_TagString: Untagged
@@ -1638,7 +1637,7 @@ MonoBehaviour:
     LookAtTarget: {fileID: 0}
     CustomLookAtTarget: 0
   Lens:
-    FieldOfView: 65
+    FieldOfView: 55
     OrthographicSize: 5
     NearClipPlane: 0.3
     FarClipPlane: 1000
@@ -1707,25 +1706,6 @@ MonoBehaviour:
     FrequencyGain: 1.2
     Duration: 0.2
     m_NoiseOffsets: {x: 0, y: 0, z: 0}
---- !u!114 &5543330568442929500
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2049436401520426889}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aba2f5aef4aa54040b2c928899b8eb41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _yawTarget: {fileID: 1395619334719790249}
-  _pitchWrapper: {fileID: 5303719469242003839}
-  _pitchTarget: {fileID: 174884412768031234}
-  _lookAction: {fileID: -5630151704836100654, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  _switchShoulderAction: {fileID: -2958764282487652952, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  _aimCamera: {fileID: 1032634832793299515}
-  _cameraStats: {fileID: 11400000, guid: c372f8909913b414d98e5e09c2c2c933, type: 2}
 --- !u!1 &2233243108513328217
 GameObject:
   m_ObjectHideFlags: 0
@@ -3578,7 +3558,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7947137337728128512
 Transform:
   m_ObjectHideFlags: 0
@@ -4655,7 +4635,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6897686546786876415
 Transform:
   m_ObjectHideFlags: 0
@@ -4928,7 +4908,7 @@ CharacterController:
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0.9, z: 0}
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!136 &8874762447520356792
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -5087,25 +5067,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _characterController: {fileID: 8747774172982874446}
   _characterStats: {fileID: 11400000, guid: ae84432063809ae4d80fbf75e5b9f49d, type: 2}
-  _cameraThirdPerson: {fileID: 142753402343333497}
-  _yawTarget: {fileID: 1395619334719790249}
-  _rigAim: {fileID: 6510986353857277565}
-  _isAiming: 0
-  _isCrouching: 0
-  _isOpeningBuyTable: 0
-  _isOpeningResultTable: 0
-  _isSelectedItem: 0
   _canAction: 1
   _canReload: 0
-  _isPausing: 0
   _movementState: 0
   _stanceState: 0
+  _combatState: 0
   _actionState: 0
   _itemType: 2
   _lifeState: 1
+  _killedCount: 0
+  _deathCount: 0
   _currentSpeed: 0
   _currentDirection: 0
-  _currentCash: 10000
+  _currentCash: 20000
 --- !u!114 &2257126804939020538
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5121,7 +5095,11 @@ MonoBehaviour:
   _freeLookCamera: {fileID: 9088510362361294856}
   _aimCamera: {fileID: 7416895544616086800}
   _inputAxisController: {fileID: 4407529504738382282}
-  _aimCameraController: {fileID: 5543330568442929500}
+  _aimFollow: {fileID: 1032634832793299515}
+  _yawTarget: {fileID: 1395619334719790249}
+  _pitchWrapper: {fileID: 5303719469242003839}
+  _pitchTarget: {fileID: 174884412768031234}
+  _cameraStats: {fileID: 11400000, guid: c372f8909913b414d98e5e09c2c2c933, type: 2}
 --- !u!114 &-5787053422898594902
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5135,18 +5113,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _moveAction: {fileID: -1680190386980627800, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  _lookAction: {fileID: -5630151704836100654, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   _sprintAction: {fileID: -7471211009204490832, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   _jumpAction: {fileID: -2099379676528639254, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   _crouchAction: {fileID: 7040659881675835329, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   _aimAction: {fileID: 4275065855663605319, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  _switchShoulderAction: {fileID: -2958764282487652952, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  _zoomAction: {fileID: -2831689251083825379, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   _attackAction: {fileID: 1120369429361536294, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   _switchItemAction: {fileID: 1775394689035796912, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   _reloadAction: {fileID: -8854350581797777147, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   _dropAction: {fileID: -2985758506974065851, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   _pauseAction: {fileID: -7187328742538688586, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  _openBuyTableAction: {fileID: 9078799884804059275, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  _selectBuyItemAction: {fileID: -939615163248408758, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  _buyAction: {fileID: -3176644520795862588, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  _openShopInGameAction: {fileID: 9078799884804059275, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  _selectItemAction: {fileID: -939615163248408758, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  _buyItemAction: {fileID: -3176644520795862588, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   _openResultTableAction: {fileID: -7052245931314845813, guid: 052faaac586de48259a63d0c4782560b, type: 3}
 --- !u!114 &-8461558313700100838
 MonoBehaviour:
@@ -5188,20 +5169,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 525a8f88c9da28145afd8dfadf061c24, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _footStepSounds:
-  - {fileID: 8300000, guid: 86656c402cac0194792f2b0cf535c5f3, type: 3}
-  - {fileID: 8300000, guid: e0da95718e6eb7a418ea6a197ca8bd94, type: 3}
-  - {fileID: 8300000, guid: d0fa53ef2bd485843912e636168c36bb, type: 3}
-  - {fileID: 8300000, guid: 3d05f817c588ebd468a0f944d0cb94fa, type: 3}
-  - {fileID: 8300000, guid: a271b6a4e6cc18244a95dddf11f78428, type: 3}
-  - {fileID: 8300000, guid: 2c075dc64225db54398d2838f1c2ae85, type: 3}
-  - {fileID: 8300000, guid: bb7dd800c3ee36f498441bf6abd9f2ce, type: 3}
-  - {fileID: 8300000, guid: 621f42ffbe28e5e4d9bfc2f319c5bdd5, type: 3}
-  - {fileID: 8300000, guid: 2ac78cbafacbd08449f877405c602e53, type: 3}
-  - {fileID: 8300000, guid: fa36b547c480cc840af2f8bd3eb16ef4, type: 3}
-  _landStepSound: {fileID: 8300000, guid: 96e7911eaca5c044c9e0379fdfa71c70, type: 3}
-  _switchItemSound: {fileID: 8300000, guid: a1cc9150834784146bab5a65b1d68968, type: 3}
-  _zoomSound: {fileID: 8300000, guid: 7989dcbd974f55a4cabfa440cf3cb2dd, type: 3}
 --- !u!114 &2517413544147158824
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5230,7 +5197,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79240a10f32125d478da776bf8d65cae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _characterStats: {fileID: 11400000, guid: ae84432063809ae4d80fbf75e5b9f49d, type: 2}
   _currentHealth: 0
   _currentArmorHealth: 0
   _isDead: 0
@@ -5247,11 +5213,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _characterRigData: {fileID: 11400000, guid: 22acde200a9b84f4792f3fb47e02c58b, type: 2}
-  _rigPrimaryItem: {fileID: 7744579393881986726}
-  _rigSecondaryItem: {fileID: 6435669111258842455}
-  _rigMeleeItem: {fileID: 3706166768332331649}
-  _rigThrowItem: {fileID: 7632520940374004362}
-  _bodyRotationConstraint: {fileID: 757383734187082143}
+  _primaryItemRig: {fileID: 7744579393881986726}
+  _secondaryItemRig: {fileID: 6435669111258842455}
+  _meleeItemRig: {fileID: 3706166768332331649}
+  _throwItemRig: {fileID: 7632520940374004362}
+  _aimRig: {fileID: 6510986353857277565}
+  _bodyRig: {fileID: 757383734187082143}
   _primaryLeftHandIK: {fileID: 6339864126827306963}
   _primaryRightHandIK: {fileID: 4425573737318102306}
   _secondaryLeftHandIK: {fileID: 2086493557529445207}
@@ -5844,7 +5811,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7278419472282300436
 Transform:
   m_ObjectHideFlags: 0

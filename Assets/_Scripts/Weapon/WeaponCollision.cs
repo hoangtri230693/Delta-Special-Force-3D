@@ -2,7 +2,7 @@
 
 public class WeaponCollision : MonoBehaviour
 {
-    [SerializeField] private WeaponManager _weaponManager;
+    [SerializeField] private WeaponController _weaponController;
 
     private void OnCollisionEnter(Collision collision)
     {
@@ -10,7 +10,7 @@ public class WeaponCollision : MonoBehaviour
         {
             PlayerController player = collision.gameObject.GetComponent<PlayerController>();
             if (player == null) return;
-            _weaponManager.AssignToPlayer(player.transform);
+            _weaponController.PickUpWeapon(player.transform);
             Debug.Log("Weapon picked up by player.");
         }
     }

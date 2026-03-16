@@ -5,13 +5,14 @@ public class RagdollSwitcher : MonoBehaviour
 {
     [SerializeField] private Rigidbody[] _rigids;
     [SerializeField] private Collider[] _colliders;
-    [SerializeField] private Animator _animator;
-    [SerializeField] private ZombieAudio _zombieAudio;
+
+    private Animator _animator;
 
 
     private void Awake()
     {
         CollectRagdolls();
+        _animator = GetComponent<Animator>();
     }
 
     [ContextMenu("Collect ragdolls")]
@@ -30,13 +31,12 @@ public class RagdollSwitcher : MonoBehaviour
         }
 
         _animator.enabled = false;
-        _zombieAudio.PlayBodyFallSound();
 
         StartCoroutine(DisableRagdollsAfterTime());
     }
 
     [ContextMenu("Disable ragdolls")]
-    public void DisableRagdolls()
+    private void DisableRagdolls()
     {
         foreach (var rigidbody in _rigids)
         {

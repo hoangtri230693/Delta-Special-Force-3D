@@ -16,7 +16,13 @@ public class RangeDetector : MonoBehaviour
 
     private void Update()
     {
+        DetectTargetInRange();
+    }
+
+    private void DetectTargetInRange()
+    {
         Collider[] hits = Physics.OverlapSphere(transform.position, detectionRange, detectionLayer);
+
         if (hits.Length > 0)
         {
             detectedTarget = hits[0].transform;
@@ -26,6 +32,11 @@ public class RangeDetector : MonoBehaviour
             detectedTarget = null;
         }
 
+        UpdateBlackboard();
+    }
+
+    private void UpdateBlackboard()
+    {
         behaviorAgent.BlackboardReference.SetVariableValue("Target", detectedTarget ? detectedTarget.gameObject : null);
         behaviorAgent.BlackboardReference.SetVariableValue("IsTargetInRange", IsTargetInRange);
     }

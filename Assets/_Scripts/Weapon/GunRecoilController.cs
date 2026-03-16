@@ -10,9 +10,6 @@ public class GunRecoilController : MonoBehaviour
     private Vector3 _currentRotation;
     private Vector3 _targetRotation;
 
-    private float _recoilX;
-    private float _recoilY;
-    private float _recoilZ;
 
     private void Start()
     {
@@ -26,11 +23,11 @@ public class GunRecoilController : MonoBehaviour
         transform.localRotation = _originalRotation * Quaternion.Euler(_currentRotation);
     }
 
-    public Vector3 ApplyRecoil(float recoilAmount)
+    public Vector3 UpdateRecoil(float recoilAmount)
     {
-        _recoilX = -recoilAmount;
-        _recoilY = Random.Range(-recoilAmount * 0.2f, recoilAmount * 0.2f);
-        _recoilZ = -recoilAmount;
+        float _recoilX = -recoilAmount;
+        float _recoilY = Random.Range(-recoilAmount * 0.2f, recoilAmount * 0.2f);
+        float _recoilZ = -recoilAmount;
 
         Vector3 recoilVector = new Vector3(_recoilX, _recoilY, _recoilZ);
 

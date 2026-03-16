@@ -1,9 +1,10 @@
-﻿using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.AddressableAssets;
-using UnityEngine.UI;
-using TMPro;
+﻿using System.Threading;
 using System.Threading.Tasks;
+using TMPro;
+using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class UITeamDeathMatch : MonoBehaviour
 {
@@ -28,12 +29,14 @@ public class UITeamDeathMatch : MonoBehaviour
 
     private TeamMenu _teamMenu;
     private MapMenu _mapMenu;
+    private CancellationTokenSource _characterCts;
 
     private int _currentTeamIndex = 0;
     private bool _isSelectedCharacter;
     private bool _isSelectedMap;
     private string _selectedSceneName;
     private GameObject _spawnedCharacterModel;
+    
 
     private void Awake() => _backgroundLoading.SetActive(true);
 
@@ -88,7 +91,7 @@ public class UITeamDeathMatch : MonoBehaviour
     /// Hiển thị Menu của Team hoặc Menu Map
     /// index 0: Counter, index 1: Terrorist, index 2: Map
     /// </summary>
-    public async void ShowMenu(int index)
+    private async void ShowMenu(int index)
     {
         _containerCounter.SetActive(index == 0);
         _containerTerrorist.SetActive(index == 1);
@@ -106,33 +109,51 @@ public class UITeamDeathMatch : MonoBehaviour
         if (index == 0 || index == 1) await ShowCharacter(0);
         if (index == 2) ShowMap(0);
     }
-    
-    public async Task ShowCharacter(int index)
+
+    private async Task ShowCharacter(int index)
     {
+        // 1. Hủy tác vụ đang chạy (nếu có) để tránh nhân vật cũ đè lên sau khi tải xong
+        _characterCts?.Cancel();
+        _characterCts?.Dispose();
+        _characterCts = new CancellationTokenSource();
+        var token = _characterCts.Token;
+
         if (_teamMenu == null) return;
         TeamData currentTeam = _teamMenu._menuTeam[_currentTeamIndex];
-        if (index < 0 || index >= currentTeam.characterData.Length) return;
-
         CharacterData data = currentTeam.characterData[index];
 
-        // Giải phóng model cũ
+        // 2. Xóa model cũ ngay lập tức để trống chỗ cho model mới
         if (_spawnedCharacterModel != null)
         {
             AddressableManager.instance.ReleaseInstance(_spawnedCharacterModel);
             _spawnedCharacterModel = null;
         }
 
-        // Tải model mới vào CharacterPreview
-        if (data.characterModelPrefab != null)
+        try
         {
-            _spawnedCharacterModel = await AddressableManager.instance.InstantiatePrefabAsync(data.characterModelPrefab, _characterPreview);
-            if (_spawnedCharacterModel != null)
+            // 3. Tải Asset (Prefab) trước. Nếu đã click rồi, bước này sẽ chạy tức thì nhờ Cache
+            GameObject prefab = await AddressableManager.instance.LoadAssetAsync<GameObject>(data.characterModelPrefab);
+
+            // Kiểm tra xem trong lúc đợi tải, người dùng có click nhân vật khác không
+            if (token.IsCancellationRequested) return;
+
+            if (prefab != null)
             {
-                _spawnedCharacterModel.transform.localPosition = Vector3.zero;
-                _spawnedCharacterModel.transform.localRotation = Quaternion.identity;
+                // 4. Sinh ra nhân vật từ Prefab đã tải
+                _spawnedCharacterModel = await AddressableManager.instance.InstantiatePrefabAsync(data.characterModelPrefab, _characterPreview);
+
+                if (token.IsCancellationRequested)
+                {
+                    AddressableManager.instance.ReleaseInstance(_spawnedCharacterModel);
+                    return;
+                }
+
+                // Setup Transform
+                _spawnedCharacterModel.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
                 _spawnedCharacterModel.transform.localScale = Vector3.one;
             }
         }
+        catch (System.OperationCanceledException) { } // Không xử lý khi bị hủy
 
         PlayerPrefs.SetInt("SelectedTeamID", _currentTeamIndex);
         PlayerPrefs.SetInt("SelectedCharacterID", index);
@@ -140,7 +161,7 @@ public class UITeamDeathMatch : MonoBehaviour
         AudioManager.instance.PlaySfx(SFXType.MetalClick);
     }
 
-    public void ShowMap(int index)
+    private void ShowMap(int index)
     {
         if (_mapMenu == null || index < 0 || index >= _mapMenu._menuMap.Length) return;
 
@@ -176,13 +197,16 @@ public class UITeamDeathMatch : MonoBehaviour
     public void OnClickBack()
     {
         SceneManager.LoadScene("PlayGame");
-        AudioManager.instance.PlaySfx(SFXType.DefaultClick);
+        AudioManager.instance.PlaySfx(SFXType.MetalClick);
     }
 
     #endregion
 
     private void OnDestroy()
     {
+        _characterCts?.Cancel();
+        _characterCts?.Dispose();
+
         if (_teamMenuRef.IsValid()) AddressableManager.instance.ReleaseAsset(_teamMenuRef);
         if (_mapMenuRef.IsValid()) AddressableManager.instance.ReleaseAsset(_mapMenuRef);
         if (_spawnedCharacterModel != null) AddressableManager.instance.ReleaseInstance(_spawnedCharacterModel);

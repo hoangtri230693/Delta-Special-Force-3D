@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.Animations.Rigging;
 
 public class FullBodyLayerWeight : StateMachineBehaviour
 {
@@ -15,18 +14,6 @@ public class FullBodyLayerWeight : StateMachineBehaviour
         animator.SetLayerWeight(_meleeItemLayerIndex, 0);
         animator.SetLayerWeight(_throwableItemLayerIndex, 0);
         animator.SetLayerWeight(_actionLayerIndex, 0);
-
-        Rig[] rigs = animator.GetComponentsInChildren<Rig>();
-        foreach (Rig r in rigs)
-        {
-            r.weight = 0f;
-        }
-
-        RigBuilder rb = animator.GetComponent<RigBuilder>();
-        if (rb != null)
-        {
-            rb.enabled = false;
-        }
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks

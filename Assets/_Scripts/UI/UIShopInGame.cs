@@ -14,9 +14,6 @@ public class UIShopInGame : MonoBehaviour
 {
     public static UIShopInGame instance;
 
-    [Header("Data")]
-    [SerializeField] private WeaponStatsSO[] _weaponStatsData;
-
     [Header("UI - Weapon Type (1-9)")]
     [SerializeField] private TextMeshProUGUI[] _weaponTypeSlots;
 
@@ -34,10 +31,10 @@ public class UIShopInGame : MonoBehaviour
     [Header("Flash Color")]
     [SerializeField] private Color _normalColor = Color.white;
     [SerializeField] private Color _flashColor = Color.green;
-    [SerializeField] private float _flashDuration = 0.1f;
+    private float _flashDuration = 0.2f;
 
     private Dictionary<WeaponType, List<WeaponStatsSO>> _weaponByType;
-    private List<WeaponType> _availableTypes;
+    private List<WeaponType> _availableType;
 
     private WeaponType _currentType;
     private WeaponStatsSO _currentWeapon;
@@ -50,15 +47,11 @@ public class UIShopInGame : MonoBehaviour
     {
         instance = this;
 
-        _weaponStatsData = _weaponStatsData
-            .OrderBy(w => w.weaponID)
-            .ToArray();
-
-        _weaponByType = _weaponStatsData
+        _weaponByType = WeaponStatsManager.instance.weaponStats
             .GroupBy(w => w.weaponType)
             .ToDictionary(g => g.Key, g => g.ToList());
 
-        _availableTypes = _weaponByType.Keys.ToList();
+        _availableType = _weaponByType.Keys.ToList();
     }
 
     // ================= SHOP FLOW =================
@@ -81,7 +74,104 @@ public class UIShopInGame : MonoBehaviour
         }
     }
 
-    // ================= INPUT =================
+    public void OnClickBuy()
+    {
+        if (_currentWeapon == null) return;
+
+        int id = _currentWeapon.weaponID;
+
+        if (!IsUnlocked(id)) return;
+
+        if (GameManager_TeamDeathmatch.instance != null)
+        {
+            BuyWeapon(id, GameManager_TeamDeathmatch.instance._player.GetComponent<PlayerController>(),
+                          GameManager_TeamDeathmatch.instance._player.GetComponent<PlayerInventory>(),
+                          GameManager_TeamDeathmatch.instance._player.GetComponent<PlayerHealth>());
+        }
+        if (GameManager_ZombieSurvival.instance != null)
+        {
+            BuyWeapon(id, GameManager_ZombieSurvival.instance._player.GetComponent<PlayerController>(),
+                          GameManager_ZombieSurvival.instance._player.GetComponent<PlayerInventory>(),
+                          GameManager_ZombieSurvival.instance._player.GetComponent<PlayerHealth>());
+        }
+
+        AudioManager.instance.PlaySfx(SFXType.MetalClick);
+        StartCoroutine(FlashAndFadeColor(_textBuy));
+    }
+
+    public void BuyWeapon(int weaponID, PlayerController playerController,
+                                        PlayerInventory playerInventory,
+                                        PlayerHealth playerHealth)
+    {
+        WeaponStatsSO weapon = WeaponStatsManager.instance.weaponStats
+            .FirstOrDefault(w => w.weaponID == weaponID);
+
+        if (playerController._currentCash < weapon.cash)
+            return;
+
+        Transform inventory = null;
+
+        switch (weapon.itemType)
+        {
+            case ItemType.PrimaryItem:
+                inventory = playerInventory._primaryItem.transform;
+                playerController._itemType = ItemType.PrimaryItem;
+                break;
+
+            case ItemType.SecondaryItem:
+                inventory = playerInventory._secondaryItem.transform;
+                playerController._itemType = ItemType.SecondaryItem;
+                break;
+
+            case ItemType.ThrowItem:
+                inventory = playerInventory._throwItem.transform;
+                playerController._itemType = ItemType.ThrowItem;
+                break;
+
+            case ItemType.ArmorItem:
+                playerHealth._currentArmorHealth = weapon.armorHealth;
+
+                if (playerHealth == GameManager_TeamDeathmatch.instance?._playerHealth)
+                {
+                    UIGameManager_TeamDeathmatch.instance
+                        .UpdateUIArmorHealth(playerHealth._currentArmorHealth, playerHealth);
+                }
+                else if (playerHealth == GameManager_ZombieSurvival.instance?._playerHealth)
+                {
+                    UIGameManager_ZombieSurvival.instance
+                        .UpdateUIArmorHealth(playerHealth._currentArmorHealth, playerHealth);
+                }
+                break;
+        }
+
+        if (inventory != null && inventory.childCount > 0)
+        {
+            for (int i = inventory.childCount - 1; i >= 0; i--)
+            {
+                Transform child = inventory.GetChild(i);
+                WeaponController weaponController = child.GetComponent<WeaponController>();
+
+                if (weaponController != null)
+                {
+                    weaponController.DropWeapon();
+                }
+            }
+        }
+
+        if (inventory != null)
+        {
+            GameObject weaponPrefab = Instantiate(weapon.weaponPrefab);
+            weaponPrefab.transform.SetParent(inventory);
+            weaponPrefab.transform.localPosition = Vector3.zero;
+            weaponPrefab.transform.localRotation = Quaternion.identity;
+        }
+
+        playerController._currentCash -= weapon.cash;
+        playerController._itemType = weapon.itemType;
+        if (weapon.itemType != ItemType.ArmorItem)
+            playerController.SwitchItem();
+    }
+
     public void OnNumberInput(int index)
     {
         if (index < 0 || index > 9) return;
@@ -96,14 +186,30 @@ public class UIShopInGame : MonoBehaviour
         }
     }
 
+    public void UpdateCash()
+    {
+        int cash = 0;
+
+        if (GameManager_TeamDeathmatch.instance != null)
+        {
+            cash = GameManager_TeamDeathmatch.instance._playerController._currentCash;
+        }
+        else if (GameManager_ZombieSurvival.instance != null)
+        {
+            cash = GameManager_ZombieSurvival.instance._playerController._currentCash;
+        }
+
+        _textCash.text = "$" + cash;
+    }
+
     // ================= WEAPON TYPE =================
     private void SetupWeaponTypeUI()
     {
         for (int i = 0; i < _weaponTypeSlots.Length; i++)
         {
-            if (i < _availableTypes.Count)
+            if (i < _availableType.Count)
             {
-                _weaponTypeSlots[i].text = _availableTypes[i].ToString().ToUpper();
+                _weaponTypeSlots[i].text = _availableType[i].ToString().ToUpper();
                 _weaponTypeSlots[i].gameObject.SetActive(true);
             }
             else
@@ -115,9 +221,9 @@ public class UIShopInGame : MonoBehaviour
 
     private void SelectWeaponType(int index)
     {
-        if (index >= _availableTypes.Count) return;
+        if (index >= _availableType.Count) return;
 
-        _currentType = _availableTypes[index];
+        _currentType = _availableType[index];
         shopState = ShopState.SelectWeapon;
 
         List<WeaponStatsSO> weapons = _weaponByType[_currentType];
@@ -172,105 +278,6 @@ public class UIShopInGame : MonoBehaviour
         }
     }
 
-    public void OnClickBuy()
-    {
-        if (_currentWeapon == null) return;
-
-        int id = _currentWeapon.weaponID;
-
-        if (!IsUnlocked(id)) return;
-
-        if (GameManager_TeamDeathmatch.instance != null)
-        {
-            BuyWeapon(id, GameManager_TeamDeathmatch.instance._player.GetComponent<PlayerController>(),
-                          GameManager_TeamDeathmatch.instance._player.GetComponent<PlayerInventory>(),
-                          GameManager_TeamDeathmatch.instance._player.GetComponent<PlayerHealth>());
-        }
-        if (GameManager_ZombieSurvival.instance != null)
-        {
-            BuyWeapon(id, GameManager_ZombieSurvival.instance._player.GetComponent<PlayerController>(),
-                          GameManager_ZombieSurvival.instance._player.GetComponent<PlayerInventory>(),
-                          GameManager_ZombieSurvival.instance._player.GetComponent<PlayerHealth>());
-        }
-
-        AudioManager.instance.PlaySfx(SFXType.MetalClick);
-        StartCoroutine(FlashAndFadeColor(_textBuy));
-    }
-
-    public void BuyWeapon(int weaponID, PlayerController playerController, 
-                                        PlayerInventory playerInventory, 
-                                        PlayerHealth playerHealth)
-    {
-        WeaponStatsSO weapon = WeaponDataManager.instance.weaponStats
-            .FirstOrDefault(w => w.weaponID == weaponID);
-
-        if (playerController._currentCash < weapon.cash)
-            return;
-
-        Transform inventory = null;
-
-        switch (weapon.itemType)
-        {
-            case ItemType.PrimaryItem:
-                inventory = playerInventory._primaryItem.transform;
-                playerController._itemType = ItemType.PrimaryItem;
-                break;
-
-            case ItemType.SecondaryItem:
-                inventory = playerInventory._secondaryItem.transform;
-                playerController._itemType = ItemType.SecondaryItem;
-                break;
-
-            case ItemType.ThrowItem:
-                inventory = playerInventory._throwItem.transform;
-                playerController._itemType = ItemType.ThrowItem;
-                break;
-
-            case ItemType.ArmorItem:
-                playerHealth._currentArmorHealth = weapon.armorHealth;
-
-                if (playerHealth == GameManager_TeamDeathmatch.instance?._playerHealth)
-                {
-                    UIGameManager_TeamDeathmatch.instance
-                        .UpdateUIArmorHealth(playerHealth._currentArmorHealth, playerHealth);
-                }
-                else if (playerHealth == GameManager_ZombieSurvival.instance?._playerHealth)
-                {
-                    UIGameManager_ZombieSurvival.instance
-                        .UpdateUIArmorHealth(playerHealth._currentArmorHealth, playerHealth);
-                }
-                break;
-        }
-
-        if (inventory != null && inventory.childCount > 0)
-        {
-            for (int i = inventory.childCount - 1; i >= 0; i--)
-            {
-                Transform child = inventory.GetChild(i);
-                WeaponManager weaponManager = child.GetComponent<WeaponManager>();
-
-                if (weaponManager != null)
-                {
-                    weaponManager.DropWeapon();
-                }
-            }
-        }
-
-        if (inventory != null)
-        {
-            GameObject weaponPrefab = Instantiate(weapon.weaponPrefab);
-            weaponPrefab.transform.SetParent(inventory);
-            weaponPrefab.transform.localPosition = Vector3.zero;
-            weaponPrefab.transform.localRotation = Quaternion.identity;
-            weaponPrefab.GetComponent<WeaponManager>()._playerOwner = playerController.gameObject;
-        }
-
-        playerController._currentCash -= weapon.cash;
-        playerController._itemType = weapon.itemType;
-        if (weapon.itemType != ItemType.ArmorItem)
-            playerController.SwitchItem();
-    }
-
     private void ShowPreview(WeaponStatsSO weapon)
     {
         if (_currentPreview)
@@ -289,8 +296,8 @@ public class UIShopInGame : MonoBehaviour
             case WeaponType.Pistol:
             case WeaponType.Shotgun:
             case WeaponType.SMG:
-            case WeaponType.Rifle:
-            case WeaponType.Sniper:
+            case WeaponType.AssaultRifle:
+            case WeaponType.SniperRifle:
                 ShowGunStats(w);
                 break;
 
@@ -357,22 +364,6 @@ public class UIShopInGame : MonoBehaviour
     private bool IsUnlocked(int id)
     {
         return PlayerDataManager.instance.playerSaveData.UnlockedWeaponIDs.Contains(id);
-    }
-
-    public void UpdateCash()
-    {
-        int cash = 0;
-
-        if (GameManager_TeamDeathmatch.instance != null)
-        {
-            cash = GameManager_TeamDeathmatch.instance._playerController._currentCash;
-        }
-        else if (GameManager_ZombieSurvival.instance != null)
-        {
-            cash = GameManager_ZombieSurvival.instance._playerController._currentCash;
-        }
-
-        _textCash.text = "$" + cash;
     }
 
     private IEnumerator FlashAndFadeColor(TextMeshProUGUI text)

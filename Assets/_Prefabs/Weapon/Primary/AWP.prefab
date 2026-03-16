@@ -45,15 +45,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3c971dbb13da7546a85a00be8625390, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _weaponManager: {fileID: -2502404173965018628}
+  _weaponController: {fileID: 376715164982722652}
   _crosshairOffset: 0.01
   _crosshair: {fileID: 0}
   _scopeCrosshair: {fileID: 3865276279223117373}
   _aimScopeCamera: {fileID: 6218385341070217693}
-  _weaponStats: {fileID: 11400000, guid: 905a5642ec6b98a4bb2dfef87bd6bb0b, type: 2}
+  _crosshairController: {fileID: 0}
+  _scopeAimController: {fileID: 460893618502482800}
   _targetPosition: {x: 0, y: 0, z: 0}
   _targetRotation: {x: 0, y: 0, z: 0, w: 0}
   _playerHealth: {fileID: 0}
+  _zombieHealth: {fileID: 0}
 --- !u!1 &2047268210689228588
 GameObject:
   m_ObjectHideFlags: 0
@@ -139,7 +141,7 @@ GameObject:
   - component: {fileID: 8627466175164144523}
   - component: {fileID: 6194857051096928948}
   - component: {fileID: 4692922106241423849}
-  - component: {fileID: -2502404173965018628}
+  - component: {fileID: 376715164982722652}
   - component: {fileID: 4088025862715153976}
   - component: {fileID: 1817610213154701644}
   - component: {fileID: 1403941158272116634}
@@ -273,7 +275,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.2390379, y: 2.4764495, z: 8.831746}
   m_Center: {x: 0, y: 0.037844177, z: 0.03407192}
---- !u!114 &-2502404173965018628
+--- !u!114 &376715164982722652
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -282,24 +284,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 2828079787997164249}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8f858dd0f94225443a6dd270dea01021, type: 3}
+  m_Script: {fileID: 11500000, guid: 1332962ec5bc58247bf22eae166f9fca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _playerOwner: {fileID: 0}
   _weaponStats: {fileID: 11400000, guid: 905a5642ec6b98a4bb2dfef87bd6bb0b, type: 2}
-  _weaponRigData: {fileID: 11400000, guid: c2a221efe42697b408c3443c6b11c798, type: 2}
   _weaponRigController: {fileID: 4088025862715153976}
   _weaponShootController: {fileID: 1817610213154701644}
   _weaponMeleeController: {fileID: 0}
   _weaponThrowController: {fileID: 0}
   _weaponCollision: {fileID: 1403941158272116634}
-  _weaponAudio: {fileID: 8973205825984686266}
   _rigidbody: {fileID: 6194857051096928948}
+  _barrelPointController: {fileID: 6169022617836361678}
+  _player: {fileID: 0}
   _playerController: {fileID: 0}
   _playerRig: {fileID: 0}
   _playerAnimationEvents: {fileID: 0}
-  _playerLocal: {fileID: 0}
-  _botController: {fileID: 0}
+  _botAIController: {fileID: 0}
 --- !u!114 &4088025862715153976
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -312,7 +312,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28922f549e1265b4f929365c82537971, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _weaponManager: {fileID: -2502404173965018628}
+  _weaponRigData: {fileID: 11400000, guid: c2a221efe42697b408c3443c6b11c798, type: 2}
+  _weaponController: {fileID: 376715164982722652}
 --- !u!114 &1817610213154701644
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -325,7 +326,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2da225666529694428a9b12005d7d26f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _weaponManager: {fileID: -2502404173965018628}
+  _weaponController: {fileID: 376715164982722652}
   _gunRecoilController: {fileID: 3239034151067790791}
   _barrelPointController: {fileID: 6169022617836361678}
   _recoilCamera: {fileID: 400602061801695557}
@@ -346,7 +347,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5437ec35ce0d264aa547055071a3161, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _weaponManager: {fileID: -2502404173965018628}
+  _weaponController: {fileID: 376715164982722652}
 --- !u!114 &8973205825984686266
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -359,7 +360,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97f0513e9dbb37040860f704c98e99f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _weaponManager: {fileID: -2502404173965018628}
+  _weaponController: {fileID: 376715164982722652}
   _audioSource: {fileID: 4884376872569710496}
 --- !u!114 &3239034151067790791
 MonoBehaviour:
@@ -699,7 +700,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21a4654c12374474384af0bf7b865775, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _zoomAction: {fileID: -2831689251083825379, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   _aimScopeCamera: {fileID: 6218385341070217693}
 --- !u!1 &7502700958164905571
 GameObject:

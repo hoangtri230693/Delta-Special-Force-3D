@@ -1,55 +1,66 @@
 using UnityEngine;
 
+public enum ZombieSoundType
+{
+    FootStep,
+    Growl,
+    Attack,
+    Hit,
+    Hurt,
+    Fall
+}
+
 public class ZombieAudio : MonoBehaviour
 {
-    [Header("Audio Settings")]
-    [SerializeField] private AudioClip[] _footStepSounds;
-    [SerializeField] private AudioClip[] _growlSounds;
-    [SerializeField] private AudioClip[] _attackSounds;
-    [SerializeField] private AudioClip[] _attackHitSounds;
-    [SerializeField] private AudioClip[] _bodyFallSounds;
-
     private float _stepCooldown = 0.2f;
     private float _lastStepTime = 0f;
 
+    private ZombieController _zombieController;
     private AudioSource _audioSource;
 
     private void Awake()
     {
+        _zombieController = GetComponent<ZombieController>();
         _audioSource = GetComponent<AudioSource>();
     }
 
     private void Start()
     {
         _audioSource.volume = PlayerPrefs.GetFloat("SFXVolume", 1f);
-       PlayGrowlSound();
     }
 
-    public void FootStep()
+    public void PlayZombieSound(ZombieSoundType type)
     {
-        if (Time.time - _lastStepTime < _stepCooldown) return;
-        _lastStepTime = Time.time;
+        AudioClip clipToPlay = null;
+        var stats = _zombieController.ZombieStats;
 
-        _audioSource.PlayOneShot(_footStepSounds[Random.Range(0, _footStepSounds.Length)]);
-    }
+        switch (type)
+        {
+            case ZombieSoundType.FootStep:
+                if (Time.time - _lastStepTime < _stepCooldown) return;
+                _lastStepTime = Time.time;
+                clipToPlay = stats.footStepSounds[Random.Range(0, stats.footStepSounds.Length)];
+                break;
+            case ZombieSoundType.Growl:
+                clipToPlay = stats.growlSounds[Random.Range(0, stats.growlSounds.Length)];
+                break;
+            case ZombieSoundType.Attack:
+                clipToPlay = stats.attackSounds[Random.Range(0, stats.attackSounds.Length)];
+                break;
+            case ZombieSoundType.Hit:
+                clipToPlay = stats.hitSounds[Random.Range(0, stats.hitSounds.Length)];
+                break;
+            case ZombieSoundType.Hurt:
+                clipToPlay = stats.hurtSounds[Random.Range(0, stats.hurtSounds.Length)];
+                break;
+            case ZombieSoundType.Fall:
+                clipToPlay = stats.fallSounds[Random.Range(0, stats.fallSounds.Length)];
+                break;
+        }
 
-    public void PlayGrowlSound()
-    {
-        _audioSource.PlayOneShot(_growlSounds[Random.Range(0, _growlSounds.Length)]);
-    }
-
-    public void PlayAttackSound()
-    {
-        _audioSource.PlayOneShot(_attackSounds[Random.Range(0, _attackSounds.Length)]);
-    }
-
-    public void PlayAttackHitSound()
-    {
-        _audioSource.PlayOneShot(_attackHitSounds[Random.Range(0, _attackHitSounds.Length)]);
-    }
-
-    public void PlayBodyFallSound()
-    {
-        _audioSource.PlayOneShot(_bodyFallSounds[Random.Range(0, _bodyFallSounds.Length)]);
+        if (clipToPlay != null)
+        {
+            _audioSource.PlayOneShot(clipToPlay);
+        }
     }
 }

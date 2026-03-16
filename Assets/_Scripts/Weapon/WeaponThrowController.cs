@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using Unity.Behavior;
 using Unity.Cinemachine;
 using UnityEngine;
@@ -6,7 +7,7 @@ using UnityEngine.AI;
 
 public class WeaponThrowController : MonoBehaviour
 {
-    [SerializeField] private WeaponManager _weaponManager;
+    [SerializeField] private WeaponController _weaponController;
     [SerializeField] private CinemachineImpulseSource _shakeCamera;
     [SerializeField] private WeaponAudio _weaponAudio;
 
@@ -26,7 +27,7 @@ public class WeaponThrowController : MonoBehaviour
 
     private void RefreshUI()
     {
-        if (_weaponManager._playerLocal != null)
+        if (_weaponController._botAIController == null)
         {
             if (UIGameManager_TeamDeathmatch.instance != null)
                 UIGameManager_TeamDeathmatch.instance.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
@@ -37,13 +38,13 @@ public class WeaponThrowController : MonoBehaviour
 
     public void InitializeThrow()
     {
-        _currentAmmo = _weaponManager._weaponStats.ammoPerMag;
-        _currentReverse = _weaponManager._weaponStats.ammoReverse;
+        _currentAmmo = _weaponController.WeaponStats.ammoPerMag;
+        _currentReverse = _weaponController.WeaponStats.ammoReverse;
     }
 
     public void AssignAnimationEvents(PlayerAnimationEvents playerAnimationEvents)
     {
-        if (_weaponManager._weaponStats.itemType == ItemType.ThrowItem)
+        if (_weaponController.WeaponStats.itemType == ItemType.ThrowItem)
         {
             playerAnimationEvents._throwController = this;
         }
@@ -52,7 +53,7 @@ public class WeaponThrowController : MonoBehaviour
     #region Action Throw
     public void ThrowGrenade()
     {
-        _weaponAudio.PlayAudioThrow();
+        _weaponAudio.PlayWeaponSound(WeaponSoundType.Throw);
         HandleAmmo();
 
         Vector3 cameraForward = _playerCamera.transform.forward;
@@ -69,7 +70,7 @@ public class WeaponThrowController : MonoBehaviour
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
 
-        rb.AddForce(throwDirection * _weaponManager._weaponStats.throwForce, ForceMode.Impulse);
+        rb.AddForce(throwDirection * _weaponController.WeaponStats.throwForce, ForceMode.Impulse);
         rb.AddTorque(Random.insideUnitSphere * 5f, ForceMode.Impulse);
 
         StartCoroutine(ExplosionGrenadeAfter());
@@ -80,8 +81,8 @@ public class WeaponThrowController : MonoBehaviour
         yield return new WaitForSeconds(3f);
         ToggleMeshRenderer(false);
         HandleHitTarget();
-        GenerateExplosionGrenade();
-        _weaponAudio.PlayAudioExplosion();
+        GenerateExplosion();
+        HandleAudio();
         HandleShakeCamera();
         Destroy(gameObject, 2f);
     }
@@ -95,21 +96,44 @@ public class WeaponThrowController : MonoBehaviour
         }
     }
 
+    private void GenerateExplosion()
+    {
+        GameObject explosionPrefab = _weaponController.WeaponStats.explosionGrenade.gameObject;
+
+        if (ObjectPoolService.Instance == null || explosionPrefab == null) return;
+
+        GameObject pooledExplosion = ObjectPoolService.Instance.GetPooledObject(explosionPrefab);
+
+        pooledExplosion.transform.SetPositionAndRotation(transform.position, Quaternion.identity);
+
+        if (pooledExplosion.TryGetComponent(out ParticleSystem ps))
+        {
+            ps.Play(true);
+        }
+    }
+
     private void HandleHitTarget()
     {
         Vector3 explosionPosition = transform.position;
-        float radius = _weaponManager._weaponStats.attackRadius;
+        float radius = _weaponController.WeaponStats.attackRadius;
         float fullDamageRadius = 10f;
-        float baseDamage = _weaponManager._weaponStats.damage;
-        float explosionForce = _weaponManager._weaponStats.explosionForce;
-        LayerMask raycastMask = _weaponManager._weaponStats.targetMask;
+        float baseDamage = _weaponController.WeaponStats.damage;
+        float explosionForce = _weaponController.WeaponStats.explosionForce;
+        LayerMask raycastMask = _weaponController.WeaponStats.targetMask;
 
         Collider[] colliders = Physics.OverlapSphere(explosionPosition, radius);
 
+        HashSet<GameObject> hitObjects = new HashSet<GameObject>();
+
         foreach (Collider hitCollider in colliders)
         {
+            GameObject root = hitCollider.transform.root.gameObject;
+            if (hitObjects.Contains(root)) continue;
+
             PlayerHealth playerHealth = hitCollider.GetComponent<PlayerHealth>();
-            if (playerHealth == null) continue;
+            ZombieHealth zombieHealth = hitCollider.GetComponent<ZombieHealth>();
+
+            if (playerHealth == null && zombieHealth == null) continue;
 
             float distance = Vector3.Distance(explosionPosition, hitCollider.bounds.center);
             float fallOffMultiplier = 1f;
@@ -131,66 +155,54 @@ public class WeaponThrowController : MonoBehaviour
                 if (hit.collider != hitCollider) continue;
             }
 
-            if (playerHealth != null && !playerHealth._isDead)
+            if (playerHealth != null)
             {
                 float finalDamage = Mathf.RoundToInt(baseDamage * fallOffMultiplier);
-                playerHealth.UpdateHealth(finalDamage, _weaponManager._weaponStats.itemType);
+                playerHealth.UpdateHealth(finalDamage, _weaponController.WeaponStats.itemType);
 
                 if (playerHealth._currentHealth <= 0)
+                    _weaponController._playerController.IncrementKillCount();
+
+                hitObjects.Add(root);
+            }
+            
+            if (zombieHealth != null)
+            {
+                float finalDamage = Mathf.RoundToInt(baseDamage * fallOffMultiplier);
+                zombieHealth.UpdateHealth(finalDamage);
+
+                if (zombieHealth._currentHealth <= 0)
                 {
-                    playerHealth._isDead = true;
-
-                    var characterController = playerHealth.GetComponent<CharacterController>();
-                    if (characterController != null) characterController.enabled = false;
-
-                    var navAgent = playerHealth.GetComponent<NavMeshAgent>();
-                    if (navAgent != null) navAgent.enabled = false;
-
-                    var behaviorAgent = playerHealth.GetComponent<BehaviorGraphAgent>();
-                    if (behaviorAgent != null) behaviorAgent.enabled = false;
-
-                    var switcher = playerHealth.GetComponent<RagdollSwitcher>();
-                    if (switcher != null) switcher.EnableRagdolls();
-
-                    Rigidbody[] childrenRbs = playerHealth.GetComponentsInChildren<Rigidbody>();
+                    Rigidbody[] childrenRbs = zombieHealth.GetComponentsInChildren<Rigidbody>();
                     foreach (Rigidbody rb in childrenRbs)
                     {
                         rb.AddExplosionForce(explosionForce, explosionPosition, radius, 1f, ForceMode.Impulse);
                     }
 
-                    _weaponManager._playerController.IncrementKillCount();
+                    _weaponController._playerController.IncrementKillCount();
+
+                    hitObjects.Add(root);
                 }
-            }          
+            }
         }
     }
 
-    private void GenerateExplosionGrenade()
+    private void HandleAudio()
     {
-        GameObject explosionPrefab = _weaponManager._weaponStats.explosionGrenade.gameObject;
-
-        if (ObjectPoolService.Instance == null || explosionPrefab == null) return;
-
-        GameObject pooledExplosion = ObjectPoolService.Instance.GetPooledObject(explosionPrefab);
-
-        pooledExplosion.transform.SetPositionAndRotation(transform.position, Quaternion.identity);
-
-        if (pooledExplosion.TryGetComponent(out ParticleSystem ps))
-        {
-            ps.Play(true);
-        }
+        _weaponAudio.PlayWeaponSound(WeaponSoundType.Explosion);
     }
 
     private void HandleShakeCamera()
     {
-        float distance = Vector3.Distance(_weaponManager._playerOwner.transform.position, transform.position);
-        if (distance > _weaponManager._weaponStats.attackRadius) return;
+        float distance = Vector3.Distance(_weaponController._player.transform.position, transform.position);
+        if (distance > _weaponController.WeaponStats.attackRadius) return;
 
-        float falloffMultiplier = 1 - (distance / _weaponManager._weaponStats.attackRadius);
+        float falloffMultiplier = 1 - (distance / _weaponController.WeaponStats.attackRadius);
         falloffMultiplier = Mathf.Clamp01(falloffMultiplier);
 
-        float finalShakeIntensity = _weaponManager._weaponStats.shakeIntensity * falloffMultiplier;
+        float finalShakeIntensity = _weaponController.WeaponStats.shakeIntensity * falloffMultiplier;
         Vector3 impulseForce = Vector3.one * finalShakeIntensity;
-        if (_shakeCamera != null)
+        if (_shakeCamera != null && _weaponController._botAIController == null)
         {
             _shakeCamera.GenerateImpulse(impulseForce);
         }       
@@ -199,7 +211,7 @@ public class WeaponThrowController : MonoBehaviour
     private void HandleAmmo()
     { 
         _currentAmmo -= 1;
-        Mathf.Clamp(_currentAmmo, 0, _weaponManager._weaponStats.ammoPerMag);
+        Mathf.Clamp(_currentAmmo, 0, _weaponController.WeaponStats.ammoPerMag);
         RefreshUI();
     }
     #endregion

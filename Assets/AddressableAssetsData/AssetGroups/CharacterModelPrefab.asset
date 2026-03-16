@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: CharacterModelPrefab
+  m_EditorClassIdentifier: 
+  m_GroupName: CharacterModelPrefab
+  m_GUID: 9ba88f597d0024e4b9a22c4d97e6fabc
+  m_SerializeEntries:
+  - m_GUID: 1a802d91d5442134f8730f1f24ae2062
+    m_Address: Assets/_Prefabs/UI/CharacterModel/Terrorist_BlackViper_Model.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 508f375dde7070d4495ec7f2dcf86939
+    m_Address: Assets/_Prefabs/UI/CharacterModel/Bravo_Group_Model.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8c6aafd92482b7c4f84104a56eefa4b4
+    m_Address: Assets/_Prefabs/UI/CharacterModel/Alpha_Group_Model.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b821bbb9254cfb4498947cc69722d7d0
+    m_Address: Assets/_Prefabs/UI/CharacterModel/Delta_Group_Model.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bd42d018560fdd3448db4ee5e978e2d7
+    m_Address: Assets/_Prefabs/UI/CharacterModel/Terrorist_IronBlood_Model.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c1fc63ecdc5d2e94e930583048b5c0ca
+    m_Address: Assets/_Prefabs/UI/CharacterModel/Terrorist_RedFang_Model.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e140531243c2d0d448fc908c36fb12af
+    m_Address: Assets/_Prefabs/UI/CharacterModel/Terrorist_ShadowDawn_Model.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 0f6a5b48bef5e9a449ca3ed794a3e81a, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 30ffc01a087a4bf4589aeb503200d333, type: 2}
+    - {fileID: 11400000, guid: da8d15cd409a2b94e96ebf37198a15fa, type: 2}

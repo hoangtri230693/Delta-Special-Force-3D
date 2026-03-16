@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -15,9 +14,9 @@ public class UIGameManager_ZombieSurvival : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _ammo;
     [SerializeField] private TextMeshProUGUI _time;
     [SerializeField] private TextMeshProUGUI _kill;
-    [SerializeField] private GameObject _tableBuyItem;
+    [SerializeField] private GameObject _shopInGame;
     [SerializeField] private GameObject _panelMatchEnd;
-    [SerializeField] private Image _victoryMatch, _drawMatch, _defeatMatch;
+    [SerializeField] private Image _victoryMatch, _defeatMatch;
     [SerializeField] private GameObject _pauseMenu;
 
 
@@ -57,7 +56,7 @@ public class UIGameManager_ZombieSurvival : MonoBehaviour
 
     public void OpenMenuItem(bool isOpen)
     {
-        _tableBuyItem.SetActive(isOpen);
+        _shopInGame.SetActive(isOpen);
     } 
 
     public void UpdateUIWeaponAmmo(int currentAmmo, int currentReverse)
@@ -99,13 +98,11 @@ public class UIGameManager_ZombieSurvival : MonoBehaviour
         if (GameManager_ZombieSurvival.instance.IsPlayerVictorious())
         {
             _victoryMatch.gameObject.SetActive(true);
-            _drawMatch.gameObject.SetActive(false);
             _defeatMatch.gameObject.SetActive(false);
         }
         else
         {
             _victoryMatch.gameObject.SetActive(false);
-            _drawMatch.gameObject.SetActive(false);
             _defeatMatch.gameObject.SetActive(true);
         }
 

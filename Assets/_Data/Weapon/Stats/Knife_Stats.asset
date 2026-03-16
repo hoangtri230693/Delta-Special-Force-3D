@@ -27,12 +27,11 @@ MonoBehaviour:
   maxDistance: 0
   shootForce: 0
   explosionForce: 0
-  damage: 10
+  damage: 35
   attackRadius: 0
   ammoPerMag: 1
   ammoReverse: 0
   fireRate: 30
-  reloadTime: 0
   recoilAmount: 0
   shakeIntensity: 0.05
   throwForce: 0

@@ -53,8 +53,8 @@ AudioSource:
   SpatializePostEffects: 0
   Priority: 128
   DopplerLevel: 1
-  MinDistance: 1
-  MaxDistance: 500
+  MinDistance: 10
+  MaxDistance: 100
   Pan2D: 0
   rolloffMode: 0
   BypassEffects: 0
@@ -89,7 +89,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -142,7 +142,7 @@ GameObject:
   - component: {fileID: 5054318848690561064}
   - component: {fileID: 7815683056213893219}
   - component: {fileID: 2254188604581268847}
-  - component: {fileID: -867318201257709513}
+  - component: {fileID: 3572775373738243209}
   - component: {fileID: 7154469330614844190}
   - component: {fileID: 1846750293035323210}
   - component: {fileID: 7636887283885389651}
@@ -272,7 +272,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.020895995, y: 0.071604, z: 0.18968877}
   m_Center: {x: 0, y: 0.005657349, z: 0.15404053}
---- !u!114 &-867318201257709513
+--- !u!114 &3572775373738243209
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -281,23 +281,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 782299240580983448}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8f858dd0f94225443a6dd270dea01021, type: 3}
+  m_Script: {fileID: 11500000, guid: 1332962ec5bc58247bf22eae166f9fca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _playerController: {fileID: 0}
-  _playerInventory: {fileID: 0}
-  _playerAnimationEvents: {fileID: 0}
-  _playerRig: {fileID: 0}
-  _playerHealth: {fileID: 0}
   _weaponStats: {fileID: 11400000, guid: b65a86b86330f0c4e8b3ee0c752fcf5c, type: 2}
-  _weaponRigData: {fileID: 11400000, guid: 6f3d277802f524d48ad8188bf4e0f75e, type: 2}
   _weaponRigController: {fileID: 7154469330614844190}
   _weaponShootController: {fileID: 0}
   _weaponMeleeController: {fileID: 1846750293035323210}
   _weaponThrowController: {fileID: 0}
   _weaponCollision: {fileID: 810551030899988731}
-  _weaponAudio: {fileID: 7636887283885389651}
   _rigidbody: {fileID: 7815683056213893219}
+  _barrelPointController: {fileID: 0}
+  _player: {fileID: 0}
+  _playerController: {fileID: 0}
+  _playerRig: {fileID: 0}
+  _playerAnimationEvents: {fileID: 0}
+  _botAIController: {fileID: 0}
 --- !u!114 &7154469330614844190
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -310,10 +309,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28922f549e1265b4f929365c82537971, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _weaponManager: {fileID: -867318201257709513}
-  _leftHandTarget: {fileID: 0}
-  _rightHandTarget: {fileID: 0}
-  _currentTeam: 0
+  _weaponRigData: {fileID: 11400000, guid: 6f3d277802f524d48ad8188bf4e0f75e, type: 2}
+  _weaponController: {fileID: 3572775373738243209}
 --- !u!114 &1846750293035323210
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -326,7 +323,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 328f07fc8aaf3f44b913257c79907075, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _weaponManager: {fileID: -867318201257709513}
+  _weaponController: {fileID: 3572775373738243209}
   _shakeCamera: {fileID: 4428833570113042993}
   _weaponAudio: {fileID: 7636887283885389651}
   _currentAmmo: 0
@@ -343,7 +340,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97f0513e9dbb37040860f704c98e99f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _weaponManager: {fileID: -867318201257709513}
+  _weaponController: {fileID: 3572775373738243209}
   _audioSource: {fileID: 2387540882640905958}
 --- !u!114 &810551030899988731
 MonoBehaviour:
@@ -357,7 +354,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5437ec35ce0d264aa547055071a3161, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _weaponManager: {fileID: -867318201257709513}
+  _weaponController: {fileID: 3572775373738243209}
 --- !u!1 &6401100653616000748
 GameObject:
   m_ObjectHideFlags: 0

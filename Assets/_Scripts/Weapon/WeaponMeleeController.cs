@@ -1,15 +1,15 @@
-using Unity.Behavior;
 using Unity.Cinemachine;
 using UnityEngine;
-using UnityEngine.AI;
+
 
 public class WeaponMeleeController : MonoBehaviour
 {
-    [SerializeField] private WeaponManager _weaponManager;
+    [SerializeField] private WeaponController _weaponController;
     [SerializeField] private CinemachineImpulseSource _shakeCamera;
     [SerializeField] private WeaponAudio _weaponAudio;
    
     private PlayerHealth _playerHealth;
+    private ZombieHealth _zombieHealth;
     private bool _isHitKnife = false;
 
     public int _currentAmmo;
@@ -21,7 +21,7 @@ public class WeaponMeleeController : MonoBehaviour
 
     private void RefreshUI()
     {
-        if (_weaponManager._playerLocal != null)
+        if (_weaponController._botAIController == null)
         {
             if (UIGameManager_TeamDeathmatch.instance != null)
                 UIGameManager_TeamDeathmatch.instance.UpdateUIWeaponAmmo(_currentAmmo, _currentReverse);
@@ -32,13 +32,13 @@ public class WeaponMeleeController : MonoBehaviour
 
     public void InitializeMelee()
     {
-        _currentAmmo = _weaponManager._weaponStats.ammoPerMag;
-        _currentReverse = _weaponManager._weaponStats.ammoReverse;
+        _currentAmmo = _weaponController.WeaponStats.ammoPerMag;
+        _currentReverse = _weaponController.WeaponStats.ammoReverse;
     }
 
     public void AssignAnimationEvents(PlayerAnimationEvents playerAnimationEvents)
     {
-        if (_weaponManager._weaponStats.itemType == ItemType.MeleeItem)
+        if (_weaponController.WeaponStats.itemType == ItemType.MeleeItem)
         {
             playerAnimationEvents._meleeController = this;
         }
@@ -46,60 +46,14 @@ public class WeaponMeleeController : MonoBehaviour
 
     public void StabbingKnife()
     {
-        _weaponAudio.PlayAudioMelee();
+        HandleAudio();
         
-        if (_isHitKnife && _playerHealth != null)
+        if (_isHitKnife && (_playerHealth != null || _zombieHealth != null))
         {
             HandleHitTarget();
             HandleShakeCamera();
+            HandleAudioHit();
         }
-    }
-
-    private void HandleShakeCamera()
-    {
-        float finalShakeIntensity = _weaponManager._weaponStats.shakeIntensity;
-        Vector3 impulseForce = Vector3.one * finalShakeIntensity;
-        if (_shakeCamera != null && _weaponManager._playerLocal != null)
-        {
-            _shakeCamera.GenerateImpulse(impulseForce);
-        }
-    }
-    private void HandleHitTarget()
-    {
-        if (_playerHealth != null && !_playerHealth._isDead)
-        {
-            if (_playerHealth.CompareTag("Zombie"))
-                _playerHealth.UpdateHealth(100, _weaponManager._weaponStats.itemType);
-            else
-                _playerHealth.UpdateHealth(_weaponManager._weaponStats.damage, _weaponManager._weaponStats.itemType);
-
-            if (_playerHealth._currentHealth <= 0)
-            {
-                var characterController = _playerHealth.GetComponent<CharacterController>();
-                if (characterController != null) characterController.enabled = false;
-
-                var navAgent = _playerHealth.GetComponent<NavMeshAgent>();
-                if (navAgent != null) navAgent.enabled = false;
-
-                var behaviorAgent = _playerHealth.GetComponent<BehaviorGraphAgent>();
-                if (behaviorAgent != null) behaviorAgent.enabled = false;
-
-                var switcher = _playerHealth.GetComponent<RagdollSwitcher>();
-                if (switcher != null) switcher.EnableRagdolls();
-
-                Rigidbody rb = _playerHealth.GetComponent<Rigidbody>();
-                if (rb != null && _playerHealth.CompareTag("Zombie"))
-                {
-                    Vector3 forceDirection = (_playerHealth.transform.position - transform.position).normalized;
-                    rb.AddForce(forceDirection * 500f);
-                }
-
-                _weaponManager._playerController.IncrementKillCount();
-                _playerHealth._isDead = true;
-            }
-        }
-            
-        Debug.Log("Hit Knife");
     }
 
     private void OnTriggerEnter(Collider other)
@@ -107,7 +61,8 @@ public class WeaponMeleeController : MonoBehaviour
         if (IsValidTarget(other))
         {
             _isHitKnife = true;
-            _playerHealth = other.GetComponent<PlayerHealth>();
+            _playerHealth = other.GetComponentInParent<PlayerHealth>();
+            _zombieHealth = other.GetComponentInParent<ZombieHealth>();
         }
     }
 
@@ -117,7 +72,53 @@ public class WeaponMeleeController : MonoBehaviour
         {
             _isHitKnife = false;
             _playerHealth = null;
+            _zombieHealth = null;
         }
+    }
+
+    private void HandleAudio()
+    {
+        _weaponAudio.PlayWeaponSound(WeaponSoundType.Melee);
+    }
+
+    private void HandleAudioHit()
+    {
+        _weaponAudio.PlayWeaponSound(WeaponSoundType.Hit);
+    }
+
+    private void HandleShakeCamera()
+    {
+        float finalShakeIntensity = _weaponController.WeaponStats.shakeIntensity;
+        Vector3 impulseForce = Vector3.one * finalShakeIntensity;
+        if (_shakeCamera != null && _weaponController._botAIController == null)
+        {
+            _shakeCamera.GenerateImpulse(impulseForce);
+        }
+    }
+
+    private void HandleHitTarget()
+    {
+        if (_playerHealth != null)
+        {
+            _playerHealth.UpdateHealth(_weaponController.WeaponStats.damage, _weaponController.WeaponStats.itemType);
+
+            if (_playerHealth._currentHealth <= 0)
+                _weaponController._playerController.IncrementKillCount();
+
+            _playerHealth = null;
+        }
+
+        if (_zombieHealth != null)
+        {
+            _zombieHealth.UpdateHealth(_weaponController.WeaponStats.damage);
+
+            if (_zombieHealth._currentHealth <= 0)
+                _weaponController._playerController.IncrementKillCount();
+
+            _zombieHealth = null;
+        }
+
+        Debug.Log("Hit Knife");
     }
 
     private bool IsValidTarget(Collider other)

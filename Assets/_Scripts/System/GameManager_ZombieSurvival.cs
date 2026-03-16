@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Unity.Behavior;
 using UnityEngine;
+using UnityEngine.AI;
 
 
 public class GameManager_ZombieSurvival : MonoBehaviour
@@ -39,8 +40,6 @@ public class GameManager_ZombieSurvival : MonoBehaviour
     public int _playerKilled = 0;
 
     private float _timeCount;
-    private int _currentRound;
-    private bool _isMatchEnded = false;
     
     private Vector3 _baseSpawnDirection;
     private Vector3 _initialSpawnPoint;
@@ -56,19 +55,17 @@ public class GameManager_ZombieSurvival : MonoBehaviour
 
         _currentGameState = GameState.Countdown;
         _timeCount = _timeCountdown;
-        _currentRound = 1;
     }
 
     private void Start()
     {
         SpawnPlayer();
-        SpawnZombie();
+        SpawnZombieWave();
         PlayRadioVoiceReadyMission();
     }
 
     private void Update()
     {
-        UpdateRound();
         UpdateMatch();
         UpdateTime();
     }
@@ -94,24 +91,7 @@ public class GameManager_ZombieSurvival : MonoBehaviour
     public void UpdatePlayerKilled()
     {
         _playerKilled++;
-        _zombieWaveCount--;
-        if (_zombieWaveCount <= 0)
-        {
-            SpawnZombie();
-        }
-    }
-
-    public IEnumerator UpdatePlayerDeath()
-    {
-        _isMatchEnded = true;
-        _currentGameState = GameState.MatchEnd;
-        foreach (var bot in _allBotCharacter)
-        {
-            Destroy(bot);
-        }
-        CalculateMatchRewards();
-        yield return new WaitForSecondsRealtime(5f);
-        UIGameManager_ZombieSurvival.instance.ShowUIResultMatch();
+        _zombieWaveCount--;    
     }
 
     private void PlayRadioVoiceReadyMission()
@@ -143,7 +123,6 @@ public class GameManager_ZombieSurvival : MonoBehaviour
             _player = Instantiate(_terroristPrefabs[selectedCharacterID], _spawnPoint.position, _spawnPoint.rotation);                                             
         }
 
-        _player.AddComponent<PlayerLocal>();
         _player.layer = LayerMask.NameToLayer("Player");
         _playerController = _player.GetComponent<PlayerController>();
         _playerInventory = _player.GetComponent<PlayerInventory>();
@@ -153,7 +132,7 @@ public class GameManager_ZombieSurvival : MonoBehaviour
         MiniMap.instance.SetupPlayerTransform(_player.transform);
     }
 
-    private void SpawnZombie()
+    private void SpawnZombieWave()
     {
         if (_spawnWaveCount == 0)
         {
@@ -197,7 +176,7 @@ public class GameManager_ZombieSurvival : MonoBehaviour
         }
     }
 
-    private void UpdateRound()
+    private void UpdateMatch()
     {
         if (_currentGameState == GameState.Countdown)
         {
@@ -212,33 +191,42 @@ public class GameManager_ZombieSurvival : MonoBehaviour
         {
             if (_timeCount <= 0)
             {
-                _currentGameState = GameState.RoundEnd;
-                _timeCount = 5f;
+                StartCoroutine(UpdateResultMatch());
+            }
+            else
+            {
+                if (_zombieWaveCount <= 0)
+                {
+                    SpawnZombieWave();
+                }
             }
         }
     }
 
-    private void UpdateMatch()
+    public IEnumerator UpdateResultMatch()
     {
-        if (_currentGameState == GameState.RoundEnd)
+        _currentGameState = GameState.MatchEnd;
+        foreach (var bot in _allBotCharacter)
         {
-            if (_timeCount <= 0)
+            if (bot == null) continue;
+
+            if (bot.TryGetComponent<BehaviorGraphAgent>(out var behaviorAgent))
             {
-                if (_currentRound < _totalRound)
-                {
-                    _currentRound++;
-                    _currentGameState = GameState.Countdown;
-                    _timeCount = _timeCountdown;
-                }
-                else
-                {
-                    if (!_isMatchEnded)
-                    {
-                        StartCoroutine(UpdatePlayerDeath());
-                    }
-                }
+                behaviorAgent.enabled = false;
+            }
+            if (bot.TryGetComponent<NavMeshAgent>(out var agent))
+            {
+                agent.isStopped = true;
+                agent.velocity = Vector3.zero;
+            }
+            if (bot.TryGetComponent<Animator>(out var anim))
+            {
+                anim.SetFloat("Speed", 0);
             }
         }
+        CalculateMatchRewards();
+        yield return new WaitForSecondsRealtime(5f);
+        UIGameManager_ZombieSurvival.instance.ShowUIResultMatch();
     }
 
     private void CalculateMatchRewards()
@@ -271,7 +259,7 @@ public class GameManager_ZombieSurvival : MonoBehaviour
 
     public bool IsPlayerVictorious()
     {
-        if (_timeCount <= 0 && !_playerHealth._isDead)
+        if (_timeCount <= 0 && _playerController._lifeState == LifeState.Alive)
             return true;
         return false;
     }

@@ -22,9 +22,14 @@ public class ValueChangeColor : MonoBehaviour
 
     private void Update()
     {
+        ChangeColor();
+    }
+
+    private void ChangeColor()
+    {
         if (_text == null) return;
 
-        string raw = _text.text.Replace("$", "");
+        string raw = _text.text.Split('/')[0].Replace("$", "").Trim();
 
         if (!int.TryParse(raw, out int current))
             return;

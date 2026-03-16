@@ -16,6 +16,7 @@ public class AudioManager : MonoBehaviour
     [Header("Audio Sources")]
     [SerializeField] private AudioSource _musicSounds;
     [SerializeField] private AudioSource _sfxSounds;
+    [SerializeField] private AudioSource _radioSounds;
 
     [Header("Music Sounds")]
     [SerializeField] private AudioClip[] _musicTracks;
@@ -90,9 +91,9 @@ public class AudioManager : MonoBehaviour
             _radioCoroutine = null;
         }
 
-        if (_sfxSounds.isPlaying)
+        if (_radioSounds.isPlaying)
         {
-            _sfxSounds.Stop();
+            _radioSounds.Stop();
         }
     }
 
@@ -138,7 +139,7 @@ public class AudioManager : MonoBehaviour
     {
         foreach (AudioClip clip in clips)
         {
-            _sfxSounds.PlayOneShot(clip);
+            _radioSounds.PlayOneShot(clip);
             yield return new WaitForSeconds(clip.length);
         }
         _radioCoroutine = null;

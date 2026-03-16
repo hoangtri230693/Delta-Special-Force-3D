@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: MapPrefab
+  m_EditorClassIdentifier: 
+  m_GroupName: MapPrefab
+  m_GUID: 8f4b872c51116b149a32eaddbcd56998
+  m_SerializeEntries:
+  - m_GUID: 31bcb669703482a4aa6a48aedc92c199
+    m_Address: Assets/_Prefabs/Map/Greenland_Map.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 476e842252a2d6944992cfe2142ab4e6
+    m_Address: Assets/_Prefabs/Map/IndustrialAsia.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7e96953c6d797104689bb56d701012f4
+    m_Address: Assets/_Prefabs/Map/Desert_Map.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dddd2e32035db4345b142bcff8c5422d
+    m_Address: Assets/_Prefabs/Map/IndustrialEurope.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 0f6a5b48bef5e9a449ca3ed794a3e81a, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 866680578910ac44e95fe68d4db111f5, type: 2}
+    - {fileID: 11400000, guid: ec44f8ea55df07f4499b9cbc44c2daea, type: 2}

@@ -35121,8 +35121,8 @@ AnimationClip:
   m_HasGenericRootTransform: 0
   m_HasMotionFloatCurves: 0
   m_Events:
-  - time: 0.96666664
-    functionName: LandStep
+  - time: 0.76666665
+    functionName: JumpEvent
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0

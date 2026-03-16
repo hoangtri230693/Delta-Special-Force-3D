@@ -3,11 +3,6 @@ using UnityEngine.SceneManagement;
 
 public class UIStartGame : MonoBehaviour
 {
-    [SerializeField] private GameObject _playGameButton;
-    [SerializeField] private GameObject _tutorialsButton;
-    [SerializeField] private GameObject _settingsButton;
-    [SerializeField] private GameObject _quitButton;
-
     private void Start()
     {
         Time.timeScale = 1f;
@@ -23,7 +18,8 @@ public class UIStartGame : MonoBehaviour
 
     public void OnClickTutorials()
     {
-
+        SceneManager.LoadScene("Tutorial");
+        AudioManager.instance.PlaySfx(SFXType.DefaultClick);
     }
 
     public void OnClickSettings()

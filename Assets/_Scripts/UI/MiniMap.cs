@@ -11,17 +11,23 @@ public class MiniMap : MonoBehaviour
         instance = this;
     }
 
-    private void Update()
+    private void LateUpdate()
     {
         if (_player == null) return;
 
-        Vector3 newPosition = _player.position;
-        newPosition.y = transform.position.y;
-        transform.position = newPosition;
+        FollowPlayerTransform();
     }
 
-    public void SetupPlayerTransform(Transform playerTransform)
+    public void SetupPlayerTransform(Transform player)
     {
-        _player = playerTransform;
+        _player = player;
+    }
+
+    private void FollowPlayerTransform()
+    {
+        Vector3 newPosition = _player.position;
+        newPosition.y = _player.position.y + 20f;
+        transform.position = newPosition;
+        transform.rotation = Quaternion.Euler(90f, _player.eulerAngles.y, 0f);
     }
 }

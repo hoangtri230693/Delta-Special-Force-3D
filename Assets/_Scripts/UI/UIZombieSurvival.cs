@@ -1,9 +1,10 @@
-﻿using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.AddressableAssets;
-using TMPro;
-using UnityEngine.UI;
+﻿using System.Threading;
 using System.Threading.Tasks;
+using TMPro;
+using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class UIZombieSurvival : MonoBehaviour
 {
@@ -19,16 +20,16 @@ public class UIZombieSurvival : MonoBehaviour
     [SerializeField] private Transform _characterPreview;
     [SerializeField] private GameObject _backgroundLoading;
 
-    private TeamMenu _teamTable;
-    private MapMenu _mapTable;
+    private TeamMenu _teamMenu;
+    private MapMenu _mapMenu;
+    private CancellationTokenSource _characterCts;
 
     private int _currentTeamIndex = 0;
     private int _currentCharacterIndex = 0;
     private int _currentMapIndex = 0;
-
     private string _selectedSceneName;
-
     private GameObject _spawnedCharacterModel;
+
 
     private void Awake() => _backgroundLoading.SetActive(true);
 
@@ -41,12 +42,11 @@ public class UIZombieSurvival : MonoBehaviour
 
         await Task.WhenAll(charTask, mapTask);
 
-        _teamTable = charTask.Result;
-        _mapTable = mapTask.Result;
+        _teamMenu = charTask.Result;
+        _mapMenu = mapTask.Result;
 
-        if (_teamTable != null && _mapTable != null)
+        if (_teamMenu != null && _mapMenu != null)
         {
-            // Khởi tạo hiển thị ban đầu
             ShowTeam(_currentTeamIndex);
             ShowMap(_currentMapIndex);
         }
@@ -54,12 +54,12 @@ public class UIZombieSurvival : MonoBehaviour
         _backgroundLoading.SetActive(false);
     }
 
-    public void ShowTeam(int index)
+    private void ShowTeam(int index)
     {
-        if (_teamTable == null || _teamTable._menuTeam.Length == 0) return;
+        if (_teamMenu == null || _teamMenu._menuTeam.Length == 0) return;
 
         _currentTeamIndex = index;
-        TeamData data = _teamTable._menuTeam[_currentTeamIndex];
+        TeamData data = _teamMenu._menuTeam[_currentTeamIndex];
 
         if (_teamNameText != null)
             _teamNameText.text = data.teamName;
@@ -71,47 +71,68 @@ public class UIZombieSurvival : MonoBehaviour
         PlayerPrefs.SetInt("SelectedTeamID", _currentTeamIndex);
     }
 
-    public async void ShowCharacter(int index)
+    private async void ShowCharacter(int index)
     {
-        if (_teamTable == null) return;
-        TeamData currentTeam = _teamTable._menuTeam[_currentTeamIndex];
+        // 1. Hủy bỏ tác vụ load trước đó nếu người dùng click quá nhanh
+        _characterCts?.Cancel();
+        _characterCts?.Dispose();
+        _characterCts = new CancellationTokenSource();
+        var token = _characterCts.Token;
 
+        if (_teamMenu == null) return;
+        TeamData currentTeam = _teamMenu._menuTeam[_currentTeamIndex];
         if (currentTeam.characterData == null || currentTeam.characterData.Length == 0) return;
 
         _currentCharacterIndex = index;
         CharacterData data = currentTeam.characterData[_currentCharacterIndex];
 
-        // 1. Dọn dẹp model cũ
+        // 2. Dọn dẹp model cũ ngay lập tức để trống chỗ
         if (_spawnedCharacterModel != null)
         {
             AddressableManager.instance.ReleaseInstance(_spawnedCharacterModel);
             _spawnedCharacterModel = null;
         }
 
-        // 2. Cập nhật UI
+        // 3. Cập nhật UI Text trước cho mượt
         _characterNameText.text = data.characterName;
 
-        // 3. Tải model mới
+        // 4. Tải model
         if (data.characterModelPrefab != null)
         {
-            GameObject model = await AddressableManager.instance.InstantiatePrefabAsync(data.characterModelPrefab, _characterPreview);
-            if (model != null)
+            try
             {
-                _spawnedCharacterModel = model;
-                _spawnedCharacterModel.transform.localPosition = Vector3.zero;
-                _spawnedCharacterModel.transform.localRotation = Quaternion.identity;
+                // Bước này sẽ rất nhanh nếu asset đã có trong cache của AddressableManager
+                GameObject prefab = await AddressableManager.instance.LoadAssetAsync<GameObject>(data.characterModelPrefab);
+
+                // Kiểm tra xem đã bị hủy task chưa (người dùng click tiếp cái khác)
+                if (token.IsCancellationRequested) return;
+
+                if (prefab != null)
+                {
+                    _spawnedCharacterModel = await AddressableManager.instance.InstantiatePrefabAsync(data.characterModelPrefab, _characterPreview);
+
+                    if (token.IsCancellationRequested)
+                    {
+                        AddressableManager.instance.ReleaseInstance(_spawnedCharacterModel);
+                        return;
+                    }
+
+                    _spawnedCharacterModel.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+                    _spawnedCharacterModel.transform.localScale = Vector3.one;
+                }
             }
+            catch (System.OperationCanceledException) { }
         }
 
         PlayerPrefs.SetInt("SelectedCharacterID", _currentCharacterIndex);
     }
 
-    public void ShowMap(int index)
+    private void ShowMap(int index)
     {
-        if (_mapTable == null || _mapTable._menuMap.Length == 0) return;
+        if (_mapMenu == null || _mapMenu._menuMap.Length == 0) return;
 
         _currentMapIndex = index;
-        MapData data = _mapTable._menuMap[_currentMapIndex];
+        MapData data = _mapMenu._menuMap[_currentMapIndex];
 
         _mapNameText.text = data.mapName;
         _selectedSceneName = data.mapName;
@@ -132,17 +153,17 @@ public class UIZombieSurvival : MonoBehaviour
     // --- QUẢN LÝ TEAM ---
     public void OnClickNextTeam()
     {
-        if (_teamTable == null) return;
-        int nextIndex = (_currentTeamIndex + 1) % _teamTable._menuTeam.Length;
+        if (_teamMenu == null) return;
+        int nextIndex = (_currentTeamIndex + 1) % _teamMenu._menuTeam.Length;
         ShowTeam(nextIndex);
         AudioManager.instance.PlaySfx(SFXType.MetalClick);
     }
 
     public void OnClickPreviousTeam()
     {
-        if (_teamTable == null) return;
+        if (_teamMenu == null) return;
         int prevIndex = _currentTeamIndex - 1;
-        if (prevIndex < 0) prevIndex = _teamTable._menuTeam.Length - 1;
+        if (prevIndex < 0) prevIndex = _teamMenu._menuTeam.Length - 1;
         ShowTeam(prevIndex);
         AudioManager.instance.PlaySfx(SFXType.MetalClick);
     }
@@ -150,8 +171,8 @@ public class UIZombieSurvival : MonoBehaviour
     // --- QUẢN LÝ NHÂN VẬT ---
     public void OnClickNextCharacter()
     {
-        if (_teamTable == null) return;
-        var characters = _teamTable._menuTeam[_currentTeamIndex].characterData;
+        if (_teamMenu == null) return;
+        var characters = _teamMenu._menuTeam[_currentTeamIndex].characterData;
         int nextIndex = (_currentCharacterIndex + 1) % characters.Length;
         ShowCharacter(nextIndex);
         AudioManager.instance.PlaySfx(SFXType.MetalClick);
@@ -159,8 +180,8 @@ public class UIZombieSurvival : MonoBehaviour
 
     public void OnClickPreviousCharacter()
     {
-        if (_teamTable == null) return;
-        var characters = _teamTable._menuTeam[_currentTeamIndex].characterData;
+        if (_teamMenu == null) return;
+        var characters = _teamMenu._menuTeam[_currentTeamIndex].characterData;
         int prevIndex = _currentCharacterIndex - 1;
         if (prevIndex < 0) prevIndex = characters.Length - 1;
         ShowCharacter(prevIndex);
@@ -170,17 +191,17 @@ public class UIZombieSurvival : MonoBehaviour
     // --- QUẢN LÝ MAP ---
     public void OnClickNextMap()
     {
-        if (_mapTable == null) return;
-        int nextIndex = (_currentMapIndex + 1) % _mapTable._menuMap.Length;
+        if (_mapMenu == null) return;
+        int nextIndex = (_currentMapIndex + 1) % _mapMenu._menuMap.Length;
         ShowMap(nextIndex);
         AudioManager.instance.PlaySfx(SFXType.MetalClick);
     }
 
     public void OnClickPreviousMap()
     {
-        if (_mapTable == null) return;
+        if (_mapMenu == null) return;
         int prevIndex = _currentMapIndex - 1;
-        if (prevIndex < 0) prevIndex = _mapTable._menuMap.Length - 1;
+        if (prevIndex < 0) prevIndex = _mapMenu._menuMap.Length - 1;
         ShowMap(prevIndex);
         AudioManager.instance.PlaySfx(SFXType.MetalClick);
     }
@@ -195,19 +216,18 @@ public class UIZombieSurvival : MonoBehaviour
 
     public void OnClickBack()
     {
-        AudioManager.instance.PlaySfx(SFXType.DefaultClick);
+        AudioManager.instance.PlaySfx(SFXType.MetalClick);
         SceneManager.LoadScene("PlayGame");
     }
     #endregion
 
     private void OnDestroy()
     {
+        _characterCts?.Cancel();
+        _characterCts?.Dispose();
+
         if (_teamMenuRef.IsValid()) AddressableManager.instance.ReleaseAsset(_teamMenuRef);
         if (_mapMenuRef.IsValid()) AddressableManager.instance.ReleaseAsset(_mapMenuRef);
-
-        if (_spawnedCharacterModel != null)
-        {
-            AddressableManager.instance.ReleaseInstance(_spawnedCharacterModel);
-        }
+        if (_spawnedCharacterModel != null) AddressableManager.instance.ReleaseInstance(_spawnedCharacterModel);
     }
 }

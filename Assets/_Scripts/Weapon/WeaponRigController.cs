@@ -4,13 +4,19 @@ public enum NameTeam { None, Alpha, Bravo, Delta, Terrorist }
 
 public class WeaponRigController : MonoBehaviour
 {
-    [SerializeField] private WeaponManager _weaponManager;
+    [SerializeField] private WeaponRigSO _weaponRigData;
+    [SerializeField] private WeaponController _weaponController;
 
-    [Header("Target Transforms")]
     private Transform _leftHandTarget;
     private Transform _rightHandTarget;
-
     private NameTeam _currentTeam = NameTeam.None;
+
+    public void InitializeRig(PlayerRig playerRig)
+    {
+        ApplyRigTargets(playerRig);
+        UpdatePlayerTeam();         
+        UpdateDataRig();
+    }
 
     public void ResetRig()
     {
@@ -19,16 +25,9 @@ public class WeaponRigController : MonoBehaviour
         _currentTeam = NameTeam.None;
     }
 
-    public void InitializeRig(PlayerRig playerRig)
+    private void ApplyRigTargets(PlayerRig playerRig)
     {
-        AssignRigTargets(playerRig);
-        ApplyPlayerTeam();
-        ApplyDataRig();
-    }
-
-    private void AssignRigTargets(PlayerRig playerRig)
-    {
-        ItemType itemType = _weaponManager._weaponStats.itemType;
+        ItemType itemType = _weaponController.WeaponStats.itemType;
 
         switch (itemType)
         {
@@ -51,7 +50,7 @@ public class WeaponRigController : MonoBehaviour
         }
     }
 
-    private void ApplyPlayerTeam()
+    private void UpdatePlayerTeam()
     {
         GameObject rootPlayer = transform.root.gameObject;
 
@@ -62,11 +61,9 @@ public class WeaponRigController : MonoBehaviour
         else _currentTeam = NameTeam.None;
     }
 
-    private void ApplyDataRig()
+    private void UpdateDataRig()
     {
-        if (_currentTeam == NameTeam.None) return;
-
-        WeaponRigDataSO data = _weaponManager._weaponRigData;
+        WeaponRigSO data = _weaponRigData;
 
         Vector3 weaponPos = Vector3.zero;
         Vector3 weaponRot = Vector3.zero;
@@ -110,8 +107,8 @@ public class WeaponRigController : MonoBehaviour
 
         if (_rightHandTarget != null)
         {
-            bool isSpecialItem = _weaponManager._weaponStats.itemType == ItemType.MeleeItem ||
-                                 _weaponManager._weaponStats.itemType == ItemType.ThrowItem;
+            bool isSpecialItem = _weaponController.WeaponStats.itemType == ItemType.MeleeItem ||
+                                 _weaponController.WeaponStats.itemType == ItemType.ThrowItem;
 
             if (isSpecialItem)
             {

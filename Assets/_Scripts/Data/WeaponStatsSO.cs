@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public enum WeaponType { Pistol, Shotgun, SMG, Rifle, Sniper, Throwable, Armor, Melee  }
+public enum WeaponType { Pistol, Shotgun, SMG, AssaultRifle, SniperRifle, Throwable, Armor, Melee  }
 
 [CreateAssetMenu(fileName = "WeaponStatsSO", menuName = "Scriptable Objects/WeaponStatsSO")]
 public class WeaponStatsSO : ScriptableObject
@@ -29,8 +29,7 @@ public class WeaponStatsSO : ScriptableObject
     [Header("Handling & Control")]
     public int ammoPerMag;
     public int ammoReverse;
-    public float fireRate;  
-    public float reloadTime;
+    public float fireRate;
     public float recoilAmount;  
     public float shakeIntensity;
     public float throwForce;

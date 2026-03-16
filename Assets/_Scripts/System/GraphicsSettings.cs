@@ -28,6 +28,7 @@ public class GraphicsSettings : MonoBehaviour
     public void SetQuality(int qualityIndex)
     {
         QualitySettings.SetQualityLevel(qualityIndex);
+
         PlayerPrefs.SetInt("QualityLevel", qualityIndex);
     }
 }

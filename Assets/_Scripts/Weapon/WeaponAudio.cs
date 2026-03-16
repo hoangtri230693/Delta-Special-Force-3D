@@ -1,8 +1,20 @@
 using UnityEngine;
 
+public enum WeaponSoundType
+{
+    Fire,
+    DryFire,
+    Reload,
+    Cock,
+    Melee,
+    Hit,
+    Throw,
+    Explosion
+}
+
 public class WeaponAudio : MonoBehaviour
 {
-    [SerializeField] private WeaponManager _weaponManager;
+    [SerializeField] private WeaponController _weaponController;
     [SerializeField] private AudioSource _audioSource;
 
     private void Start()
@@ -10,37 +22,37 @@ public class WeaponAudio : MonoBehaviour
         _audioSource.volume = PlayerPrefs.GetFloat("SFXVolume", 1f);
     }
 
-    public void PlayAudioFire()
+    public void PlayWeaponSound(WeaponSoundType type)
     {
-        _audioSource.PlayOneShot(_weaponManager._weaponStats.attackSound);
-    }
-    public void PlayAudioDryFire()
-    {
-        _audioSource.PlayOneShot(_weaponManager._weaponStats.dryFireSound);
-    }
+        AudioClip clipToPlay = null;
+        var stats = _weaponController.WeaponStats;
 
-    public void PlayAudioReload()
-    {
-        _audioSource.PlayOneShot(_weaponManager._weaponStats.reloadSound);
-    }
+        switch (type)
+        {
+            case WeaponSoundType.Fire:
+                clipToPlay = stats.attackSound;
+                break;
+            case WeaponSoundType.DryFire:
+                clipToPlay = stats.dryFireSound;
+                break;
+            case WeaponSoundType.Reload:
+                clipToPlay = stats.reloadSound;
+                break;
+            case WeaponSoundType.Cock:
+                clipToPlay = stats.cockSound;
+                break;
+            case WeaponSoundType.Melee:
+            case WeaponSoundType.Throw:
+                clipToPlay = stats.attackSound;
+                break;
+            case WeaponSoundType.Explosion:
+                clipToPlay = stats.explosionSound;
+                break;
+        }
 
-    public void PlayAudioCock()
-    {
-        _audioSource.PlayOneShot(_weaponManager._weaponStats.cockSound);
-    }   
-
-    public void PlayAudioMelee()
-    {
-        _audioSource.PlayOneShot(_weaponManager._weaponStats.attackSound);
-    }
-
-    public void PlayAudioThrow()
-    {
-        _audioSource.PlayOneShot(_weaponManager._weaponStats.attackSound);
-    }
-
-    public void PlayAudioExplosion()
-    {
-        _audioSource.PlayOneShot(_weaponManager._weaponStats.explosionSound);
+        if (clipToPlay != null)
+        {
+            _audioSource.PlayOneShot(clipToPlay);
+        }
     }
 }

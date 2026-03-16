@@ -14,7 +14,7 @@ public class UIGameManager_TeamDeathmatch : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _armor;
     [SerializeField] private TextMeshProUGUI _ammo;
     [SerializeField] private TextMeshProUGUI _time;
-    [SerializeField] private GameObject _tableBuyItem;
+    [SerializeField] private GameObject _shopInGame;
     [SerializeField] private GameObject _tableResult;
     [SerializeField] private TextMeshProUGUI[] _killedCounter;
     [SerializeField] private TextMeshProUGUI[] _deathCounter;
@@ -23,7 +23,7 @@ public class UIGameManager_TeamDeathmatch : MonoBehaviour
     [SerializeField] private TextMeshProUGUI[] _deathTerrorist;
     [SerializeField] private TextMeshProUGUI[] _resultTerrorist;
     [SerializeField] private GameObject _panelMatchEnd;
-    [SerializeField] private Image _victoryMatch, _drawMatch, _defeatMatch;
+    [SerializeField] private Image _victoryMatch, _defeatMatch;
     [SerializeField] private GameObject _pauseMenu;
 
     [Header("Flash Color")]
@@ -105,7 +105,7 @@ public class UIGameManager_TeamDeathmatch : MonoBehaviour
 
     public void UpdateKilledCount(TeamType teamType, int playerID, int killedCount)
     {
-        if (teamType == TeamType.CounterTerrorist)
+        if (teamType == TeamType.Counter)
         {
             _killedCounter[playerID].text = killedCount.ToString();
         }
@@ -117,7 +117,7 @@ public class UIGameManager_TeamDeathmatch : MonoBehaviour
 
     public void UpdateDeathCount(TeamType teamType, int playerID, int deathCount)
     {
-        if (teamType == TeamType.CounterTerrorist)
+        if (teamType == TeamType.Counter)
         {
             _deathCounter[playerID].text = deathCount.ToString();
         }
@@ -134,7 +134,7 @@ public class UIGameManager_TeamDeathmatch : MonoBehaviour
 
     public void OpenMenuItem(bool isOpen)
     {
-        _tableBuyItem.SetActive(isOpen);
+        _shopInGame.SetActive(isOpen);
     }
 
     public void UpdateUIWeaponAmmo(int currentAmmo, int currentReverse)
@@ -183,7 +183,7 @@ public class UIGameManager_TeamDeathmatch : MonoBehaviour
 
         if (!isDraw)
         {
-            if (playerTeam == TeamType.CounterTerrorist)
+            if (playerTeam == TeamType.Counter)
             {
                 isVictory = ctWins > tWins;
             }
@@ -195,7 +195,6 @@ public class UIGameManager_TeamDeathmatch : MonoBehaviour
 
         _victoryMatch.gameObject.SetActive(!isDraw && isVictory);
         _defeatMatch.gameObject.SetActive(!isDraw && !isVictory);
-        _drawMatch.gameObject.SetActive(isDraw);
 
         yield return new WaitForSecondsRealtime(5f);
 

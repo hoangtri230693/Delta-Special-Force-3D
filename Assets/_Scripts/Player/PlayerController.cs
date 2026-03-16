@@ -1,13 +1,15 @@
-﻿using UnityEngine;
-using UnityEngine.Animations.Rigging;
+﻿using Unity.Behavior;
+using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.InputSystem;
 
 public enum MovementState { Idle, Walk, Run, JumpOI, JumpOM, Fall }
-public enum StanceState { Standing, Crouching }
+public enum StanceState { Stand, Crouch }
+public enum CombatState { None, Aim}
 public enum ActionState { None, ManualShoot, AutomaticShoot, Melee, Throw, Reload, Drop }
 public enum ItemType { None, PrimaryItem, SecondaryItem, MeleeItem, ThrowItem, ArmorItem }
-public enum LifeState { None, Alive, Hit, DeathShoot, DeathMelee, DeathThrow }
-public enum TeamType { None, CounterTerrorist, Terrorist }
+public enum LifeState { None, Alive, Hurt, DeathShoot, DeathMelee, DeathThrow }
+public enum TeamType { None, Counter, Terrorist }
 
 
 public class PlayerController : MonoBehaviour
@@ -15,36 +17,41 @@ public class PlayerController : MonoBehaviour
     [Header("References")]
     [SerializeField] private CharacterController _characterController;
     [SerializeField] private CharacterStatsSO _characterStats;
-    [SerializeField] private Transform _cameraThirdPerson;
-    [SerializeField] private Transform _yawTarget;
-    [SerializeField] private Rig _rigAim;
+    public CharacterStatsSO CharacterStas => _characterStats;
 
+    [Header("Player Component Group")]
     private PlayerAnimator _playerAnimator;
     private PlayerInventory _playerInventory;
     private PlayerRig _playerRig;
     private PlayerCamera _playerCamera;
     private PlayerAudio _playerAudio;
     private PlayerTeam _playerTeam;
-    
+
+    [Header("Player Movement Data")]
+    private Vector3 _forward = Vector3.zero;
+    private Vector3 _right = Vector3.zero;
     private Vector3 _velocity = Vector3.zero;
     private Vector3 _moveDirection = Vector3.zero;
-    private int _killedCount = 0;
-    private int _deathCount = 0;
 
-    public bool _isAiming = false;
-    public bool _isCrouching = false;
-    public bool _isOpeningBuyTable = false;
-    public bool _isOpeningResultTable = false;
-    public bool _isSelectedItem = false;
+    [Header("Player Flags")]
     public bool _canAction = true;
-    public bool _canReload = false;
-    public bool _isPausing = false;
+    private bool _isAiming = false;
+    private bool _isCrouching = false;
+    private bool _isOpeningShopInGame = false;
+    private bool _isOpeningResultTable = false;
+    private bool _isSelectedItem = false;    
 
+    [Header("Player States")]
     public MovementState _movementState = MovementState.Idle;
-    public StanceState _stanceState = StanceState.Standing;
+    public StanceState _stanceState = StanceState.Stand;
+    public CombatState _combatState = CombatState.None;
     public ActionState _actionState = ActionState.None;
-    public ItemType _itemType = ItemType.ThrowItem;
+    public ItemType _itemType = ItemType.SecondaryItem;
     public LifeState _lifeState = LifeState.Alive;
+
+    [Header("Player Stats")]
+    public int _killedCount = 0;
+    public int _deathCount = 0;
     public float _currentSpeed = 0;
     public float _currentDirection = 0;
     public int _currentCash = 20000;
@@ -70,46 +77,28 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        if (_lifeState == LifeState.DeathShoot || _lifeState == LifeState.DeathMelee || _lifeState == LifeState.DeathThrow)
-        {
-            if (GameManager_TeamDeathmatch.instance != null)
-                GameManager_TeamDeathmatch.instance.UpdateTeamCount(_playerTeam._playerTeam);
-
-            HandleDeath();
-            IncrementDeadCount();
-        }
-
-        if (_lifeState == LifeState.None)
-        {
-            HandleGravity();
-            _characterController.Move(_velocity * Time.deltaTime);
-        }
-
-        if (_characterController.isGrounded && _lifeState == LifeState.None)
-        {
-            _characterController.enabled = false;
-            this.enabled = false;
-            return;
-        }
+       HandleLifeState();
     }
+
+    //------------PUBLIC METHODS------------
 
     public void ReloadAmmo()
     {
         if (_itemType == ItemType.PrimaryItem || _itemType == ItemType.SecondaryItem)
         {
-            _playerAudio.ZoomSound();
-            if (_playerCamera != null) _playerCamera.ExitAimMode();
-            _canAction = false;
+            _playerAudio.PlayCharacterSound(CharacterSoundType.Zoom);
             _actionState = ActionState.Reload;
             _playerAnimator.UpdateActionState(_actionState, _stanceState);
+            _canAction = false;
         }
     }
 
     public void SwitchItem()
     {
-        _playerAudio.SwitchItemSound();
+        _playerAudio.PlayCharacterSound(CharacterSoundType.SwitchItem);
         _playerAnimator.UpdateItemType(_itemType);
         _playerInventory.UpdateItem(_itemType);
+        _playerInventory.ActiveCombatItem(_itemType, _combatState);
         _playerRig.UpdateRigWeight(_itemType);
         _playerRig.UpdateBodyOffset(_itemType, _stanceState);
     }
@@ -118,18 +107,20 @@ public class PlayerController : MonoBehaviour
     {
         _lifeState = LifeState.Alive;
         _isAiming = false;
-        _rigAim.weight = 0f;
+        _playerRig.UpdateAimRigWeight(false);
         if (_playerCamera != null) _playerCamera.ExitAimMode();
         _isCrouching = false;
-        _isOpeningBuyTable = false;
-        _isOpeningResultTable = false;
-        _isSelectedItem = false;
-        _canReload = false;
         _movementState = MovementState.Idle;
-        _stanceState = StanceState.Standing;
+        _stanceState = StanceState.Stand;
         _actionState = ActionState.None;
+        _combatState = CombatState.None;
         _currentSpeed = 0;
         _currentDirection = 0;
+        _playerAnimator.ResetMovementState();
+        _playerAnimator.UpdateAiming(_isAiming);
+        _playerAnimator.UpdateStanceState(_stanceState);
+        _playerAnimator.UpdateActionState(_actionState, _stanceState);
+        _playerInventory.ActiveCombatItem(_itemType, _combatState);
     }
 
     public void IncrementKillCount()
@@ -155,17 +146,19 @@ public class PlayerController : MonoBehaviour
         {
             _deathCount++;
             UIGameManager_TeamDeathmatch.instance.UpdateDeathCount(_playerTeam._playerTeam, _playerTeam._playerID, _deathCount);
-        }      
+            GameManager_TeamDeathmatch.instance.UpdateTeamCount(_playerTeam._playerTeam);
+        }
     }
 
-    public void UpdateInputs(Vector2 moveInput, bool isSprinting, bool isJumping, bool isCrouching,
-                            bool isAiming, bool isManualAttacking, bool isAutomaticAttacking,
+    public void UpdateInputs(Vector2 moveInput, Vector2 lookInput, bool isSprinting, bool isJumping, bool isCrouching,
+                            bool isAiming, bool isSwitchingShoulder, float zoomDelta, bool isManualAttacking, bool isAutomaticAttacking,
                             bool isSwitchingItem, bool isReloading, bool isDropping,
-                            bool isOpeningBuyTable, bool isSelectedItem, bool isBuying,
-                            bool isOpeningResultTable)
+                            bool isOpeningShopInGame, bool isSelectedItem, bool isBuyingItem,
+                            bool isOpeningResultTable, bool isPausing)
     {
+        HandlePauseMenu(isPausing);
+
         if (_lifeState == LifeState.None) return;
-        if (_isPausing) return;
 
         bool isRoundActive = false;
         if (GameManager_TeamDeathmatch.instance != null)
@@ -182,25 +175,31 @@ public class PlayerController : MonoBehaviour
             if (_canAction)
             {
                 HandleMovement(moveInput, isSprinting);
-                HandleGravityAndJump(isJumping, moveInput, isCrouching);
+                HandleLook(lookInput);
+                HandleRotation(moveInput);
+                HandleGravityAndJump(isJumping, isCrouching);
                 HandleCrouching(isCrouching);
-                HandleAiming(isAiming, moveInput);
+                HandleAiming(isAiming);
+                HandleSwitchShoulder(isSwitchingShoulder);
+                HandleZoom(zoomDelta);
                 HandleAttack(isManualAttacking, isAutomaticAttacking);
                 HandleSwitchItem(isSwitchingItem);
                 HandleReloading(isReloading);
                 HandleDropping(isDropping);
-                HandleOpeningBuyTable(isOpeningBuyTable);
-                HandleOpeningResultTable(isOpeningResultTable);
+                HandleOpeningShopInGame(isOpeningShopInGame);
+                HandleOpeningResultTable(isOpeningResultTable);              
             }
             else
             {
                 HandleMovement(moveInput, isSprinting);
-                HandleGravityAndJump(isJumping, moveInput, isCrouching);
+                HandleLook(lookInput);
+                HandleRotation(moveInput);
+                HandleGravityAndJump(isJumping, isCrouching);
                 HandleCrouching(isCrouching);
-                HandleAiming(isAiming, moveInput);
-                HandleOpeningBuyTable(isOpeningBuyTable);
+                HandleAiming(isAiming);
+                HandleOpeningShopInGame(isOpeningShopInGame);
                 HandleSelectedItem(isSelectedItem);
-                HandleBuyWeapon(isBuying);
+                HandleBuyItem(isBuyingItem);
                 HandleOpeningResultTable(isOpeningResultTable);
             }
 
@@ -209,63 +208,19 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            HandleOpeningBuyTable(isOpeningBuyTable);
+            HandleSwitchItem(isSwitchingItem);
+            HandleOpeningShopInGame(isOpeningShopInGame);
             HandleSelectedItem(isSelectedItem);
-            HandleBuyWeapon(isBuying);
+            HandleBuyItem(isBuyingItem);
             HandleOpeningResultTable(isOpeningResultTable);
+            HandleReloading(isReloading);
         }
     }
 
-    public void HandlePauseMenu(bool isPausing)
-    {
-        if (!isPausing || _isOpeningBuyTable || _isOpeningResultTable) return;
 
-        if (isPausing && !_isPausing)
-        {
-            _isPausing = true;
-            if (GameManager_TeamDeathmatch.instance != null)
-                GameManager_TeamDeathmatch.instance.PauseMenu(true);
-            if (GameManager_ZombieSurvival.instance != null)
-                GameManager_ZombieSurvival.instance.PauseMenu(true);
-        }
-        else if (isPausing && _isPausing)
-        {
-            _isPausing = false;
-            if (GameManager_TeamDeathmatch.instance != null)
-                GameManager_TeamDeathmatch.instance.PauseMenu(false);
-            if (GameManager_ZombieSurvival.instance != null)
-                GameManager_ZombieSurvival.instance.PauseMenu(false);
-        }       
-    }
-
-    private void HandleDeath()
-    {
-        _isAiming = false;
-        _rigAim.weight = 0f;
-        if (_playerCamera != null) _playerCamera.ExitAimMode();
-
-        _velocity = Vector3.zero;
-        _moveDirection = Vector3.zero;
-        _currentSpeed = 0;
-        _currentDirection = 0;
-        _characterController.Move(_velocity * Time.deltaTime);
-
-        _actionState = ActionState.None;
-        _itemType = ItemType.None;
-
-        _playerAnimator.UpdateItemType(_itemType);
-        _playerInventory.UpdateItem(_itemType);
-        _playerInventory.DropCurrentItem(_itemType);
-        _playerRig.UpdateRigWeight(_itemType);
-        _playerRig.UpdateBodyOffset(_itemType, _stanceState);
-        _playerAnimator.UpdateDeath(_lifeState);
-
-        _lifeState = LifeState.None;
-    }
-    
+    //------------PRIVATE METHODS------------
     private void HandleMovement(Vector2 input, bool isSprinting)
     {
-        _currentDirection = input.y;
         bool isMoving = input.magnitude > 0.1f;
 
         _currentSpeed = isMoving
@@ -274,47 +229,76 @@ public class PlayerController : MonoBehaviour
 
         if (_isAiming)
         {
-            Vector3 forward = transform.forward;
-            Vector3 right = transform.right;
-            forward.y = 0;
-            right.y = 0;
-            forward.Normalize();
-            right.Normalize();
+            _forward = transform.forward;
+            _right = transform.right;
+            _forward.y = 0;
+            _right.y = 0;
 
-            _moveDirection = forward * input.y + right * input.x;
+            _moveDirection = (_forward * input.y + _right * input.x).normalized;
+            _currentDirection = input.y;
         }
         else
         {
-            if (_cameraThirdPerson != null)
+            if (_playerCamera != null)
             {
-                Vector3 forward = _cameraThirdPerson.forward;
-                Vector3 right = _cameraThirdPerson.right;
-                forward.y = 0;
-                right.y = 0;
-                forward.Normalize();
-                right.Normalize();
-
-                _moveDirection = forward * input.y + right * input.x;
+                _forward = Camera.main.transform.forward;
+                _right = Camera.main.transform.right;             
             }
             else
             {
-                Vector3 forward = transform.forward;
-                Vector3 right = transform.right;
-                forward.y = 0;
-                right.y = 0;
-                forward.Normalize();
-                right.Normalize();
+                _forward = transform.forward;
+                _right = transform.right;
+            }
+            _forward.y = 0;
+            _right.y = 0;
 
-                _moveDirection = forward * input.y + right * input.x;
-            }           
+            _moveDirection = (_forward * input.y + _right * input.x).normalized;
+            if (isMoving) _currentDirection = 1;
+            else _currentDirection = 0;
         }
 
         if (isSprinting) _movementState = MovementState.Run;
         else if (isMoving) _movementState = MovementState.Walk;
         else _movementState = MovementState.Idle;
+
+        _playerAnimator.UpdateMovementState(input, _movementState, _combatState);
     }
 
-    private void HandleGravityAndJump(bool isJumping, Vector2 input, bool isCrouching)
+    private void HandleLook(Vector2 input)
+    {
+        if (_isAiming)
+        {
+            _playerCamera.UpdateCamera(input);
+        }
+    }
+
+    private void HandleRotation(Vector2 input)
+    {
+        Vector3 targetDirection = Vector3.zero;
+
+        if (_isAiming)
+        {
+            targetDirection = Camera.main.transform.forward.normalized;
+            targetDirection.y = 0;
+        }
+        else if (input.sqrMagnitude > 0.1f)
+        {
+            targetDirection = _moveDirection;
+        }
+
+        if (targetDirection.sqrMagnitude > 0.001f)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
+
+            transform.rotation = Quaternion.Slerp(
+                transform.rotation,
+                targetRotation,
+                _characterStats.rotationSpeed * Time.deltaTime
+            );
+        }
+    }
+
+    private void HandleGravityAndJump(bool isJumping, bool isCrouching)
     {
         if (_characterController.isGrounded)
         {
@@ -324,28 +308,18 @@ public class PlayerController : MonoBehaviour
 
                 _velocity.y = 0f;
                 _velocity.y += _characterStats.jumpForce;
-                _movementState = (input.magnitude > 0.1f) ? MovementState.JumpOM : MovementState.JumpOI;
+                _movementState = (_currentSpeed > 0f) ? MovementState.JumpOM : MovementState.JumpOI;
+                _playerAnimator.UpdateJumping(_movementState);
             }
             else
             {
-                _velocity.y = -1f;
+                _velocity.y = -2f;
             }
         }
         else
         {
             _velocity.y += Physics.gravity.y * Time.deltaTime;
-        }
-    }
-
-    private void HandleGravity()
-    {
-        if (_characterController.isGrounded)
-        {
-            _velocity.y = -1f;
-        }
-        else
-        {
-            _velocity.y += Physics.gravity.y * Time.deltaTime;
+            _movementState = MovementState.Fall;
         }
     }
 
@@ -354,74 +328,80 @@ public class PlayerController : MonoBehaviour
         if (isCrouching && !_isCrouching)
         {
             _isCrouching = true;
-            _stanceState = StanceState.Crouching;
+            _stanceState = StanceState.Crouch;
+            _playerAnimator.UpdateStanceState(_stanceState);
+            _playerRig.UpdateBodyOffset(_itemType, _stanceState);
         }          
         else if (isCrouching && _isCrouching)
         {
             _isCrouching = false;
-            _stanceState = StanceState.Standing;
+            _stanceState = StanceState.Stand;
+            _playerAnimator.UpdateStanceState(_stanceState);
+            _playerRig.UpdateBodyOffset(_itemType, _stanceState);
         }           
     }
 
-    private void HandleAiming(bool isAiming, Vector2 input)
+    private void HandleAiming(bool isAiming)
     {
         if (isAiming && !_isAiming)
         {
-            _playerAudio.ZoomSound();
+            _playerAudio.PlayCharacterSound(CharacterSoundType.Zoom);
             _isAiming = true;
-            _rigAim.weight = 1f;
+            _combatState = CombatState.Aim;
+            _playerAnimator.UpdateAiming(true);
+            _playerInventory.ActiveCombatItem(_itemType, _combatState);
+            _playerRig.UpdateAimRigWeight(true);
             _playerCamera.EnterAimMode();
         }
         else if (isAiming && _isAiming)
         {
-            _playerAudio.ZoomSound();
+            _playerAudio.PlayCharacterSound(CharacterSoundType.Zoom);
             _isAiming = false;
-            _rigAim.weight = 0f;
+            _combatState = CombatState.None;
+            _playerAnimator.UpdateAiming(false);
+            _playerInventory.ActiveCombatItem(_itemType, _combatState);
+            _playerRig.UpdateAimRigWeight(false);
             _playerCamera.ExitAimMode();
-        }
+        }       
+    }
 
-        if (_isAiming)
-        {
-            Vector3 lookDirection = _yawTarget.forward;
-            lookDirection.y = 0;
+    private void HandleSwitchShoulder(bool isSwitchingShoulder)
+    {
+        if (!isSwitchingShoulder) return;
+        if (_combatState != CombatState.Aim) return;
+        _playerCamera.SwitchShoulder();
+    }
 
-            if (lookDirection.magnitude > 0.1f)
-            {
-                Quaternion targetRatation = Quaternion.LookRotation(lookDirection);
-                transform.rotation = Quaternion.Slerp(transform.rotation, targetRatation, 5f * Time.deltaTime);
-            }
-        }
-        else if (input.magnitude > 0.1f && input.y > 0)
-        {
-            Quaternion toRatation = Quaternion.LookRotation(_moveDirection, Vector3.up);
-            transform.rotation = Quaternion.Slerp(transform.rotation, toRatation, 5f * Time.deltaTime);
-        }
+    private void HandleZoom(float zoomDelta)
+    {
+        if (_combatState != CombatState.Aim) return;
+        if (Mathf.Abs(zoomDelta) < 0.01f) return;
+        _playerInventory.UpdateHandleZoom(_itemType, zoomDelta);
     }
 
     private void HandleAttack(bool isManualAttacking, bool isAutomaticAttacking)
     {
-        if (_isAiming == false) return;
+        if (!_isAiming || !_canAction) return;
 
         if (isManualAttacking)
         {
-            if (_itemType == ItemType.MeleeItem)
+            switch (_itemType)
             {
-                _actionState = ActionState.Melee;
-                _playerAnimator.UpdateActionState(_actionState, _stanceState);
-            }
-            else if (_itemType == ItemType.ThrowItem)
-            {
-                _actionState = ActionState.Throw;
-                _playerAnimator.UpdateActionState(_actionState, _stanceState);
-            }
-            else if (_itemType == ItemType.SecondaryItem)
-            {
-                _actionState = ActionState.ManualShoot;
-            }
-            else if (_itemType == ItemType.PrimaryItem)
-            {
-                _actionState = ActionState.ManualShoot;
-            }         
+                case ItemType.PrimaryItem:
+                case ItemType.SecondaryItem:
+                    _actionState = ActionState.ManualShoot;
+                    break;
+                case ItemType.MeleeItem:
+                    _actionState = ActionState.Melee;
+                    _playerAnimator.UpdateActionState(_actionState, _stanceState);
+                    _canAction = false;
+                    break;
+                case ItemType.ThrowItem:
+                    _actionState = ActionState.Throw;
+                    _playerAnimator.UpdateActionState(_actionState, _stanceState);
+                    _canAction = false;
+                    break;
+            }          
         }
         else if (isAutomaticAttacking)
         {
@@ -436,9 +416,80 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void HandleDeath()
+    {
+        _isAiming = false;
+        _playerRig.UpdateAimRigWeight(false);
+        if (_playerCamera != null) _playerCamera.ExitAimMode();
+        _velocity = Vector3.zero;
+        _moveDirection = Vector3.zero;
+        _currentSpeed = 0;
+        _currentDirection = 0;
+        _characterController.Move(_velocity * Time.deltaTime);
+
+        if (TryGetComponent<BehaviorGraphAgent>(out var behaviorAgent)) behaviorAgent.enabled = false;
+        if (TryGetComponent<NavMeshAgent>(out var navAgent)) navAgent.enabled = false;
+        if (TryGetComponent<BotAIController>(out var botController)) botController.enabled = false;
+        if (TryGetComponent<BotNavAgent>(out var botNavAgent)) botNavAgent.enabled = false;
+        if (TryGetComponent<RangeDetector>(out var rangeDetector)) rangeDetector.enabled = false;
+        if (TryGetComponent<LineOfSightDetector>(out var lineOfSightDetector)) lineOfSightDetector.enabled = false;
+
+        _combatState = CombatState.None;
+        _playerInventory.ActiveCombatItem(_itemType, _combatState);
+
+        _actionState = ActionState.None;
+        _itemType = ItemType.None;
+        _playerAnimator.UpdateItemType(_itemType);  
+        _playerInventory.UpdateItem(_itemType);
+        _playerInventory.DropCurrentItem(_itemType);
+        _playerRig.UpdateRigWeight(_itemType);
+        _playerRig.UpdateBodyOffset(_itemType, _stanceState);
+        _playerAnimator.UpdateDeathState(_lifeState);
+        _playerAudio.PlayCharacterSound(CharacterSoundType.Death);
+
+        Collider[] allColliders = GetComponentsInChildren<Collider>();
+        foreach (var col in allColliders)
+        {
+            col.enabled = false;
+        }
+    }
+
+    private void HandleLifeState()
+    {
+        switch (_lifeState)
+        {
+            case LifeState.Hurt:
+                _canAction = false;
+                _playerAnimator.UpdateHurt();
+                _playerAudio.PlayCharacterSound(CharacterSoundType.Hurt);
+                _lifeState = LifeState.Alive;
+                break;
+            case LifeState.DeathShoot:
+            case LifeState.DeathMelee:
+            case LifeState.DeathThrow:
+                HandleDeath();
+                IncrementDeadCount();
+                _lifeState = LifeState.None;
+                break;
+        }
+    }
+
+    private void HandlePauseMenu(bool isPausing)
+    {
+        if (_isOpeningShopInGame || _isOpeningResultTable) return;
+
+        if (isPausing)
+        {
+            if (GameManager_TeamDeathmatch.instance != null)
+                GameManager_TeamDeathmatch.instance.PauseMenu(true);
+            if (GameManager_ZombieSurvival.instance != null)
+                GameManager_ZombieSurvival.instance.PauseMenu(true);
+        }
+    }
+
     private void HandleSwitchItem(bool isSwitchingItem)
     {
-        if (_isOpeningBuyTable) return;
+        if (_isOpeningShopInGame) return;
 
         if (!isSwitchingItem) return;
 
@@ -449,11 +500,7 @@ public class PlayerController : MonoBehaviour
         else if (keyboard.digit3Key.wasPressedThisFrame) _itemType = ItemType.MeleeItem;        
         else if (keyboard.digit4Key.wasPressedThisFrame) _itemType = ItemType.ThrowItem;
 
-        _playerAudio.SwitchItemSound();
-        _playerAnimator.UpdateItemType(_itemType);
-        _playerInventory.UpdateItem(_itemType);
-        _playerRig.UpdateRigWeight(_itemType);
-        _playerRig.UpdateBodyOffset(_itemType, _stanceState);
+        SwitchItem();
     }
 
     private void HandleReloading(bool isReloading)
@@ -462,12 +509,17 @@ public class PlayerController : MonoBehaviour
         {
             if (_itemType == ItemType.PrimaryItem || _itemType == ItemType.SecondaryItem)
             {
-                _playerAudio.ZoomSound();
+                if (!_playerInventory.HasWeapon(_itemType)) return;
+                _playerAudio.PlayCharacterSound(CharacterSoundType.Zoom);
                 _isAiming = false;
-                _rigAim.weight = 0f;
+                _combatState = CombatState.None;
+                _playerAnimator.UpdateAiming(false);
+                _playerInventory.ActiveCombatItem(_itemType, _combatState);
+                _playerRig.UpdateAimRigWeight(false);
                 _playerCamera.ExitAimMode();
                 _actionState = ActionState.Reload;
                 _playerAnimator.UpdateActionState(_actionState, _stanceState);
+                _canAction = false;
             }
         }
     }
@@ -496,12 +548,12 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void HandleOpeningBuyTable(bool isOpeningBuyTable)
+    private void HandleOpeningShopInGame(bool isOpeningShopInGame)
     {
-        if (isOpeningBuyTable && !_isOpeningBuyTable)
+        if (isOpeningShopInGame && !_isOpeningShopInGame)
         {
             _canAction = false;
-            _isOpeningBuyTable = true;
+            _isOpeningShopInGame = true;
             if (UIGameManager_TeamDeathmatch.instance != null)
                 UIGameManager_TeamDeathmatch.instance.OpenMenuItem(true);
 
@@ -510,14 +562,14 @@ public class PlayerController : MonoBehaviour
 
             if (UIShopInGame.instance != null)
                 UIShopInGame.instance.OnEnableTable();
-            UIShopInGame.instance.OnEnableTable();
+
             Cursor.visible = true;
             Cursor.lockState = CursorLockMode.None;
         }
-        else if (isOpeningBuyTable && _isOpeningBuyTable)
+        else if (isOpeningShopInGame && _isOpeningShopInGame)
         {
             _canAction = true;
-            _isOpeningBuyTable = false;
+            _isOpeningShopInGame = false;
             if (UIGameManager_TeamDeathmatch.instance != null)
                 UIGameManager_TeamDeathmatch.instance.OpenMenuItem(false);
 
@@ -528,9 +580,9 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void HandleSelectedItem(bool isBuyingItem)
+    private void HandleSelectedItem(bool isSelectedItem)
     {
-        if (!isBuyingItem || !_isOpeningBuyTable) return;
+        if (!isSelectedItem || !_isOpeningShopInGame) return;
 
         var keyboard = Keyboard.current;
         if (keyboard == null) return;
@@ -548,9 +600,9 @@ public class PlayerController : MonoBehaviour
         _isSelectedItem = true;
     }
 
-    private void HandleBuyWeapon(bool isBuying)
+    private void HandleBuyItem(bool isBuyingItem)
     {
-        if (!isBuying) return;
+        if (!isBuyingItem) return;
 
         if (_isSelectedItem)
         {

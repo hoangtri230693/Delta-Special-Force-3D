@@ -1,21 +1,26 @@
 using UnityEngine;
 
+public enum CharacterSoundType
+{
+    FootStep,
+    LandStep,
+    SwitchItem,
+    Zoom,
+    Hurt,
+    Death
+}
+
 public class PlayerAudio : MonoBehaviour
 {
-    [Header("Audio Settings")]
-    [SerializeField] private AudioClip[] _footStepSounds;
-    [SerializeField] private AudioClip _landStepSound;
-    [SerializeField] private AudioClip _switchItemSound;
-    [SerializeField] private AudioClip _zoomSound;
-
+    private PlayerController _playerController;
+    private AudioSource _audioSource;
     private float _stepCooldown = 0.2f;
     private float _lastStepTime = 0f;
 
-    private AudioSource _audioSource;
-    
 
     private void Awake()
     {
+        _playerController = GetComponent<PlayerController>();
         _audioSource = GetComponent<AudioSource>();
     }
 
@@ -24,26 +29,38 @@ public class PlayerAudio : MonoBehaviour
         _audioSource.volume = PlayerPrefs.GetFloat("SFXVolume", 1f);
     }
 
-    public void ZoomSound()
+    public void PlayCharacterSound(CharacterSoundType type)
     {
-        _audioSource.PlayOneShot(_zoomSound);
-    }
+        AudioClip clipToPlay = null;
+        var stats = _playerController.CharacterStas;
 
-    public void SwitchItemSound()
-    {
-        _audioSource.PlayOneShot(_switchItemSound);
-    }
+        switch (type)
+        {
+            case CharacterSoundType.FootStep:
+                if (Time.time - _lastStepTime < _stepCooldown) return;
+                _lastStepTime = Time.time;
+                clipToPlay = stats.footStepSound[Random.Range(0, stats.footStepSound.Length)];
+                break;
+            case CharacterSoundType.LandStep:
+                clipToPlay = stats.landStepSound;
+                break;
+            case CharacterSoundType.SwitchItem:
+                clipToPlay = stats.switchItemSound;
+                break;
+            case CharacterSoundType.Zoom:
+                clipToPlay = stats.zoomSound;
+                break;
+            case CharacterSoundType.Hurt:
+                clipToPlay = stats.hurtSound[Random.Range(0, stats.hurtSound.Length)];
+                break;
+            case CharacterSoundType.Death:
+                clipToPlay = stats.deathSound;
+                break;
+        }
 
-    public void FootStep()
-    {
-        if (Time.time - _lastStepTime < _stepCooldown) return;
-        _lastStepTime = Time.time;
-
-        _audioSource.PlayOneShot(_footStepSounds[Random.Range(0, _footStepSounds.Length)]);
-    }
-
-    public void LandStep()
-    {
-        _audioSource.PlayOneShot(_landStepSound);
+        if (clipToPlay != null)
+        {
+            _audioSource.PlayOneShot(clipToPlay);
+        }
     }
 }

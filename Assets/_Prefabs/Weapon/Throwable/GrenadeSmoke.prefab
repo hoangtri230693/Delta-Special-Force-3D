@@ -183,7 +183,7 @@ GameObject:
   - component: {fileID: 6913922796487559283}
   - component: {fileID: 4652069508868787030}
   - component: {fileID: 7572550752491527815}
-  - component: {fileID: 7216148217007547814}
+  - component: {fileID: 7201672929658807820}
   - component: {fileID: 7240253133074712461}
   - component: {fileID: -2432224884629219597}
   - component: {fileID: 1719034887874926228}
@@ -261,7 +261,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.15, y: 0.25, z: 0.15}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &7216148217007547814
+--- !u!114 &7201672929658807820
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -270,24 +270,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 1221578968898106040}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8f858dd0f94225443a6dd270dea01021, type: 3}
+  m_Script: {fileID: 11500000, guid: 1332962ec5bc58247bf22eae166f9fca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _playerOwner: {fileID: 0}
   _weaponStats: {fileID: 11400000, guid: d4f39bb2126f09548a18e46c2ef7eaf1, type: 2}
-  _weaponRigData: {fileID: 11400000, guid: df67c2e08c68be84381803a1b4e56bab, type: 2}
   _weaponRigController: {fileID: 7240253133074712461}
   _weaponShootController: {fileID: 0}
   _weaponMeleeController: {fileID: 0}
   _weaponThrowController: {fileID: -2432224884629219597}
   _weaponCollision: {fileID: 942239898405989050}
-  _weaponAudio: {fileID: 1719034887874926228}
   _rigidbody: {fileID: 4652069508868787030}
+  _barrelPointController: {fileID: 0}
+  _player: {fileID: 0}
   _playerController: {fileID: 0}
   _playerRig: {fileID: 0}
   _playerAnimationEvents: {fileID: 0}
-  _playerLocal: {fileID: 0}
-  _botController: {fileID: 0}
+  _botAIController: {fileID: 0}
 --- !u!114 &7240253133074712461
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -300,7 +298,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28922f549e1265b4f929365c82537971, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _weaponManager: {fileID: 7216148217007547814}
+  _weaponRigData: {fileID: 11400000, guid: df67c2e08c68be84381803a1b4e56bab, type: 2}
+  _weaponController: {fileID: 7201672929658807820}
 --- !u!114 &-2432224884629219597
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -313,7 +312,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ece71c12a16de64bae3ea38c623b596, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _weaponManager: {fileID: 7216148217007547814}
+  _weaponController: {fileID: 7201672929658807820}
   _shakeCamera: {fileID: 1745545064257992236}
   _weaponAudio: {fileID: 1719034887874926228}
   _currentAmmo: 0
@@ -330,7 +329,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97f0513e9dbb37040860f704c98e99f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _weaponManager: {fileID: 7216148217007547814}
+  _weaponController: {fileID: 7201672929658807820}
   _audioSource: {fileID: 2382027178021422848}
 --- !u!114 &942239898405989050
 MonoBehaviour:
@@ -344,7 +343,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5437ec35ce0d264aa547055071a3161, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _weaponManager: {fileID: 7216148217007547814}
+  _weaponController: {fileID: 7201672929658807820}
 --- !u!1 &1326114697124652148
 GameObject:
   m_ObjectHideFlags: 0
@@ -606,8 +605,8 @@ AudioSource:
   SpatializePostEffects: 0
   Priority: 128
   DopplerLevel: 1
-  MinDistance: 10
-  MaxDistance: 200
+  MinDistance: 1
+  MaxDistance: 500
   Pan2D: 0
   rolloffMode: 0
   BypassEffects: 0
@@ -642,7 +641,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 1
+      value: 0
       inSlope: 0
       outSlope: 0
       tangentMode: 0

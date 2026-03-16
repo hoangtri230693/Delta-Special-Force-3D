@@ -26,16 +26,15 @@ MonoBehaviour:
     m_Bits: 4294967295
   maxDistance: 0
   shootForce: 0
-  explosionForce: 20
+  explosionForce: 10
   damage: 100
   attackRadius: 20
   ammoPerMag: 1
   ammoReverse: 0
   fireRate: 0
-  reloadTime: 0
   recoilAmount: 0
   shakeIntensity: 1.5
-  throwForce: 10
+  throwForce: 12
   armorHealth: 0
   muzzleFlash: {fileID: 0}
   fireSmoke: {fileID: 0}

@@ -17,6 +17,11 @@ public class BotNavAgent : MonoBehaviour
 
     private void LateUpdate()
     {
+        SyncAgentPosition();
+    }
+
+    private void SyncAgentPosition()
+    {
         _agent.nextPosition = transform.position;
     }
 

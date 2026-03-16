@@ -2131,7 +2131,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &665258128082814811
 Transform:
   m_ObjectHideFlags: 0
@@ -2568,7 +2568,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &3459941733457119635
 Transform:
   m_ObjectHideFlags: 0
@@ -3719,7 +3719,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6516775585661641875
 Transform:
   m_ObjectHideFlags: 0
@@ -4753,7 +4753,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4786867306192729109
 Transform:
   m_ObjectHideFlags: 0
@@ -4786,10 +4786,10 @@ GameObject:
   - component: {fileID: 3019917132720569845}
   - component: {fileID: 1181165234138549455}
   - component: {fileID: 4497149210117638475}
-  - component: {fileID: 96812108647807755}
+  - component: {fileID: 1030561958689852174}
+  - component: {fileID: 4884388551897057252}
   - component: {fileID: 6129774262696657441}
   - component: {fileID: 2054982731946824681}
-  - component: {fileID: 4884388551897057252}
   - component: {fileID: 6518928438355159}
   - component: {fileID: 4311829506814886903}
   - component: {fileID: 6653725361056826487}
@@ -4870,7 +4870,7 @@ CharacterController:
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0.9, z: 0}
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!136 &3245212398182919500
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -5024,7 +5024,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 8366222647539236831}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.4
+  m_Radius: 0.6
   m_Speed: 3.5
   m_Acceleration: 12
   avoidancePriority: 50
@@ -5079,7 +5079,7 @@ MonoBehaviour:
         - {fileID: 0}
         - {fileID: 0}
         - {fileID: 0}
---- !u!114 &96812108647807755
+--- !u!114 &1030561958689852174
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -5088,10 +5088,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 8366222647539236831}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 59a7cbe2072bee449b71b1532b3a8466, type: 3}
+  m_Script: {fileID: 11500000, guid: 506dfd8ab8d387546bc201cc0764a44d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _characterStats: {fileID: 11400000, guid: ae84432063809ae4d80fbf75e5b9f49d, type: 2}
   _characterController: {fileID: 36235872764930700}
   _playerController: {fileID: 6518928438355159}
   _playerInventory: {fileID: 6653725361056826487}
@@ -5100,6 +5099,19 @@ MonoBehaviour:
   _animator: {fileID: 8042017211730292640}
   _behaviorGraphAgent: {fileID: 4497149210117638475}
   _canShoot: 0
+--- !u!114 &4884388551897057252
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8366222647539236831}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6179b22c7a7bad945b4fbf4bd629f63f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _agent: {fileID: 1181165234138549455}
 --- !u!114 &6129774262696657441
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5113,7 +5125,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   behaviorAgent: {fileID: 4497149210117638475}
-  detectionRange: 15
+  detectionRange: 20
   detectionLayer:
     serializedVersion: 2
     m_Bits: 4096
@@ -5131,7 +5143,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   behaviorAgent: {fileID: 4497149210117638475}
-  viewDistance: 10
+  viewDistance: 15
   viewAngle: 60
   targetLayer:
     serializedVersion: 2
@@ -5140,19 +5152,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 3072
   detectedTarget: {fileID: 0}
---- !u!114 &4884388551897057252
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8366222647539236831}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6179b22c7a7bad945b4fbf4bd629f63f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _agent: {fileID: 1181165234138549455}
 --- !u!114 &6518928438355159
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5167,25 +5166,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _characterController: {fileID: 36235872764930700}
   _characterStats: {fileID: 11400000, guid: ae84432063809ae4d80fbf75e5b9f49d, type: 2}
-  _cameraThirdPerson: {fileID: 0}
-  _yawTarget: {fileID: 8828008525273906468}
-  _rigAim: {fileID: 662937411556049855}
-  _isAiming: 0
-  _isCrouching: 0
-  _isOpeningBuyTable: 0
-  _isOpeningResultTable: 0
-  _isSelectedItem: 0
   _canAction: 1
-  _canReload: 0
-  _isPausing: 0
   _movementState: 0
   _stanceState: 0
+  _combatState: 0
   _actionState: 0
   _itemType: 2
   _lifeState: 1
+  _killedCount: 0
+  _deathCount: 0
   _currentSpeed: 0
   _currentDirection: 0
-  _currentCash: 10000
+  _currentCash: 20000
 --- !u!114 &4311829506814886903
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5226,20 +5218,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 525a8f88c9da28145afd8dfadf061c24, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _footStepSounds:
-  - {fileID: 8300000, guid: 86656c402cac0194792f2b0cf535c5f3, type: 3}
-  - {fileID: 8300000, guid: e0da95718e6eb7a418ea6a197ca8bd94, type: 3}
-  - {fileID: 8300000, guid: d0fa53ef2bd485843912e636168c36bb, type: 3}
-  - {fileID: 8300000, guid: 3d05f817c588ebd468a0f944d0cb94fa, type: 3}
-  - {fileID: 8300000, guid: a271b6a4e6cc18244a95dddf11f78428, type: 3}
-  - {fileID: 8300000, guid: 2c075dc64225db54398d2838f1c2ae85, type: 3}
-  - {fileID: 8300000, guid: bb7dd800c3ee36f498441bf6abd9f2ce, type: 3}
-  - {fileID: 8300000, guid: 621f42ffbe28e5e4d9bfc2f319c5bdd5, type: 3}
-  - {fileID: 8300000, guid: 2ac78cbafacbd08449f877405c602e53, type: 3}
-  - {fileID: 8300000, guid: fa36b547c480cc840af2f8bd3eb16ef4, type: 3}
-  _landStepSound: {fileID: 8300000, guid: 96e7911eaca5c044c9e0379fdfa71c70, type: 3}
-  _switchItemSound: {fileID: 8300000, guid: a1cc9150834784146bab5a65b1d68968, type: 3}
-  _zoomSound: {fileID: 8300000, guid: 7989dcbd974f55a4cabfa440cf3cb2dd, type: 3}
 --- !u!114 &9060202697100612325
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5268,10 +5246,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79240a10f32125d478da776bf8d65cae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _characterStats: {fileID: 11400000, guid: ae84432063809ae4d80fbf75e5b9f49d, type: 2}
   _currentHealth: 0
   _currentArmorHealth: 0
-  _isDead: 0
 --- !u!114 &3556300957071017678
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5285,11 +5261,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _characterRigData: {fileID: 11400000, guid: 22acde200a9b84f4792f3fb47e02c58b, type: 2}
-  _rigPrimaryItem: {fileID: 8076627303747648588}
-  _rigSecondaryItem: {fileID: 3920875430560720401}
-  _rigMeleeItem: {fileID: 4198361426814264621}
-  _rigThrowItem: {fileID: 6824797425457760928}
-  _bodyRotationConstraint: {fileID: 607876145213512920}
+  _primaryItemRig: {fileID: 8076627303747648588}
+  _secondaryItemRig: {fileID: 3920875430560720401}
+  _meleeItemRig: {fileID: 4198361426814264621}
+  _throwItemRig: {fileID: 6824797425457760928}
+  _aimRig: {fileID: 662937411556049855}
+  _bodyRig: {fileID: 607876145213512920}
   _primaryLeftHandIK: {fileID: 7840094332239902858}
   _primaryRightHandIK: {fileID: 6241499229435139933}
   _secondaryLeftHandIK: {fileID: 5266024004828252147}

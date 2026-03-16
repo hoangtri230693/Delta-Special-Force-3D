@@ -50,6 +50,6 @@ public class UIPlayGame : MonoBehaviour
     public void OnClickBack()
     {
         SceneManager.LoadScene("StartGame");
-        AudioManager.instance.PlaySfx(SFXType.DefaultClick);
+        AudioManager.instance.PlaySfx(SFXType.MetalClick);
     }
 }

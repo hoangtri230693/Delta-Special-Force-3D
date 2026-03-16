@@ -8,7 +8,7 @@ public class LineOfSightDetector : MonoBehaviour
 
     [Header("Line of Sight Settings")]
     public float viewDistance = 15f;
-    [Range(0, 180f)] public float viewAngle = 90f;
+    public float viewAngle = 60f;
     public LayerMask targetLayer;
     public LayerMask obstacleLayer;
 
@@ -20,9 +20,15 @@ public class LineOfSightDetector : MonoBehaviour
 
     private void Update()
     {
+        DetectLineOfSight();
+    }
+
+    private void DetectLineOfSight()
+    {
         detectedTarget = null;
 
         Collider[] targets = Physics.OverlapSphere(transform.position, viewDistance, targetLayer);
+
         foreach (var target in targets)
         {
             Vector3 directionToTarget = (target.transform.position - transform.position).normalized;
@@ -42,10 +48,14 @@ public class LineOfSightDetector : MonoBehaviour
                 }
             }
         }
-     
-        behaviorAgent.BlackboardReference.SetVariableValue("HasLineOfSight", HasLineOfSight);
+
+        UpdateBlackboard();
     }
 
+    private void UpdateBlackboard()
+    {
+        behaviorAgent.BlackboardReference.SetVariableValue("HasLineOfSight", HasLineOfSight);
+    }
 
     private void OnDrawGizmosSelected()
     {

@@ -44,6 +44,10 @@ MonoBehaviour:
   shellCasing: {fileID: 4850937910619775609, guid: 7e45082c7692be641b572e4afb32f4f2, type: 3}
   cockSound: {fileID: 8300000, guid: f57a06141c6ca9b4280a483a69488b03, type: 3}
   attackSound: {fileID: 8300000, guid: 0f671448654b6b64dbe7c58c351a78df, type: 3}
+  hitSound:
+  - {fileID: 8300000, guid: 9dcd13733ae1542fba4664e841eb4fff, type: 3}
+  - {fileID: 8300000, guid: 82807f118ec9b4a0dbbb5234dd645837, type: 3}
+  - {fileID: 8300000, guid: 85ab22c5a2fc24a6cbc2497bfb42c8de, type: 3}
   reloadSound: {fileID: 8300000, guid: 76d0dccbe0e905c429fb06b6bf1b3aac, type: 3}
   explosionSound: {fileID: 0}
   dryFireSound: {fileID: 8300000, guid: 42ba8db7efdd33a49a8e92d507029bd8, type: 3}

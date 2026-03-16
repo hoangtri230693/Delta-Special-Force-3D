@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: MapMenuSO
+  m_EditorClassIdentifier: 
+  m_GroupName: MapMenuSO
+  m_GUID: a212573cbe750454eafcbc52d397708f
+  m_SerializeEntries:
+  - m_GUID: 878424ee73119dc4ba0f5adf8b755140
+    m_Address: Assets/_Data/Map/MapMenu_TeamDeathmatch.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d63ee2f3687663045b8011efb18bcca1
+    m_Address: Assets/_Data/Map/MapMenu_ZombieSurvival.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 0f6a5b48bef5e9a449ca3ed794a3e81a, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: ab7762118f395444db42650c36c9f983, type: 2}
+    - {fileID: 11400000, guid: 40c29fa8a4bea0c4a8473b059f854267, type: 2}

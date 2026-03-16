@@ -19,16 +19,49 @@ public class PlayerInventory : MonoBehaviour
 
     public void DropCurrentItem(ItemType itemType)
     {
-        switch (itemType)
+        WeaponController weapon = GetWeaponInSlot(itemType);
+        if (weapon != null)
         {
-            case ItemType.PrimaryItem:
-                var weaponPrimary = _primaryItem.GetComponentInChildren<WeaponManager>();
-                weaponPrimary.DropWeapon();
-                break;
-            case ItemType.SecondaryItem:
-                var weaponSecondary = _secondaryItem.GetComponentInChildren<WeaponManager>();
-                weaponSecondary.DropWeapon();
-                break;
+            weapon.DropWeapon();
         }
+    }
+
+    public void ActiveCombatItem(ItemType itemType, CombatState combatState)
+    {
+        WeaponController weapon = GetWeaponInSlot(itemType);
+        if (weapon != null)
+        {
+            weapon.ActiveCombat(combatState);
+        }
+    }
+
+    public void UpdateHandleZoom(ItemType itemType, float zoomDelta)
+    {
+        WeaponController weapon = GetWeaponInSlot(itemType);
+        if (weapon != null)
+        {
+            weapon.ZoomControl(zoomDelta);
+        }
+    }
+
+    public bool HasWeapon(ItemType itemType)
+    {
+        return GetWeaponInSlot(itemType) != null;
+    }
+
+    private WeaponController GetWeaponInSlot(ItemType itemType)
+    {
+        GameObject slot = itemType switch
+        {
+            ItemType.PrimaryItem => _primaryItem,
+            ItemType.SecondaryItem => _secondaryItem,
+            ItemType.MeleeItem => _meleeItem,
+            ItemType.ThrowItem => _throwItem,
+            _ => null
+        };
+
+        if (slot == null) return null;
+
+        return slot.GetComponentInChildren<WeaponController>();
     }
 }

@@ -4,7 +4,7 @@ public class GameplayDataManager : MonoBehaviour
 {
     public static GameplayDataManager instance;
 
-    [SerializeField] private GameplayData _gameplayData;
+    public GameplayData _gameplayData;
 
     private void Awake()
     {

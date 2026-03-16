@@ -289,15 +289,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3c971dbb13da7546a85a00be8625390, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _weaponManager: {fileID: 3278094073472234529}
+  _weaponController: {fileID: 7375101201566437228}
   _crosshairOffset: 0.01
   _crosshair: {fileID: 8805339887476457376}
   _scopeCrosshair: {fileID: 0}
   _aimScopeCamera: {fileID: 0}
-  _weaponStats: {fileID: 11400000, guid: d039c184f4633294fa00bc417e9b26e0, type: 2}
+  _crosshairController: {fileID: 6492892590340698588}
+  _scopeAimController: {fileID: 0}
   _targetPosition: {x: 0, y: 0, z: 0}
   _targetRotation: {x: 0, y: 0, z: 0, w: 0}
   _playerHealth: {fileID: 0}
+  _zombieHealth: {fileID: 0}
 --- !u!1 &6208910163461141657
 GameObject:
   m_ObjectHideFlags: 0
@@ -311,7 +313,7 @@ GameObject:
   - component: {fileID: 7532242107032012126}
   - component: {fileID: -6175154538949510360}
   - component: {fileID: 136081105966653104}
-  - component: {fileID: 3278094073472234529}
+  - component: {fileID: 7375101201566437228}
   - component: {fileID: 8809967873437851264}
   - component: {fileID: 2008217797514255189}
   - component: {fileID: 950047521360564860}
@@ -445,7 +447,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.18116018, y: 0.78403383, z: 1.1331629}
   m_Center: {x: 0, y: 0.12741068, z: -0.053917255}
---- !u!114 &3278094073472234529
+--- !u!114 &7375101201566437228
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -454,24 +456,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 6208910163461141657}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8f858dd0f94225443a6dd270dea01021, type: 3}
+  m_Script: {fileID: 11500000, guid: 1332962ec5bc58247bf22eae166f9fca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _playerOwner: {fileID: 0}
   _weaponStats: {fileID: 11400000, guid: d039c184f4633294fa00bc417e9b26e0, type: 2}
-  _weaponRigData: {fileID: 11400000, guid: 665578daee0a5e74aa5f2c027eed91e7, type: 2}
   _weaponRigController: {fileID: 8809967873437851264}
   _weaponShootController: {fileID: 2008217797514255189}
   _weaponMeleeController: {fileID: 0}
   _weaponThrowController: {fileID: 0}
   _weaponCollision: {fileID: 950047521360564860}
-  _weaponAudio: {fileID: 635770288357318154}
   _rigidbody: {fileID: -6175154538949510360}
+  _barrelPointController: {fileID: 302738270755758310}
+  _player: {fileID: 0}
   _playerController: {fileID: 0}
   _playerRig: {fileID: 0}
   _playerAnimationEvents: {fileID: 0}
-  _playerLocal: {fileID: 0}
-  _botController: {fileID: 0}
+  _botAIController: {fileID: 0}
 --- !u!114 &8809967873437851264
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -484,7 +484,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28922f549e1265b4f929365c82537971, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _weaponManager: {fileID: 3278094073472234529}
+  _weaponRigData: {fileID: 11400000, guid: 665578daee0a5e74aa5f2c027eed91e7, type: 2}
+  _weaponController: {fileID: 7375101201566437228}
 --- !u!114 &2008217797514255189
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -497,7 +498,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2da225666529694428a9b12005d7d26f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _weaponManager: {fileID: 3278094073472234529}
+  _weaponController: {fileID: 7375101201566437228}
   _gunRecoilController: {fileID: 4699355901554969385}
   _barrelPointController: {fileID: 302738270755758310}
   _recoilCamera: {fileID: 5755117370544025562}
@@ -518,7 +519,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5437ec35ce0d264aa547055071a3161, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _weaponManager: {fileID: 3278094073472234529}
+  _weaponController: {fileID: 7375101201566437228}
 --- !u!114 &635770288357318154
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -531,7 +532,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97f0513e9dbb37040860f704c98e99f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _weaponManager: {fileID: 3278094073472234529}
+  _weaponController: {fileID: 7375101201566437228}
   _audioSource: {fileID: 5216369480252762074}
 --- !u!114 &4699355901554969385
 MonoBehaviour:
@@ -737,4 +738,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c12933d158e9c84eaa1672919eae238, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _barrelPointController: {fileID: 302738270755758310}

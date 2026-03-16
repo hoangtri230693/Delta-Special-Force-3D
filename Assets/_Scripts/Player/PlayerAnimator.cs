@@ -3,60 +3,74 @@ using UnityEngine;
 
 public class PlayerAnimator : MonoBehaviour
 {
-    private PlayerController _playerController;
     private Animator _animator;
 
     private int _primaryItemLayerIndex;
-    private int _meleeLayerIndex;
+    private int _meleeItemLayerIndex;
     private int _throwItemLayerIndex;
 
 
     private void Awake()
     {
-        _playerController = GetComponent<PlayerController>();
         _animator = GetComponentInChildren<Animator>();
     }
 
     private void Start()
     {    
         _primaryItemLayerIndex = _animator.GetLayerIndex("Primary Item Layer");
-        _meleeLayerIndex = _animator.GetLayerIndex("Melee Item Layer");
+        _meleeItemLayerIndex = _animator.GetLayerIndex("Melee Item Layer");
         _throwItemLayerIndex = _animator.GetLayerIndex("Throw Item Layer");
     }
 
-    private void Update()
+    public void UpdateMovementState(Vector2 input, MovementState movementState, CombatState combatState)
     {
-        UpdateMovementState();
-        UpdateHit();
+        if (combatState == CombatState.Aim)
+        {
+            float multiplier = (movementState == MovementState.Run) ? 2f : 1f;
+            _animator.SetFloat("Horizontal", input.x * multiplier, 0.1f, Time.deltaTime);
+            _animator.SetFloat("Vertical", input.y * multiplier, 0.1f, Time.deltaTime);
+        }
+        else
+        {
+            float targetSpeed = 0f;
+            switch (movementState)
+            {
+                case MovementState.Walk:
+                    targetSpeed = 1f;
+                    break;
+                case MovementState.Run:
+                    targetSpeed = 2f;
+                    break;
+                case MovementState.Idle:
+                default:
+                    targetSpeed = 0f;
+                    break;
+            }
+            _animator.SetFloat("Speed", targetSpeed, 0.1f, Time.deltaTime);
+        }
     }
-                               
-    private void UpdateMovementState()
-    {
-        _animator.SetFloat("Speed", _playerController._currentSpeed, 0.1f, Time.deltaTime);
-        _animator.SetFloat("Direction", _playerController._currentDirection, 0.1f, Time.deltaTime);
 
-        if (_playerController._movementState == MovementState.JumpOI)
+    public void UpdateStanceState(StanceState stanceState)
+    {
+        _animator.SetBool("isCrouching", stanceState == StanceState.Crouch);
+    }
+
+    public void UpdateJumping(MovementState movementState)
+    {
+        if (movementState == MovementState.JumpOI)
         {
             _animator.SetTrigger("JumpOI");
-            _playerController._movementState = MovementState.Idle;
         }
-
-        if (_playerController._movementState == MovementState.JumpOM)
+        if (movementState == MovementState.JumpOM)
         {
             _animator.SetTrigger("JumpOM");
-            _playerController._movementState = MovementState.Idle;
-        }
-
-        if (_playerController._stanceState == StanceState.Crouching)
-        {
-            _animator.SetBool("isCrouching", true);
-        }
-        else if (_playerController._stanceState == StanceState.Standing)
-        {
-            _animator.SetBool("isCrouching", false);
         }
     }
 
+    public void UpdateAiming(bool isAiming)
+    {
+        _animator.SetBool("isAiming", isAiming);
+    }
 
     public void UpdateActionState(ActionState actionState, StanceState stanceState)
     {        
@@ -72,11 +86,11 @@ public class PlayerAnimator : MonoBehaviour
 
         if (actionState == ActionState.Reload)
         {
-            if (stanceState == StanceState.Standing)
+            if (stanceState == StanceState.Stand)
             {
                 _animator.SetTrigger("ReloadOS");
             }
-            else if (stanceState == StanceState.Crouching)
+            else if (stanceState == StanceState.Crouch)
             {
                 _animator.SetTrigger("ReloadOC");
             }
@@ -90,37 +104,37 @@ public class PlayerAnimator : MonoBehaviour
         bool isThrowableItem = itemType == ItemType.ThrowItem;
 
         _animator.SetLayerWeight(_primaryItemLayerIndex, isPrimaryItem ? 1f : 0f);
-        _animator.SetLayerWeight(_meleeLayerIndex, isMeleeItem ? 1f : 0f);
+        _animator.SetLayerWeight(_meleeItemLayerIndex, isMeleeItem ? 1f : 0f);
         _animator.SetLayerWeight(_throwItemLayerIndex, isThrowableItem ? 1f : 0f);
     }
 
-    public void UpdateHit()
+    public void UpdateHurt()
     {
-        if (_playerController._lifeState == LifeState.Hit)
-        {
-            _animator.SetTrigger("Hit");
-            _playerController._lifeState = LifeState.Alive;
-        }       
+        _animator.SetTrigger("Hurt");
     }
 
-    public void UpdateDeath(LifeState lifeState)
+    public void UpdateDeathState(LifeState lifeState)
     {
-        if (lifeState == LifeState.DeathShoot)
+        switch (lifeState)
         {
-            _animator.SetTrigger("DeathShoot");
-            _playerController._lifeState = LifeState.None;
-        }
-        if (lifeState == LifeState.DeathMelee)
-        {
-            _animator.SetTrigger("DeathMelee");
-            _playerController._lifeState = LifeState.None;
-        }
-        if (lifeState == LifeState.DeathThrow)
-        {
-            _animator.SetTrigger("DeathThrow");
-            _playerController._lifeState = LifeState.None;
+            case LifeState.DeathShoot:
+                _animator.SetTrigger("DeathShoot");
+                break;
+            case LifeState.DeathMelee:
+                _animator.SetTrigger("DeathMelee");
+                break;
+            case LifeState.DeathThrow:
+                _animator.SetTrigger("DeathThrow");
+                break;
         }
 
         this.enabled = false;
+    }
+
+    public void ResetMovementState()
+    {
+        _animator.SetFloat("Horizontal", 0f);
+        _animator.SetFloat("Vertical", 0f);
+        _animator.SetFloat("Speed", 0f);
     }
 }

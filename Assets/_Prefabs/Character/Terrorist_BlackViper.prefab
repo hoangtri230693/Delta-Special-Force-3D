@@ -1602,7 +1602,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &9020859493424066881
 Transform:
   m_ObjectHideFlags: 0
@@ -2596,7 +2596,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &3388630703767897811
 Transform:
   m_ObjectHideFlags: 0
@@ -3306,7 +3306,7 @@ CharacterController:
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0.9, z: 0}
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!136 &6397966476608455344
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -3465,25 +3465,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _characterController: {fileID: 4427474568097823480}
   _characterStats: {fileID: 11400000, guid: ae84432063809ae4d80fbf75e5b9f49d, type: 2}
-  _cameraThirdPerson: {fileID: 2565164163756754994}
-  _yawTarget: {fileID: 8291456893557313863}
-  _rigAim: {fileID: 2397183349574758643}
-  _isAiming: 0
-  _isCrouching: 0
-  _isOpeningBuyTable: 0
-  _isOpeningResultTable: 0
-  _isSelectedItem: 0
   _canAction: 1
   _canReload: 0
-  _isPausing: 0
   _movementState: 0
   _stanceState: 0
+  _combatState: 0
   _actionState: 0
   _itemType: 2
   _lifeState: 1
+  _killedCount: 0
+  _deathCount: 0
   _currentSpeed: 0
   _currentDirection: 0
-  _currentCash: 10000
+  _currentCash: 20000
 --- !u!114 &7542706710969729652
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3499,7 +3493,11 @@ MonoBehaviour:
   _freeLookCamera: {fileID: 2224058934262736799}
   _aimCamera: {fileID: 4590742925737572106}
   _inputAxisController: {fileID: 6560842163343260810}
-  _aimCameraController: {fileID: 1047007272429687733}
+  _aimFollow: {fileID: 6386125657183872514}
+  _yawTarget: {fileID: 8291456893557313863}
+  _pitchWrapper: {fileID: 1769841859602513716}
+  _pitchTarget: {fileID: 5198138463823493515}
+  _cameraStats: {fileID: 11400000, guid: c372f8909913b414d98e5e09c2c2c933, type: 2}
 --- !u!114 &-7988286691588798635
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3513,18 +3511,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _moveAction: {fileID: -1680190386980627800, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  _lookAction: {fileID: -5630151704836100654, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   _sprintAction: {fileID: -7471211009204490832, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   _jumpAction: {fileID: -2099379676528639254, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   _crouchAction: {fileID: 7040659881675835329, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   _aimAction: {fileID: 4275065855663605319, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  _switchShoulderAction: {fileID: -2958764282487652952, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  _zoomAction: {fileID: -2831689251083825379, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   _attackAction: {fileID: 1120369429361536294, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   _switchItemAction: {fileID: 1775394689035796912, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   _reloadAction: {fileID: -8854350581797777147, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   _dropAction: {fileID: -2985758506974065851, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   _pauseAction: {fileID: -7187328742538688586, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  _openBuyTableAction: {fileID: 9078799884804059275, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  _selectBuyItemAction: {fileID: -939615163248408758, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  _buyAction: {fileID: -3176644520795862588, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  _openShopInGameAction: {fileID: 9078799884804059275, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  _selectItemAction: {fileID: -939615163248408758, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  _buyItemAction: {fileID: -3176644520795862588, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   _openResultTableAction: {fileID: -7052245931314845813, guid: 052faaac586de48259a63d0c4782560b, type: 3}
 --- !u!114 &771491609038593851
 MonoBehaviour:
@@ -3566,20 +3567,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 525a8f88c9da28145afd8dfadf061c24, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _footStepSounds:
-  - {fileID: 8300000, guid: 86656c402cac0194792f2b0cf535c5f3, type: 3}
-  - {fileID: 8300000, guid: e0da95718e6eb7a418ea6a197ca8bd94, type: 3}
-  - {fileID: 8300000, guid: d0fa53ef2bd485843912e636168c36bb, type: 3}
-  - {fileID: 8300000, guid: 3d05f817c588ebd468a0f944d0cb94fa, type: 3}
-  - {fileID: 8300000, guid: a271b6a4e6cc18244a95dddf11f78428, type: 3}
-  - {fileID: 8300000, guid: 2c075dc64225db54398d2838f1c2ae85, type: 3}
-  - {fileID: 8300000, guid: bb7dd800c3ee36f498441bf6abd9f2ce, type: 3}
-  - {fileID: 8300000, guid: 621f42ffbe28e5e4d9bfc2f319c5bdd5, type: 3}
-  - {fileID: 8300000, guid: 2ac78cbafacbd08449f877405c602e53, type: 3}
-  - {fileID: 8300000, guid: fa36b547c480cc840af2f8bd3eb16ef4, type: 3}
-  _landStepSound: {fileID: 8300000, guid: 96e7911eaca5c044c9e0379fdfa71c70, type: 3}
-  _switchItemSound: {fileID: 8300000, guid: a1cc9150834784146bab5a65b1d68968, type: 3}
-  _zoomSound: {fileID: 8300000, guid: 7989dcbd974f55a4cabfa440cf3cb2dd, type: 3}
 --- !u!114 &7869066701361170592
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3608,7 +3595,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79240a10f32125d478da776bf8d65cae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _characterStats: {fileID: 11400000, guid: ae84432063809ae4d80fbf75e5b9f49d, type: 2}
   _currentHealth: 0
   _currentArmorHealth: 0
   _isDead: 0
@@ -3625,11 +3611,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _characterRigData: {fileID: 11400000, guid: 22acde200a9b84f4792f3fb47e02c58b, type: 2}
-  _rigPrimaryItem: {fileID: 8659013116167572233}
-  _rigSecondaryItem: {fileID: 690806523493200448}
-  _rigMeleeItem: {fileID: 5068473682899645396}
-  _rigThrowItem: {fileID: 263484415648354754}
-  _bodyRotationConstraint: {fileID: 266018784228560796}
+  _primaryItemRig: {fileID: 8659013116167572233}
+  _secondaryItemRig: {fileID: 690806523493200448}
+  _meleeItemRig: {fileID: 5068473682899645396}
+  _throwItemRig: {fileID: 263484415648354754}
+  _aimRig: {fileID: 2397183349574758643}
+  _bodyRig: {fileID: 266018784228560796}
   _primaryLeftHandIK: {fileID: 4226655212280642582}
   _primaryRightHandIK: {fileID: 4279574421530997023}
   _secondaryLeftHandIK: {fileID: 2183068871123950309}
@@ -4836,7 +4823,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &3778040813421514307
 Transform:
   m_ObjectHideFlags: 0
@@ -5586,7 +5573,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &226980476818963323
 Transform:
   m_ObjectHideFlags: 0
@@ -6350,7 +6337,6 @@ GameObject:
   - component: {fileID: 4590742925737572106}
   - component: {fileID: 6386125657183872514}
   - component: {fileID: 2600828625202978229}
-  - component: {fileID: 1047007272429687733}
   m_Layer: 11
   m_Name: ThirdPersonAimCamera
   m_TagString: Untagged
@@ -6397,7 +6383,7 @@ MonoBehaviour:
     LookAtTarget: {fileID: 0}
     CustomLookAtTarget: 0
   Lens:
-    FieldOfView: 65
+    FieldOfView: 55
     OrthographicSize: 5
     NearClipPlane: 0.3
     FarClipPlane: 1000
@@ -6466,25 +6452,6 @@ MonoBehaviour:
     FrequencyGain: 1.2
     Duration: 0.2
     m_NoiseOffsets: {x: 0, y: 0, z: 0}
---- !u!114 &1047007272429687733
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8802331057952916502}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aba2f5aef4aa54040b2c928899b8eb41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _yawTarget: {fileID: 8291456893557313863}
-  _pitchWrapper: {fileID: 1769841859602513716}
-  _pitchTarget: {fileID: 5198138463823493515}
-  _lookAction: {fileID: -5630151704836100654, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  _switchShoulderAction: {fileID: -2958764282487652952, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  _aimCamera: {fileID: 6386125657183872514}
-  _cameraStats: {fileID: 11400000, guid: c372f8909913b414d98e5e09c2c2c933, type: 2}
 --- !u!1 &8840545368214391265
 GameObject:
   m_ObjectHideFlags: 0

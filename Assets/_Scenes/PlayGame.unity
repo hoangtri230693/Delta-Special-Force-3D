@@ -557,25 +557,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72e1e2b5c1450c842b6141210db34865, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _weaponStatsData:
-  - {fileID: 11400000, guid: 76c163518e075c04da1a946826e2a83f, type: 2}
-  - {fileID: 11400000, guid: d039c184f4633294fa00bc417e9b26e0, type: 2}
-  - {fileID: 11400000, guid: beb58b13c5020eb4b8754d71b9f81e66, type: 2}
-  - {fileID: 11400000, guid: 3bad81c2952caac46ac26ac726e52262, type: 2}
-  - {fileID: 11400000, guid: 3b87eb2defd7f6e4e946bdbf0c6a7c5c, type: 2}
-  - {fileID: 11400000, guid: f79ebaa1a003816419dcbdf865d47c84, type: 2}
-  - {fileID: 11400000, guid: afd8f806dfd8e854c8c78276d54b6ed7, type: 2}
-  - {fileID: 11400000, guid: 735cf850a3240684b9e3dc1732fee233, type: 2}
-  - {fileID: 11400000, guid: b5348dd0a7eeef3438e3ac7e5ff71a1f, type: 2}
-  - {fileID: 11400000, guid: 572d591a29205334e9aa8cde7046f7f0, type: 2}
-  - {fileID: 11400000, guid: 62f944b63106b7544bb043f29eaf7739, type: 2}
-  - {fileID: 11400000, guid: a107b241a616f4648b11527ab2663bc2, type: 2}
-  - {fileID: 11400000, guid: 777419ff309ea384b839d26eeb0d4c96, type: 2}
-  - {fileID: 11400000, guid: 905a5642ec6b98a4bb2dfef87bd6bb0b, type: 2}
-  - {fileID: 11400000, guid: c3dd8a1a1ec3bda41b383057747119d1, type: 2}
-  - {fileID: 11400000, guid: d4f39bb2126f09548a18e46c2ef7eaf1, type: 2}
-  - {fileID: 11400000, guid: ce94e2748f7ef60408475c093338d165, type: 2}
-  - {fileID: 11400000, guid: d2e544551e202804d8f52f7ddf6b5dca, type: 2}
   _weaponName: {fileID: 1617869081}
   _weaponPreview: {fileID: 238123093}
   _weaponStats:
@@ -621,7 +602,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d69643533b5b1c41a408450fbbe581a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 45
+  _rotationSpeed: 45
+  _rotationAxis: {x: 0, y: 1, z: 0}
 --- !u!4 &238123093
 Transform:
   m_ObjectHideFlags: 0
@@ -2716,6 +2698,8 @@ GameObject:
   - component: {fileID: 1262581285}
   - component: {fileID: 1262581284}
   - component: {fileID: 1262581283}
+  - component: {fileID: 1262581287}
+  - component: {fileID: 1262581286}
   m_Layer: 5
   m_Name: ButtonNext
   m_TagString: Untagged
@@ -2836,6 +2820,66 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1262581281}
   m_CullTransparentMesh: 1
+--- !u!114 &1262581286
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1262581281}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates:
+  - eventID: 0
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1262581287}
+          m_TargetAssemblyTypeName: HoverTextColor, Assembly-CSharp
+          m_MethodName: SetHoverColor
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - eventID: 1
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1262581287}
+          m_TargetAssemblyTypeName: HoverTextColor, Assembly-CSharp
+          m_MethodName: SetNormalColor
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+--- !u!114 &1262581287
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1262581281}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7b8f2cb9e655e74aa34d3496b211e04, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _textElement: {fileID: 0}
+  _imageBorder: {fileID: 1262581284}
+  _hoverColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!1 &1327451636
 GameObject:
   m_ObjectHideFlags: 0
@@ -3315,6 +3359,8 @@ GameObject:
   - component: {fileID: 1513153678}
   - component: {fileID: 1513153677}
   - component: {fileID: 1513153676}
+  - component: {fileID: 1513153680}
+  - component: {fileID: 1513153679}
   m_Layer: 5
   m_Name: ButtonPrevious
   m_TagString: Untagged
@@ -3435,6 +3481,66 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1513153674}
   m_CullTransparentMesh: 1
+--- !u!114 &1513153679
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1513153674}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates:
+  - eventID: 0
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1513153680}
+          m_TargetAssemblyTypeName: HoverTextColor, Assembly-CSharp
+          m_MethodName: SetHoverColor
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - eventID: 1
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1513153680}
+          m_TargetAssemblyTypeName: HoverTextColor, Assembly-CSharp
+          m_MethodName: SetNormalColor
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+--- !u!114 &1513153680
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1513153674}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7b8f2cb9e655e74aa34d3496b211e04, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _textElement: {fileID: 0}
+  _imageBorder: {fileID: 1513153677}
+  _hoverColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!1 &1610703291
 GameObject:
   m_ObjectHideFlags: 0

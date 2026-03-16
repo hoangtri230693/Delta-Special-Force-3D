@@ -329,7 +329,7 @@ GameObject:
   - component: {fileID: 6924803233655694428}
   - component: {fileID: 8611780746610155691}
   - component: {fileID: -3610520678131247287}
-  - component: {fileID: -449521020642056505}
+  - component: {fileID: 6565988143558625351}
   - component: {fileID: 8427390595873222634}
   - component: {fileID: 7754170223601885393}
   - component: {fileID: 1957680220327723682}
@@ -463,7 +463,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.26056075, y: 0.971557, z: 1.6699742}
   m_Center: {x: 0, y: 0.050266325, z: -0.10166764}
---- !u!114 &-449521020642056505
+--- !u!114 &6565988143558625351
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -472,24 +472,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 7548666581388900521}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8f858dd0f94225443a6dd270dea01021, type: 3}
+  m_Script: {fileID: 11500000, guid: 1332962ec5bc58247bf22eae166f9fca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _playerOwner: {fileID: 0}
   _weaponStats: {fileID: 11400000, guid: 3bad81c2952caac46ac26ac726e52262, type: 2}
-  _weaponRigData: {fileID: 11400000, guid: 05f910b9b69de1c498713e9ebcb95706, type: 2}
   _weaponRigController: {fileID: 8427390595873222634}
   _weaponShootController: {fileID: 7754170223601885393}
   _weaponMeleeController: {fileID: 0}
   _weaponThrowController: {fileID: 0}
   _weaponCollision: {fileID: 1957680220327723682}
-  _weaponAudio: {fileID: 6940080264384184188}
   _rigidbody: {fileID: 8611780746610155691}
+  _barrelPointController: {fileID: 386812635785963106}
+  _player: {fileID: 0}
   _playerController: {fileID: 0}
   _playerRig: {fileID: 0}
   _playerAnimationEvents: {fileID: 0}
-  _playerLocal: {fileID: 0}
-  _botController: {fileID: 0}
+  _botAIController: {fileID: 0}
 --- !u!114 &8427390595873222634
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -502,7 +500,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28922f549e1265b4f929365c82537971, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _weaponManager: {fileID: -449521020642056505}
+  _weaponRigData: {fileID: 11400000, guid: 05f910b9b69de1c498713e9ebcb95706, type: 2}
+  _weaponController: {fileID: 6565988143558625351}
 --- !u!114 &7754170223601885393
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -515,7 +514,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2da225666529694428a9b12005d7d26f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _weaponManager: {fileID: -449521020642056505}
+  _weaponController: {fileID: 6565988143558625351}
   _gunRecoilController: {fileID: 2379732364344555267}
   _barrelPointController: {fileID: 386812635785963106}
   _recoilCamera: {fileID: 8689772154919213757}
@@ -536,7 +535,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5437ec35ce0d264aa547055071a3161, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _weaponManager: {fileID: -449521020642056505}
+  _weaponController: {fileID: 6565988143558625351}
 --- !u!114 &6940080264384184188
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -549,7 +548,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97f0513e9dbb37040860f704c98e99f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _weaponManager: {fileID: -449521020642056505}
+  _weaponController: {fileID: 6565988143558625351}
   _audioSource: {fileID: 8041580371190551610}
 --- !u!114 &2379732364344555267
 MonoBehaviour:
@@ -653,7 +652,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c12933d158e9c84eaa1672919eae238, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _barrelPointController: {fileID: 386812635785963106}
 --- !u!1 &8748048328747600942
 GameObject:
   m_ObjectHideFlags: 0
@@ -698,15 +696,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3c971dbb13da7546a85a00be8625390, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _weaponManager: {fileID: -449521020642056505}
+  _weaponController: {fileID: 6565988143558625351}
   _crosshairOffset: 0.01
   _crosshair: {fileID: 3732916391509964890}
   _scopeCrosshair: {fileID: 0}
   _aimScopeCamera: {fileID: 0}
-  _weaponStats: {fileID: 11400000, guid: 3bad81c2952caac46ac26ac726e52262, type: 2}
+  _crosshairController: {fileID: 6124008854115435307}
+  _scopeAimController: {fileID: 0}
   _targetPosition: {x: 0, y: 0, z: 0}
   _targetRotation: {x: 0, y: 0, z: 0, w: 0}
   _playerHealth: {fileID: 0}
+  _zombieHealth: {fileID: 0}
 --- !u!1 &8782334087621311259
 GameObject:
   m_ObjectHideFlags: 0

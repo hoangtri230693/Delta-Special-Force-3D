@@ -2,11 +2,8 @@ using UnityEngine;
 
 public class CrosshairController : MonoBehaviour
 {
-    [SerializeField] private BarrelPointController _barrelPointController;
-
-    private void Update()
+    public void UpdateTransform(Vector3 targetPosition)
     {
-        transform.position = _barrelPointController._targetPosition;
-        transform.rotation = _barrelPointController._targetRotation;
+        transform.position = targetPosition;
     }
 }

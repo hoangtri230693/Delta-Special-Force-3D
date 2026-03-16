@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: MapDataSO
+  m_EditorClassIdentifier: 
+  m_GroupName: MapDataSO
+  m_GUID: 345ea0f7131be284ca9cc6eee9b62bf2
+  m_SerializeEntries:
+  - m_GUID: 7df816bd5fef87d4290cefc1487d0781
+    m_Address: Assets/_Data/Map/Industrial1_Map.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9ffaa9392c6183e4fb8c97e295ec16d2
+    m_Address: Assets/_Data/Map/Desert_Map.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b1454ea7c5583db409d41fa4c2838eea
+    m_Address: Assets/_Data/Map/Greenland_Map.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bc8cc3f832f144549b718eccb975bb7a
+    m_Address: Assets/_Data/Map/Industrial2_Map.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 0f6a5b48bef5e9a449ca3ed794a3e81a, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 87d6e50debbe5ba43a1d8bc4d987bad8, type: 2}
+    - {fileID: 11400000, guid: b723e7d6a85ed8f40985e283ff649811, type: 2}

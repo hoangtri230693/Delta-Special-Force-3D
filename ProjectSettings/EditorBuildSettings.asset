@@ -15,6 +15,9 @@ EditorBuildSettings:
     path: Assets/_Scenes/Settings.unity
     guid: 8dae8b141a288ff4db40005603967ccb
   - enabled: 1
+    path: Assets/_Scenes/Tutorial.unity
+    guid: d0ec4acd58276d34f94a95b78127d32f
+  - enabled: 1
     path: Assets/_Scenes/TeamDeathmatch.unity
     guid: 939ee31b055708a4ea25b88b30868615
   - enabled: 1

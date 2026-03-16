@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: CharacterAIPrefab
+  m_EditorClassIdentifier: 
+  m_GroupName: CharacterAIPrefab
+  m_GUID: cf2b482fb56b17d44882a91e5a133068
+  m_SerializeEntries:
+  - m_GUID: 2ab094d152e24394eaf3dec6d925b4ae
+    m_Address: Assets/_Prefabs/BotAI/Delta_Group_AI.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 407ef909df787874cb96620be3118881
+    m_Address: Assets/_Prefabs/BotAI/Terrorist_BlackViper_AI.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4fc9e0029062b194e96056e54e383f99
+    m_Address: Assets/_Prefabs/BotAI/Terrorist_IronBlood_AI.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 55378a251c2f3b94da493a4beb3a72f7
+    m_Address: Assets/_Prefabs/BotAI/Terrorist_RedFang_AI.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6287da85037357445b5a7c64c11c3175
+    m_Address: Assets/_Prefabs/BotAI/Terrorist_ShadowDawn_AI.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9a735cebe76599d4986c576c2387f469
+    m_Address: Assets/_Prefabs/BotAI/Alpha_Group_AI.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d2d513610e470294faf8e7693a552836
+    m_Address: Assets/_Prefabs/BotAI/Bravo_Group_AI.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 0f6a5b48bef5e9a449ca3ed794a3e81a, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 431cdaeb923b7eb41aa2edbbce986b99, type: 2}
+    - {fileID: 11400000, guid: a05a2c9aa6b659641b8659495141dc36, type: 2}

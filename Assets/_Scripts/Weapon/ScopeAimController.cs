@@ -1,9 +1,7 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class ScopeAimController : MonoBehaviour
 {
-    [SerializeField] private InputActionReference _zoomAction;
     [SerializeField] private Camera _aimScopeCamera;
 
     private float _defaultFOV = 25f;
@@ -22,14 +20,10 @@ public class ScopeAimController : MonoBehaviour
         _aimScopeCamera.fieldOfView = _currentFOV;
     }
 
-    private void Update()
+    public void UpdateZoomControl(float zoomDelta)
     {
-        float zoomDelta = _zoomAction.action.ReadValue<float>();
-        if (zoomDelta != 0)
-        {
-            _currentFOV -= zoomDelta * _zoomSpeed;
-            _currentFOV = Mathf.Clamp(_currentFOV, 5f, 25f);
-            _aimScopeCamera.fieldOfView = _currentFOV;
-        }
+        _currentFOV -= zoomDelta * _zoomSpeed;
+        _currentFOV = Mathf.Clamp(_currentFOV, 5f, 25f);
+        _aimScopeCamera.fieldOfView = _currentFOV;
     }
 }

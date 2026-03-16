@@ -2,22 +2,19 @@
 
 public class PlayerHealth : MonoBehaviour
 {
-    [SerializeField] private CharacterStatsSO _characterStats;
-    
     private PlayerController _playerController;
-    private BotController _botController;
+    private BotAIController _botAIController;
 
     public float _currentHealth;
     public float _currentArmorHealth;
-    public bool _isDead = false;
 
 
     private void Awake()
-    {
-        _currentHealth = _characterStats.health;
-        _currentArmorHealth = 0;
+    {     
         _playerController = GetComponent<PlayerController>();
-        _botController = GetComponent<BotController>();
+        _botAIController = GetComponent<BotAIController>();
+        GetHealth();
+
     }
 
     private void Start()
@@ -35,63 +32,79 @@ public class PlayerHealth : MonoBehaviour
         }
     }
 
+    private void GetHealth()
+    {
+        _currentHealth = _playerController.CharacterStas.health;
+        _currentArmorHealth = 0;
+    }
+
     public void UpdateHealth(float damage, ItemType itemType)
     {
-        if (_isDead) return;
+        if (_currentHealth <= 0) return;
 
         if (_currentArmorHealth > 0)
         {
-            _currentArmorHealth -= damage;
-            _currentArmorHealth = Mathf.Clamp(_currentArmorHealth, 0, _characterStats.health);
+            if (damage <= _currentArmorHealth)
+            {
+                _currentArmorHealth -= damage;
+                damage = 0;
+            }
+            else
+            {
+                damage -= _currentArmorHealth;
+                _currentArmorHealth = 0;
+            }
+
             UIGameManager_TeamDeathmatch.instance?.UpdateUIArmorHealth(_currentArmorHealth, this);
             UIGameManager_ZombieSurvival.instance?.UpdateUIArmorHealth(_currentArmorHealth, this);
         }
-        else
+
+        if (damage > 0)
         {
             _currentHealth -= damage;
-            _currentHealth = Mathf.Clamp(_currentHealth, 0, _characterStats.health);
+            _currentHealth = Mathf.Clamp(_currentHealth, 0, _playerController.CharacterStas.health);
+
             UIGameManager_TeamDeathmatch.instance?.UpdateUIPlayerHealth(_currentHealth, this);
-            UIGameManager_ZombieSurvival.instance?.UpdateUIPlayerHealth(_currentHealth, this);   
-        }
-            
-        if (_currentHealth <= _characterStats.health / 2)
-        {
-            if (_botController != null) _botController.SetShouldDefend(true);
+            UIGameManager_ZombieSurvival.instance?.UpdateUIPlayerHealth(_currentHealth, this);
         }
 
+        if (_currentHealth <= _playerController.CharacterStas.health / 2)
+        {
+            if (_botAIController != null) _botAIController.SetShouldDefend(true);
+        }
+
+        UpdateLifeState(itemType);
+    }
+
+    private void UpdateLifeState(ItemType itemType)
+    {
         if (_currentHealth <= 0)
         {
-            if (itemType == ItemType.PrimaryItem || itemType == ItemType.SecondaryItem)
+            switch (itemType)
             {
-                if (_playerController != null) _playerController._lifeState = LifeState.DeathShoot;
+                case ItemType.PrimaryItem:
+                case ItemType.SecondaryItem:
+                    _playerController._lifeState = LifeState.DeathShoot;
+                    break;
+                case ItemType.ThrowItem:
+                    _playerController._lifeState = LifeState.DeathThrow;
+                    break;
+                case ItemType.MeleeItem:
+                case ItemType.None:
+                default:
+                    _playerController._lifeState = LifeState.DeathMelee;
+                    break;
             }
-            else if (itemType == ItemType.MeleeItem)
-            {
-                if (_playerController != null) _playerController._lifeState = LifeState.DeathMelee;
-            }
-            else if (itemType == ItemType.ThrowItem)
-            {
-                if (_playerController != null) _playerController._lifeState = LifeState.DeathThrow;
-            }
-            else if (itemType == ItemType.None)
-            {
-                if (_playerController != null) _playerController._lifeState = LifeState.DeathMelee;
-            }
-
-            _isDead = true;
         }
         else
         {
-            if (_playerController != null) _playerController._lifeState = LifeState.Hit;
+            if (_playerController != null) _playerController._lifeState = LifeState.Hurt;
         }
-
-        Debug.Log("Current Health: " + _currentHealth);
     }
 
     public void ResetHealth()
     {
-        _currentHealth = _characterStats.health;
-        _isDead = false;
+        _currentHealth = _playerController.CharacterStas.health;
         UIGameManager_TeamDeathmatch.instance?.UpdateUIPlayerHealth(_currentHealth, this);
         UIGameManager_ZombieSurvival.instance?.UpdateUIPlayerHealth(_currentHealth, this);
     }
