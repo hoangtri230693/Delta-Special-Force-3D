@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8870467571658135272}
   - component: {fileID: 3392633176110642962}
   - component: {fileID: 4120052673864853128}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Kar98k_Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}

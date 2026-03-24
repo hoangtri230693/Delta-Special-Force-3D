@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: TeamMenu
   m_EditorClassIdentifier: 
   _menuTeam:
-  - {fileID: 11400000, guid: 8969d5402002e724f878019965d7de53, type: 2}
-  - {fileID: 11400000, guid: 69d623139cb9dd448893fe86cc3bc7a8, type: 2}
+  - {fileID: 11400000, guid: f71b0199a88c5ec40835056f29bdabb4, type: 2}
+  - {fileID: 11400000, guid: 72dc79085f068d84bb0662f70c2adf19, type: 2}
+  - {fileID: 11400000, guid: 38eccdc504995c244b385cc46e1b90b1, type: 2}

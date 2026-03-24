@@ -26,7 +26,7 @@ MonoBehaviour:
     m_Bits: 4294967295
   maxDistance: 0
   shootForce: 0
-  explosionForce: 10
+  explosionForce: 15
   damage: 100
   attackRadius: 20
   ammoPerMag: 1

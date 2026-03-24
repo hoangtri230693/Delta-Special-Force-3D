@@ -16,37 +16,52 @@ MonoBehaviour:
   m_GUID: cf2b482fb56b17d44882a91e5a133068
   m_SerializeEntries:
   - m_GUID: 2ab094d152e24394eaf3dec6d925b4ae
-    m_Address: Assets/_Prefabs/BotAI/Delta_Group_AI.prefab
+    m_Address: DeltaGroup_AI
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 407ef909df787874cb96620be3118881
-    m_Address: Assets/_Prefabs/BotAI/Terrorist_BlackViper_AI.prefab
+    m_Address: BlackViper_AI
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 4fc9e0029062b194e96056e54e383f99
-    m_Address: Assets/_Prefabs/BotAI/Terrorist_IronBlood_AI.prefab
+    m_Address: IronBlood_AI
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 55378a251c2f3b94da493a4beb3a72f7
-    m_Address: Assets/_Prefabs/BotAI/Terrorist_RedFang_AI.prefab
+    m_Address: RedFang_AI
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6287da85037357445b5a7c64c11c3175
-    m_Address: Assets/_Prefabs/BotAI/Terrorist_ShadowDawn_AI.prefab
+    m_Address: ShadowDawn_AI
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7f11390f266b6124c9f375b6c9aaa968
+    m_Address: ZombieRunner_AI
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 9a735cebe76599d4986c576c2387f469
-    m_Address: Assets/_Prefabs/BotAI/Alpha_Group_AI.prefab
+    m_Address: AlphaGroup_AI
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ab6378773e08c57479f44ccc23a237d4
+    m_Address: ZombieShambler_AI
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d11fa0ee8b36c704cb3fde9c8cce497b
+    m_Address: ZombieWalker_AI
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d2d513610e470294faf8e7693a552836
-    m_Address: Assets/_Prefabs/BotAI/Bravo_Group_AI.prefab
+    m_Address: BravoGroup_AI
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

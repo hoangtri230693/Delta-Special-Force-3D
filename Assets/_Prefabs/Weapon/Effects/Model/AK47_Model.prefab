@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2977397558129343566}
   - component: {fileID: 5856714006576640559}
   - component: {fileID: 9134001517437953574}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: AK47_Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using DeltaSpecialForce3D.Enums;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -25,6 +26,7 @@ public class UIGameManager_TeamDeathmatch : MonoBehaviour
     [SerializeField] private GameObject _panelMatchEnd;
     [SerializeField] private Image _victoryMatch, _defeatMatch;
     [SerializeField] private GameObject _pauseMenu;
+    [SerializeField] private Image _backgroundLoading;
 
     [Header("Flash Color")]
     [SerializeField] private Color _winColor = Color.green;
@@ -35,18 +37,29 @@ public class UIGameManager_TeamDeathmatch : MonoBehaviour
     private void Awake()
     {
         instance = this;
+        OnLoadingScreen(true);
+    }
+
+    public void SetupMiniMap(GameObject player)
+    {
+        MiniMap.instance.SetupPlayerTransform(player.transform);
+    }
+
+    public void OnLoadingScreen(bool isEnable)
+    {
+        _backgroundLoading.gameObject.SetActive(isEnable);
     }
 
     public void OnClickResumeGame()
     {
         GameManager_TeamDeathmatch.instance.PauseMenu(false);
-        AudioManager.instance.PlaySfx(SFXType.MetalClick);
+        AudioManager.instance.PlaySfx(SFXSoundType.MetalClick);
     }
 
     public void OnClickReturnToMainMenu()
     {
         SceneManager.LoadScene("StartGame");
-        AudioManager.instance.PlaySfx(SFXType.MetalClick);
+        AudioManager.instance.PlaySfx(SFXSoundType.MetalClick);
     }
 
     public void OpenPauseMenu(bool isOpen)
@@ -54,15 +67,42 @@ public class UIGameManager_TeamDeathmatch : MonoBehaviour
         _pauseMenu.SetActive(isOpen);
     }
 
-    public void ShowUIResultMatch()
+    public void OpenResultMenu(bool isOpen)
+    {
+        _tableResult.SetActive(isOpen);
+    }
+
+    public void OpenShopInGame(bool isOpen)
+    {
+        _shopInGame.SetActive(isOpen);
+    }
+
+    public IEnumerator ShowUIResultMatch(GameResult result)
     {
         Time.timeScale = 0f;
-        StartCoroutine(MatchEndSequence());
-    }  
+        _panelMatchEnd.SetActive(true);
 
-    public void UpdateUIResultRound()
+        switch (result)
+        {
+            case GameResult.Win:
+                _victoryMatch.gameObject.SetActive(true);
+                _defeatMatch.gameObject.SetActive(false);
+                break;
+            case GameResult.Lose:
+                _victoryMatch.gameObject.SetActive(false);
+                _defeatMatch.gameObject.SetActive(true);
+                break;
+        }
+
+        yield return new WaitForSecondsRealtime(5f);
+
+        Time.timeScale = 1f;
+        SceneManager.LoadScene("StartGame");
+    }
+
+    public void UpdateUIResultRound(TeamName teamName)
     {     
-        if (GameManager_TeamDeathmatch.instance._teamCTWin > GameManager_TeamDeathmatch.instance._teamTerroristWin)
+        if (teamName == TeamName.Counter)
         {
             for (int i = 0; i < _resultCounter.Length; i++)
             {
@@ -75,7 +115,7 @@ public class UIGameManager_TeamDeathmatch : MonoBehaviour
                 _resultTerrorist[i].color = _loseColor;
             }
         }
-        else if (GameManager_TeamDeathmatch.instance._teamCTWin < GameManager_TeamDeathmatch.instance._teamTerroristWin)
+        else if (teamName == TeamName.Terrorist)
         {
             for (int i = 0; i < _resultTerrorist.Length; i++)
             {
@@ -88,7 +128,7 @@ public class UIGameManager_TeamDeathmatch : MonoBehaviour
                 _resultCounter[i].color = _loseColor;
             }
         }
-        else if (GameManager_TeamDeathmatch.instance._teamCTWin == GameManager_TeamDeathmatch.instance._teamTerroristWin)
+        else if (teamName == TeamName.None)
         {
             for (int i = 0; i < _resultCounter.Length; i++)
             {
@@ -101,40 +141,32 @@ public class UIGameManager_TeamDeathmatch : MonoBehaviour
                 _resultTerrorist[i].color = _drawColor;
             }
         }
+
+        OpenResultMenu(true);
     }
 
-    public void UpdateKilledCount(TeamType teamType, int playerID, int killedCount)
+    public void UpdateKilledCount(TeamName teamName, int playerID, int killedCount)
     {
-        if (teamType == TeamType.Counter)
+        if (teamName == TeamName.Counter)
         {
             _killedCounter[playerID].text = killedCount.ToString();
         }
-        else if (teamType == TeamType.Terrorist)
+        else if (teamName == TeamName.Terrorist)
         {
             _killedTerrorist[playerID].text = killedCount.ToString();
         }
     }
 
-    public void UpdateDeathCount(TeamType teamType, int playerID, int deathCount)
+    public void UpdateDeathCount(TeamName teamName, int playerID, int deathCount)
     {
-        if (teamType == TeamType.Counter)
+        if (teamName == TeamName.Counter)
         {
             _deathCounter[playerID].text = deathCount.ToString();
         }
-        else if (teamType == TeamType.Terrorist)
+        else if (teamName == TeamName.Terrorist)
         {
             _deathTerrorist[playerID].text = deathCount.ToString();
         }
-    }
-
-    public void OpenResultMenu(bool isOpen)
-    {
-        _tableResult.SetActive(isOpen);
-    }
-
-    public void OpenMenuItem(bool isOpen)
-    {
-        _shopInGame.SetActive(isOpen);
     }
 
     public void UpdateUIWeaponAmmo(int currentAmmo, int currentReverse)
@@ -142,63 +174,28 @@ public class UIGameManager_TeamDeathmatch : MonoBehaviour
         _ammo.text = currentAmmo.ToString() + " / " + currentReverse.ToString();
     }
 
-    public void UpdateUITime(float timeCount)
+    public void UpdateUITime(float timeCount, GameState gameState)
     {
         int minutes = Mathf.FloorToInt(timeCount / 60);
         int seconds = Mathf.FloorToInt(timeCount % 60);
 
-        if (GameManager_TeamDeathmatch.instance._currentGameState == GameState.Countdown)
+        if (gameState == GameState.Countdown)
         {
             _time.text = $"<color=#FF0000>{minutes:00} : {seconds:00}</color>";
         }
-        else if (GameManager_TeamDeathmatch.instance._currentGameState == GameState.RoundActive)
+        else if (gameState == GameState.RoundActive)
         {
             _time.text = $"{minutes:00} : {seconds:00}";
         }
     }
 
-    public void UpdateUIArmorHealth(float currentArmorHealth, PlayerHealth playerHealth)
+    public void UpdateUIArmorHealth(float currentArmorHealth)
     {
-        if (playerHealth == GameManager_TeamDeathmatch.instance._playerHealth)
-            _armor.text = currentArmorHealth.ToString();
+        _armor.text = currentArmorHealth.ToString();
     }
 
-    public void UpdateUIPlayerHealth(float currentHealth, PlayerHealth playerHealth)
+    public void UpdateUIPlayerHealth(float currentHealth)
     {
-        if (playerHealth == GameManager_TeamDeathmatch.instance._playerHealth)
-            _health.text = currentHealth.ToString();
-    }
-
-    private IEnumerator MatchEndSequence()
-    {
-        _panelMatchEnd.SetActive(true);
-        _tableResult.SetActive(false);
-
-        int ctWins = GameManager_TeamDeathmatch.instance._teamCTWin;
-        int tWins = GameManager_TeamDeathmatch.instance._teamTerroristWin;
-        TeamType playerTeam = GameManager_TeamDeathmatch.instance._teamType;
-
-        bool isVictory = false;
-        bool isDraw = (ctWins == tWins);
-
-        if (!isDraw)
-        {
-            if (playerTeam == TeamType.Counter)
-            {
-                isVictory = ctWins > tWins;
-            }
-            else if (playerTeam == TeamType.Terrorist)
-            {
-                isVictory = tWins > ctWins;
-            }
-        }
-
-        _victoryMatch.gameObject.SetActive(!isDraw && isVictory);
-        _defeatMatch.gameObject.SetActive(!isDraw && !isVictory);
-
-        yield return new WaitForSecondsRealtime(5f);
-
-        Time.timeScale = 1f;
-        SceneManager.LoadScene("StartGame");
+        _health.text = currentHealth.ToString();
     }
 }

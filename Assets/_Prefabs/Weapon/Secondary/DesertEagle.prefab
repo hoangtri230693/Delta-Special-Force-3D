@@ -475,7 +475,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1332962ec5bc58247bf22eae166f9fca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _weaponStats: {fileID: 11400000, guid: 3bad81c2952caac46ac26ac726e52262, type: 2}
+  _weaponID: 3
   _weaponRigController: {fileID: 8427390595873222634}
   _weaponShootController: {fileID: 7754170223601885393}
   _weaponMeleeController: {fileID: 0}
@@ -500,7 +500,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28922f549e1265b4f929365c82537971, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _weaponRigData: {fileID: 11400000, guid: 05f910b9b69de1c498713e9ebcb95706, type: 2}
   _weaponController: {fileID: 6565988143558625351}
 --- !u!114 &7754170223601885393
 MonoBehaviour:

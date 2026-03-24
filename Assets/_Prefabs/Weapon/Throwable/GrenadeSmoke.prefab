@@ -222,8 +222,8 @@ Rigidbody:
   m_GameObject: {fileID: 1221578968898106040}
   serializedVersion: 4
   m_Mass: 1
-  m_Drag: 0.1
-  m_AngularDrag: 0.1
+  m_Drag: 0.05
+  m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -273,18 +273,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1332962ec5bc58247bf22eae166f9fca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _weaponStats: {fileID: 11400000, guid: d4f39bb2126f09548a18e46c2ef7eaf1, type: 2}
+  _weaponStats: {fileID: 0}
+  _weaponRig: {fileID: 0}
+  _weaponID: 15
   _weaponRigController: {fileID: 7240253133074712461}
   _weaponShootController: {fileID: 0}
   _weaponMeleeController: {fileID: 0}
   _weaponThrowController: {fileID: -2432224884629219597}
   _weaponCollision: {fileID: 942239898405989050}
   _rigidbody: {fileID: 4652069508868787030}
-  _barrelPointController: {fileID: 0}
   _player: {fileID: 0}
   _playerController: {fileID: 0}
-  _playerRig: {fileID: 0}
-  _playerAnimationEvents: {fileID: 0}
   _botAIController: {fileID: 0}
 --- !u!114 &7240253133074712461
 MonoBehaviour:
@@ -298,7 +297,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28922f549e1265b4f929365c82537971, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _weaponRigData: {fileID: 11400000, guid: df67c2e08c68be84381803a1b4e56bab, type: 2}
   _weaponController: {fileID: 7201672929658807820}
 --- !u!114 &-2432224884629219597
 MonoBehaviour:

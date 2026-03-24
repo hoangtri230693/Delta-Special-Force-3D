@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8644922930538969649}
   - component: {fileID: 4193906170843843561}
   - component: {fileID: 2180856587106624137}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: AWP_Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}

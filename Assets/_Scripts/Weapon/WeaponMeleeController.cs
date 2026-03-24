@@ -1,5 +1,6 @@
 using Unity.Cinemachine;
 using UnityEngine;
+using DeltaSpecialForce3D.Enums;
 
 
 public class WeaponMeleeController : MonoBehaviour
@@ -98,9 +99,10 @@ public class WeaponMeleeController : MonoBehaviour
 
     private void HandleHitTarget()
     {
-        if (_playerHealth != null)
+        if (_playerHealth != null && _playerHealth._currentHealth > 0)
         {
-            _playerHealth.UpdateHealth(_weaponController.WeaponStats.damage, _weaponController.WeaponStats.itemType);
+            _playerHealth.UpdateHealth(_weaponController.WeaponStats.damage, 
+                                       _weaponController.WeaponStats.itemType);
 
             if (_playerHealth._currentHealth <= 0)
                 _weaponController._playerController.IncrementKillCount();
@@ -108,17 +110,15 @@ public class WeaponMeleeController : MonoBehaviour
             _playerHealth = null;
         }
 
-        if (_zombieHealth != null)
+        if (_zombieHealth != null && _zombieHealth._currentHealth > 0)
         {
-            _zombieHealth.UpdateHealth(_weaponController.WeaponStats.damage);
+            _zombieHealth.UpdateHealth(_zombieHealth._currentHealth);
 
             if (_zombieHealth._currentHealth <= 0)
                 _weaponController._playerController.IncrementKillCount();
 
             _zombieHealth = null;
         }
-
-        Debug.Log("Hit Knife");
     }
 
     private bool IsValidTarget(Collider other)

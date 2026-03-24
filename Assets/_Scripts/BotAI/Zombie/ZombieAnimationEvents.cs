@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using DeltaSpecialForce3D.Enums;
 
 public class ZombieAnimationEvents : MonoBehaviour
 {

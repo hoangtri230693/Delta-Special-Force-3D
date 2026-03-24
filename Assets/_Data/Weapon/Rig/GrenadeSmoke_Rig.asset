@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03012a87c24b99e47aba48766aebf7cc, type: 3}
   m_Name: GrenadeSmoke_Rig
   m_EditorClassIdentifier: 
+  weaponID: 15
   weaponName: Grenade Smoke
   alpha_Weapon_Pos: {x: -0.021, y: 0.114, z: 0.037}
   alpha_Weapon_Rot: {x: 75, y: -145, z: -50}

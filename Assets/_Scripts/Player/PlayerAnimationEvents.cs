@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using DeltaSpecialForce3D.Enums;
+using UnityEngine;
 
 public class PlayerAnimationEvents : MonoBehaviour
 {
@@ -7,11 +8,9 @@ public class PlayerAnimationEvents : MonoBehaviour
     public WeaponMeleeController _meleeController;
     public WeaponThrowController _throwController;
 
-    [Header("Scripts Player")]
     private PlayerController _playerController;
     private PlayerRig _playerRig;
     private PlayerAudio _playerAudio;
-
 
     private void Awake()
     {

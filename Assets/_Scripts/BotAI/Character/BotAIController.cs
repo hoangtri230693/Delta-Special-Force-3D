@@ -1,24 +1,23 @@
-﻿using System.Linq;
+﻿using DeltaSpecialForce3D.Enums;
+using System.Linq;
 using Unity.Behavior;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class BotAIController : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] private CharacterController _characterController;
     [SerializeField] private PlayerController _playerController;
     [SerializeField] private PlayerInventory _playerInventory;
-    [SerializeField] private PlayerHealth _playerHealth;
-    [SerializeField] private BotNavAgent _botNavAgent;
     [SerializeField] private Animator _animator;
     [SerializeField] private BehaviorGraphAgent _behaviorGraphAgent;
+    [SerializeField] private NavMeshAgent _navMeshAgent;
 
     [Header("Movement & Aiming Settings")]
-    private Transform _target;
-    private Vector3 _velocity;  
-    private float _rotationSpeed = 10f;
-    private float _scanSpeed = 5f;
-    private float _scanAngle = 15f;
+    private Transform _target; 
+    private float _rotationSpeed = 5f;
+    private float _scanSpeed = 35f;
+    private float _scanAngle = 45f;
 
     private bool _roundActive => GameManager_TeamDeathmatch.instance._currentGameState == GameState.RoundActive;
     private bool _shouldDefend = false;
@@ -30,7 +29,7 @@ public class BotAIController : MonoBehaviour
     {
         RandomBuyByItemType(ItemType.ArmorItem);
         RandomBuyByItemType(ItemType.ThrowItem);
-        RandomBuyByItemType(ItemType.SecondaryItem);
+        RandomBuyByItemType(ItemType.SecondaryItem);       
         RandomBuyByItemType(ItemType.PrimaryItem);        
     }
 
@@ -100,6 +99,7 @@ public class BotAIController : MonoBehaviour
         }
     }
 
+
     // ===================== STATES =====================
     private void EnterPatrolState()
     {
@@ -109,7 +109,7 @@ public class BotAIController : MonoBehaviour
         if (_playerController._combatState == CombatState.Aim)
         {
             _playerController._combatState = CombatState.None;
-            _playerInventory.ActiveCombatItem(_playerController._itemType, _playerController._combatState);
+            _playerInventory.ActiveCombatItem(_playerController._combatState);
         }
 
         if (_playerController._movementState != MovementState.Run)
@@ -127,7 +127,7 @@ public class BotAIController : MonoBehaviour
         if (_playerController._combatState == CombatState.None)
         {
             _playerController._combatState = CombatState.Aim;
-            _playerInventory.ActiveCombatItem(_playerController._itemType, _playerController._combatState);
+            _playerInventory.ActiveCombatItem(_playerController._combatState);
         }
 
         if (_playerController._movementState != MovementState.Walk)
@@ -140,8 +140,7 @@ public class BotAIController : MonoBehaviour
         }
         else if (_playerController._canAction && _canShoot)
         {
-            if (_playerController._actionState != ActionState.ManualShoot)
-                _playerController._actionState = ActionState.ManualShoot;
+            _playerInventory.HandleShoot();
         }
         else
         {
@@ -149,13 +148,14 @@ public class BotAIController : MonoBehaviour
         }
     }
 
+
     // ===================== MOVEMENT =====================
     private void ApplyMovement()
     {
-        Vector3 desiredVelocity = _botNavAgent.DesiredVelocity;
+        Vector3 desiredVelocity = _navMeshAgent.desiredVelocity;
 
         // ===== ROTATION =====
-        if (_target != null)
+        if (_target != null && !_canShoot)
         {
             RotateTowardsTarget();
         }
@@ -163,17 +163,6 @@ public class BotAIController : MonoBehaviour
         {
             RotateTowardsMovement(desiredVelocity);
         }
-
-        // ===== GRAVITY =====
-        if (_characterController.isGrounded)
-            _velocity.y = -2f;
-        else
-            _velocity.y += Physics.gravity.y * Time.deltaTime;
-
-        Vector3 finalMove = desiredVelocity + _velocity;
-        _characterController.Move(finalMove * Time.deltaTime);
-
-        UpdateAnimator(desiredVelocity);
     }
 
     private void RotateTowardsTarget()
@@ -186,12 +175,9 @@ public class BotAIController : MonoBehaviour
  
         Quaternion targetRot = Quaternion.LookRotation(direction.normalized);
 
-        if (!_canShoot)
-        {
-            float yOffset = Mathf.Sin(Time.time * _scanSpeed) * _scanAngle;
-            Quaternion scanOffset = Quaternion.Euler(0, yOffset, 0);
-            targetRot *= scanOffset;
-        }
+        float yOffset = Mathf.Sin(Time.time * _scanSpeed) * _scanAngle;
+        Quaternion scanOffset = Quaternion.Euler(0, yOffset, 0);
+        targetRot *= scanOffset;
 
         transform.rotation = Quaternion.Slerp(
             transform.rotation,
@@ -214,19 +200,12 @@ public class BotAIController : MonoBehaviour
         );
     }
 
-    // ===================== ANIM =====================
-
-    private void UpdateAnimator(Vector3 moveDir)
-    {
-        float currentSpeed = moveDir.magnitude;
-        _animator.SetFloat("Speed", currentSpeed, 0.1f, Time.deltaTime);
-    }
 
     // ===================== BUY RANDOM =====================
 
     private void RandomBuyByItemType(ItemType type)
     {
-        var allWeapons = WeaponStatsManager.instance.weaponStats;
+        var allWeapons = WeaponDataManager.instance.weaponStatsSO;
         var filteredWeapons = allWeapons.Where(w => w.itemType == type).ToList();
 
         if (filteredWeapons.Count > 0)
@@ -234,12 +213,9 @@ public class BotAIController : MonoBehaviour
             int randomIndex = Random.Range(0, filteredWeapons.Count);
             int selectedWeaponID = filteredWeapons[randomIndex].weaponID;
 
-            UIShopInGame.instance.BuyWeapon(
-                selectedWeaponID,
-                _playerController,
-                _playerInventory,
-                _playerHealth
-            );
+            UIShopInGame.instance.BuyWeapon(selectedWeaponID, transform.gameObject);
         }
+
+        //Debug.Log(type + ": " + filteredWeapons.Count);
     }
 }

@@ -28,10 +28,52 @@ public class PlayerInput : MonoBehaviour
     [SerializeField] private InputActionReference _openResultTableAction;
 
     private PlayerController _playerController;
-    
+
     private void Awake()
     {
         _playerController = GetComponent<PlayerController>();
+    }
+
+    private void OnEnable()
+    {
+        _moveAction.action.Enable();
+        _lookAction.action.Enable();
+        _sprintAction.action.Enable();
+        _jumpAction.action.Enable();
+        _crouchAction.action.Enable();
+        _aimAction.action.Enable();
+        _switchShoulderAction.action.Enable();
+        _zoomAction.action.Enable();
+        _attackAction.action.Enable();
+        _switchItemAction.action.Enable();
+        _reloadAction.action.Enable();
+        _dropAction.action.Enable();
+        _pauseAction.action.Enable();
+        _openShopInGameAction.action.Enable();
+        _selectItemAction.action.Enable();
+        _buyItemAction.action.Enable();
+        _openResultTableAction.action.Enable();
+    }
+
+    private void OnDisable()
+    {
+        _moveAction.action.Disable();
+        _lookAction.action.Disable();
+        _sprintAction.action.Disable();
+        _jumpAction.action.Disable();
+        _crouchAction.action.Disable();
+        _aimAction.action.Disable();
+        _switchShoulderAction.action.Disable();
+        _zoomAction.action.Disable();
+        _attackAction.action.Disable();
+        _switchItemAction.action.Disable();
+        _reloadAction.action.Disable();
+        _dropAction.action.Disable();
+        _pauseAction.action.Disable();
+        _openShopInGameAction.action.Disable();
+        _selectItemAction.action.Disable();
+        _buyItemAction.action.Disable();
+        _openResultTableAction.action.Disable();
     }
 
     private void Update()

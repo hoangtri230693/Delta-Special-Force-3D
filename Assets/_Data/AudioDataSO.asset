@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c64f0a97f44f6834a9cec28127d4edb4, type: 3}
+  m_Name: AudioDataSO
+  m_EditorClassIdentifier: 
+  musicTracks:
+  - {fileID: 8300000, guid: 312217966aff36640b4dd63635eda858, type: 3}
+  - {fileID: 8300000, guid: 65eb4a2468eeb5543bf18271f6a08108, type: 3}
+  - {fileID: 8300000, guid: 3c4f2f65df3e15f43b6e999dc4f535e0, type: 3}
+  - {fileID: 8300000, guid: ff01bc128c3d17344b9300860c12e4bf, type: 3}
+  musicBackground: {fileID: 8300000, guid: ccad50fdaeb88b94394cbe9d2afcd6b8, type: 3}
+  loreClips: {fileID: 8300000, guid: 764825a15ee37c04492c226225ab2f3c, type: 3}
+  sfxClips:
+  - {fileID: 8300000, guid: 27344ae70df986649b8a0986fa25b323, type: 3}
+  - {fileID: 8300000, guid: 1d58247c09a28fa43b3ce89c3df874a4, type: 3}
+  - {fileID: 8300000, guid: aa6cb3ae67eb7bf469c5ed658020f7bf, type: 3}
+  teamRadio:
+    ready:
+    - {fileID: 8300000, guid: 2a7c3a00d7db0451caab0c673737213f, type: 3}
+    - {fileID: 8300000, guid: 9758224172b424363bc846a4d396ed41, type: 3}
+    - {fileID: 8300000, guid: a4cc8bcbf575842499e361f287ce7f1f, type: 3}
+    start:
+    - {fileID: 8300000, guid: 9415c29dee2e98d4ab72a8373bf810d5, type: 3}
+    - {fileID: 8300000, guid: 0da5a22bc53ba444b98fb0c2f6da80c5, type: 3}
+    win:
+    - {fileID: 8300000, guid: 2957cb8495b09468198706cfb1952d1e, type: 3}
+    - {fileID: 8300000, guid: 0a97c8a5b92724e8b948882d046ff656, type: 3}
+    - {fileID: 8300000, guid: 6437123c5fada4ccaafe42b11d9995c0, type: 3}
+    lose:
+    - {fileID: 8300000, guid: ef4bcb6765efc45c59e5f2e4e88dcab3, type: 3}
+    - {fileID: 8300000, guid: a02034dda14da4fa9b482c5165aaf52b, type: 3}
+  zombieRadio:
+    ready:
+    - {fileID: 8300000, guid: 2a7c3a00d7db0451caab0c673737213f, type: 3}
+    - {fileID: 8300000, guid: 773730ff3ecab49bb86f98e5306eebea, type: 3}
+    - {fileID: 8300000, guid: 7b66c2cee6a9647859198e44aec6cf3e, type: 3}
+    - {fileID: 8300000, guid: 5887c41b2875841aab2fb7c7afb6ed90, type: 3}
+    start:
+    - {fileID: 8300000, guid: 9415c29dee2e98d4ab72a8373bf810d5, type: 3}
+    - {fileID: 8300000, guid: 90e7a41beed24be4288cb5fc4c528edf, type: 3}
+    win:
+    - {fileID: 8300000, guid: 25149aab29cad40fa818d0ab83d65333, type: 3}
+    - {fileID: 8300000, guid: 35ae856ee72d042bf9c1df1aad9026d8, type: 3}
+    lose:
+    - {fileID: 8300000, guid: 36a050fa7b0a5e240999c434f679a28d, type: 3}
+    - {fileID: 8300000, guid: 9c8821e971472449dab6993d7a32a661, type: 3}
+    - {fileID: 8300000, guid: ef1128548d8314e16b90ae7a749b7017, type: 3}

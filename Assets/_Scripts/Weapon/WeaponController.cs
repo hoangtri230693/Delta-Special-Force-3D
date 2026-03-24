@@ -1,45 +1,56 @@
-﻿using System.Collections;
+﻿using DeltaSpecialForce3D.Enums;
+using System.Collections;
 using UnityEngine;
 
 
 public class WeaponController : MonoBehaviour
 {
     [SerializeField] private WeaponStatsSO _weaponStats;
-    public WeaponStatsSO WeaponStats => _weaponStats;
+    [SerializeField] private WeaponRigSO _weaponRig;
+    [SerializeField] private int _weaponID; 
     [SerializeField] private WeaponRigController _weaponRigController;
     [SerializeField] private WeaponShootController _weaponShootController;
     [SerializeField] private WeaponMeleeController _weaponMeleeController;
     [SerializeField] private WeaponThrowController _weaponThrowController;
     [SerializeField] private WeaponCollision _weaponCollision;
     [SerializeField] private Rigidbody _rigidbody;
-    [SerializeField] private BarrelPointController _barrelPointController;
+
+    public WeaponStatsSO WeaponStats => _weaponStats; 
+    public WeaponRigSO WeaponRig => _weaponRig;
 
     public GameObject _player;
     public PlayerController _playerController;
-    public PlayerRig _playerRig;
-    public PlayerAnimationEvents _playerAnimationEvents;
     public BotAIController _botAIController;
 
 
-    private void Start()
+    private void Awake()
     {
-        InitializeWeapon();
+        GetDataWeapon();    
     }
 
-    public void InitializeWeapon()
+    private void Start()
     {
-        _player = transform.root.gameObject;
-        _playerController = _player.GetComponent<PlayerController>();
-        _playerRig = _player.GetComponent<PlayerRig>();
-        _playerAnimationEvents = _player.GetComponent<PlayerAnimationEvents>();
-        _botAIController = _player.GetComponent<BotAIController>();
+        InitializeWeapon(_player);
+    }
 
-        _weaponRigController.InitializeRig(_playerRig);
+    private void GetDataWeapon()
+    {
+        _weaponStats = WeaponDataManager.instance.GetWeaponStatsByID(_weaponID);
+        _weaponRig = WeaponDataManager.instance.GetWeaponRigByID(_weaponID);
+    }
+
+    public void InitializeWeapon(GameObject player)
+    {
+        _player = player;
+        _playerController = player.GetComponent<PlayerController>();
+        _botAIController = player.GetComponent<BotAIController>();
+        PlayerRig _playerRig = player.GetComponent<PlayerRig>();
+        PlayerAnimationEvents _playerAnimationEvents = player.GetComponent<PlayerAnimationEvents>();   
 
         if (_weaponShootController != null)
         {
             _weaponShootController.enabled = true;
-            _weaponShootController.InitializeAmmo();
+            _weaponShootController.InitializeShoot();
             _weaponShootController.AssignAnimationEvents(_playerAnimationEvents);
         }
 
@@ -59,20 +70,20 @@ public class WeaponController : MonoBehaviour
         {
             _weaponCollision.enabled = false;
         }
-        
-        ActiveCombat(_playerController._combatState);
+
+        HandleActiveCombat(_playerController._combatState);
+        _weaponRigController.InitializeRig(player);
     }
 
     public void DropWeapon()
     {
-        if (_barrelPointController != null)
-        {
-            _barrelPointController.DisableCrosshair();
-            _barrelPointController.enabled = false;
-        }
-        
+        HandleActiveCombat(CombatState.None);
+
         if (_weaponRigController != null)
             _weaponRigController.ResetRig();
+
+        if (_weaponShootController != null)
+            _weaponShootController.enabled = false;
 
         transform.SetParent(null);
         transform.position += _playerController.transform.forward * 0.8f + Vector3.up * 0.3f;
@@ -99,11 +110,8 @@ public class WeaponController : MonoBehaviour
 
         _player = null;
         _playerController = null;
-        _playerRig = null;
-        _playerAnimationEvents = null;
         _botAIController = null;
 
-        _weaponShootController.enabled = false;
         _weaponCollision.enabled = true;
     }
 
@@ -112,9 +120,9 @@ public class WeaponController : MonoBehaviour
         var playerInventory = newPlayer.GetComponent<PlayerInventory>();
 
         Transform inventory = null;
-        if (_weaponStats.itemType == ItemType.PrimaryItem)
+        if (WeaponStats.itemType == ItemType.PrimaryItem)
             inventory = playerInventory._primaryItem.transform;
-        else if (_weaponStats.itemType == ItemType.SecondaryItem)
+        else if (WeaponStats.itemType == ItemType.SecondaryItem)
             inventory = playerInventory._secondaryItem.transform;
 
         int weaponCount = 0;
@@ -133,32 +141,27 @@ public class WeaponController : MonoBehaviour
         transform.localPosition = Vector3.zero;
         transform.localRotation = Quaternion.identity;
 
-        InitializeWeapon();
+        InitializeWeapon(newPlayer.gameObject);
 
-        _playerController._itemType = _weaponStats.itemType;
+        _playerController._itemType = WeaponStats.itemType;
         _playerController.SwitchItem();
     }
 
-    public void ActiveCombat(CombatState combatState)
+    public void HandleActiveCombat(CombatState combatState)
     {
-        if (_barrelPointController == null) return;
-
-        switch (combatState)
-        {
-            case CombatState.Aim:
-                _barrelPointController.enabled = true;
-                _barrelPointController.EnableCrosshair();
-                break;
-            case CombatState.None:            
-                _barrelPointController.DisableCrosshair();
-                _barrelPointController.enabled = false;
-                break;
-        }      
+        if (_weaponShootController != null)
+            _weaponShootController.ActiveCombat(combatState);
     }
 
-    public void ZoomControl(float zoomDelta)
+    public void HandleZoomControl(float zoomDelta)
     {
-        _barrelPointController.HandleZoomControl(zoomDelta);
+        if (_weaponShootController != null)
+            _weaponShootController.ZoomControl(zoomDelta);
+    }
+
+    public void HandleWeaponShoot()
+    {
+        _weaponShootController.TryShoot();
     }
 
     private IEnumerator EnableCollision(Collider weaponCol, Collider playerCol, float delay)

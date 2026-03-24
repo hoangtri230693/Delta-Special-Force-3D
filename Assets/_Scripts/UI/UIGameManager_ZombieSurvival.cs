@@ -3,6 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using DeltaSpecialForce3D.Enums;
 
 public class UIGameManager_ZombieSurvival : MonoBehaviour
 {
@@ -18,24 +19,36 @@ public class UIGameManager_ZombieSurvival : MonoBehaviour
     [SerializeField] private GameObject _panelMatchEnd;
     [SerializeField] private Image _victoryMatch, _defeatMatch;
     [SerializeField] private GameObject _pauseMenu;
+    [SerializeField] private Image _backgroundLoading;
 
 
 
     private void Awake()
     {
         instance = this;
+        OnLoadingScreen(true);
+    }
+
+    public void SetupMiniMap(GameObject player)
+    {
+        MiniMap.instance.SetupPlayerTransform(player.transform);
+    }
+
+    public void OnLoadingScreen(bool isEnable)
+    {
+        _backgroundLoading.gameObject.SetActive(isEnable);
     }
 
     public void OnClickResumeGame()
     {
         GameManager_ZombieSurvival.instance.PauseMenu(false);
-        AudioManager.instance.PlaySfx(SFXType.MetalClick);
+        AudioManager.instance.PlaySfx(SFXSoundType.MetalClick);
     }
 
     public void OnClickReturnToMainMenu()
     {
         SceneManager.LoadScene("StartGame");
-        AudioManager.instance.PlaySfx(SFXType.MetalClick);
+        AudioManager.instance.PlaySfx(SFXSoundType.MetalClick);
     }
 
     public void OpenPauseMenu(bool isOpen)
@@ -43,72 +56,66 @@ public class UIGameManager_ZombieSurvival : MonoBehaviour
         _pauseMenu.SetActive(isOpen);
     }
 
-    public void UpdateKilledCount(int killedCount)
-    {
-        _kill.text = killedCount.ToString();
-    }
-
-    public void ShowUIResultMatch()
-    {
-        Time.timeScale = 0f;
-        StartCoroutine(MatchEndSequence());
-    }
-
-    public void OpenMenuItem(bool isOpen)
+    public void OpenShopInGame(bool isOpen)
     {
         _shopInGame.SetActive(isOpen);
-    } 
-
-    public void UpdateUIWeaponAmmo(int currentAmmo, int currentReverse)
-    {
-        _ammo.text = currentAmmo.ToString() + " / " + currentReverse.ToString();
     }
 
-    public void UpdateUITime(float timeCount)
+    public IEnumerator ShowUIResultMatch(GameResult result)
     {
-        int minutes = Mathf.FloorToInt(timeCount / 60);
-        int seconds = Mathf.FloorToInt(timeCount % 60);
-
-        if (GameManager_ZombieSurvival.instance._currentGameState == GameState.Countdown)
-        {
-            _time.text = $"<color=#FF0000>{minutes:00} : {seconds:00}</color>";
-        }
-        else if (GameManager_ZombieSurvival.instance._currentGameState == GameState.RoundActive)
-        {
-            _time.text = $"{minutes:00} : {seconds:00}";
-        }
-    }
-
-    public void UpdateUIArmorHealth(float currentArmorHealth, PlayerHealth playerHealth)
-    {
-        if (playerHealth == GameManager_ZombieSurvival.instance._playerHealth)
-            _armor.text = currentArmorHealth.ToString();
-    }
-
-    public void UpdateUIPlayerHealth(float currentHealth, PlayerHealth playerHealth)
-    {
-        if (playerHealth == GameManager_ZombieSurvival.instance._playerHealth)
-            _health.text = currentHealth.ToString();
-    }
-
-    private IEnumerator MatchEndSequence()
-    {
+        Time.timeScale = 0f;
         _panelMatchEnd.SetActive(true);
 
-        if (GameManager_ZombieSurvival.instance.IsPlayerVictorious())
+        switch (result)
         {
-            _victoryMatch.gameObject.SetActive(true);
-            _defeatMatch.gameObject.SetActive(false);
-        }
-        else
-        {
-            _victoryMatch.gameObject.SetActive(false);
-            _defeatMatch.gameObject.SetActive(true);
+            case GameResult.Win:
+                _victoryMatch.gameObject.SetActive(true);
+                _defeatMatch.gameObject.SetActive(false);
+                break;
+            case GameResult.Lose:
+                _victoryMatch.gameObject.SetActive(false);
+                _defeatMatch.gameObject.SetActive(true);
+                break;
         }
 
         yield return new WaitForSecondsRealtime(5f);
 
         Time.timeScale = 1f;
         SceneManager.LoadScene("StartGame");
+    }
+
+    public void UpdateKilledCount(int killedCount)
+    {
+        _kill.text = killedCount.ToString();
+    }
+
+    public void UpdateUIWeaponAmmo(int currentAmmo, int currentReverse)
+    {
+        _ammo.text = currentAmmo.ToString() + " / " + currentReverse.ToString();
+    }
+
+    public void UpdateUITime(float timeCount, GameState gameState)
+    {
+        int minutes = Mathf.FloorToInt(timeCount / 60);
+        int seconds = Mathf.FloorToInt(timeCount % 60);
+
+        if (gameState == GameState.Countdown)
+        {
+            _time.text = $"<color=#FF0000>{minutes:00} : {seconds:00}</color>";
+        }
+        else if (gameState == GameState.RoundActive)
+        {
+            _time.text = $"{minutes:00} : {seconds:00}";
+        }
+    }
+
+    public void UpdateUIArmorHealth(float currentArmorHealth)
+    {
+        _armor.text = currentArmorHealth.ToString();
+    }
+
+    public void UpdateUIPlayerHealth(float currentHealth)
+    {
+        _health.text = currentHealth.ToString();
     }
 }

@@ -1,14 +1,7 @@
+using DeltaSpecialForce3D.Enums;
 using UnityEngine;
 
-public enum CharacterSoundType
-{
-    FootStep,
-    LandStep,
-    SwitchItem,
-    Zoom,
-    Hurt,
-    Death
-}
+
 
 public class PlayerAudio : MonoBehaviour
 {
@@ -20,8 +13,8 @@ public class PlayerAudio : MonoBehaviour
 
     private void Awake()
     {
-        _playerController = GetComponent<PlayerController>();
         _audioSource = GetComponent<AudioSource>();
+        _playerController = GetComponent<PlayerController>();
     }
 
     private void Start()
@@ -32,7 +25,7 @@ public class PlayerAudio : MonoBehaviour
     public void PlayCharacterSound(CharacterSoundType type)
     {
         AudioClip clipToPlay = null;
-        var stats = _playerController.CharacterStas;
+        var stats = _playerController.CharacterStats;
 
         switch (type)
         {

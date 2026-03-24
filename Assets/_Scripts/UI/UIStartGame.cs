@@ -1,5 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using DeltaSpecialForce3D.Enums;
+
 
 public class UIStartGame : MonoBehaviour
 {
@@ -13,24 +15,24 @@ public class UIStartGame : MonoBehaviour
     public void OnClickPlayGame()
     {
         SceneManager.LoadScene("PlayGame");
-        AudioManager.instance.PlaySfx(SFXType.DefaultClick);
+        AudioManager.instance.PlaySfx(SFXSoundType.DefaultClick);
     }
 
     public void OnClickTutorials()
     {
         SceneManager.LoadScene("Tutorial");
-        AudioManager.instance.PlaySfx(SFXType.DefaultClick);
+        AudioManager.instance.PlaySfx(SFXSoundType.DefaultClick);
     }
 
     public void OnClickSettings()
     {
         SceneManager.LoadScene("Settings");
-        AudioManager.instance.PlaySfx(SFXType.DefaultClick);
+        AudioManager.instance.PlaySfx(SFXSoundType.DefaultClick);
     }
 
     public void OnClickQuit()
     {
         Application.Quit();
-        AudioManager.instance.PlaySfx(SFXType.DefaultClick);
+        AudioManager.instance.PlaySfx(SFXSoundType.DefaultClick);
     }
 }

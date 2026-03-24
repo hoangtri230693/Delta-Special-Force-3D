@@ -10,11 +10,6 @@ public class PooledItemHelper : MonoBehaviour
 
     public IObjectPool<GameObject> Pool { get; private set; }
 
-    public void Initialize(IObjectPool<GameObject> pool, ObjectPoolService service)
-    {
-        Pool = pool;
-        _poolService = service;
-    }
 
     private void Awake()
     {
@@ -33,6 +28,12 @@ public class PooledItemHelper : MonoBehaviour
         {
             StartCoroutine(AutoReleaseAfter(3f));
         }
+    }
+
+    public void Initialize(IObjectPool<GameObject> pool, ObjectPoolService service)
+    {
+        Pool = pool;
+        _poolService = service;
     }
 
     private IEnumerator AutoReleaseAfter(float time)

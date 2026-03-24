@@ -1,55 +1,43 @@
-﻿using System.Collections;
+﻿using Cysharp.Threading.Tasks;
+using DeltaSpecialForce3D.Enums;
+using System.Collections;
 using System.Collections.Generic;
 using Unity.Behavior;
 using UnityEngine;
-
-public enum GameState { Setup, Countdown, RoundActive, RoundEnd, MatchEnd }
+using UnityEngine.AI;
 
 
 public class GameManager_TeamDeathmatch : MonoBehaviour
 {
     public static GameManager_TeamDeathmatch instance;
 
-    [Header("Gameplay UI")]
-    [SerializeField] private float _timeCountdown;
-    [SerializeField] private float _timeRoundActive;
-    [SerializeField] private int _totalRound;
-
     [Header("Gameplay Data")]
-    [SerializeField] private GameObject[] _counterPrefabs;
-    [SerializeField] private GameObject[] _terroristPrefabs;
-    [SerializeField] private GameObject[] _counterAIPrefabs;
-    [SerializeField] private GameObject[] _terroristAIPrefabs;
-    [SerializeField] private Transform[] _spawnCounter;
-    [SerializeField] private Transform[] _spawnTerrorist;
-    [SerializeField] private Transform[] _assaultCounter;
-    [SerializeField] private Transform[] _patrolTerrorist;
-    [SerializeField] private List<GameObject> _allBotCharacter;
-
-    [Header("Player Component References")]
-    public PlayerController _playerController;
-    public PlayerInventory _playerInventory;
-    public PlayerHealth _playerHealth;
-    public PlayerTeam _playerTeam;
-    public PlayerAnimationEvents _playerAnimationEvents;
+    [SerializeField] private GameplayConfigSO _gameplayConfig;
+    [SerializeField] private TeamMenuSO _teamMenu;
+    [SerializeField] private MapMenuSO _mapMenu;
 
     [Header("Game Manager")]
-    public GameObject _player;
-    public TeamType _teamType;
-    public int _cTSpawn = 5;
-    public int _terroristSpawn = 5;
-    public GameState _currentGameState = GameState.Setup;
+    private List<GameObject> _allBotCharacter;
 
-    public int _teamCTCount = 0;
-    public int _teamTerroristCount = 0;
-    public int _teamCTWin = 0;
-    public int _teamTerroristWin = 0;
+    public GameObject _player;
+    public TeamName _playerTeam;
+    public GameState _currentGameState { get; private set; }
+    public GameResult _currentGameResult {  get; private set; }
+
+    private MapDataSO _currentMapData;
+    private SpawnData[] _spawnCounter;
+    private SpawnData[] _spawnTerrorist;
+    private int _teamCounterCount = 0;
+    private int _teamTerroristCount = 0;
+    private int _teamCounterWin = 0;
+    private int _teamTerroristWin = 0;
 
     private float _timeCount;
-    private int _currentRound;
-    private bool _isMatchEnded = false;
-    public int _playerKilled = 0;
+    private int _currentRound = 0;
+    private int _playerKilled = 0;
 
+    private List<GameObject> _createdAssaultPoints;
+    private List<GameObject> _createdPatrolPoints;
 
     private void Awake()
     {
@@ -57,17 +45,20 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
 
-        _currentGameState = GameState.Countdown;
-        _timeCount = _timeCountdown;
-        _currentRound = 1;
-        _allBotCharacter = new List<GameObject>();
+        GetDataGameplay();
     }
 
-    private void Start()
+    private void OnEnable()
     {
-        SpawnTeams();
-        PlayRadioVoiceReadyMission();
-        UIGameManager_TeamDeathmatch.instance.UpdateUIResultRound();
+        SetupGameplay();
+    }
+
+    private async void Start()
+    {
+        await SpawnMatch();
+        UIGameManager_TeamDeathmatch.instance.OnLoadingScreen(false);
+        UIGameManager_TeamDeathmatch.instance.SetupMiniMap(_player);
+        AudioManager.instance.PlayRadioTeam(_currentGameState, _currentGameResult);    
     }
 
     private void Update()
@@ -75,6 +66,57 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
         UpdateRound();
         UpdateMatch();
         UpdateTime();
+    }
+
+    private void GetDataGameplay()
+    {
+        _gameplayConfig = GameplayDataManager.instance._gameplayConfigSO;
+        _teamMenu = GameplayDataManager.instance._teamMenuSO;
+        foreach (var menu in GameplayDataManager.instance._mapMenuSO)
+        {
+            if (menu.gameMode == GameplayDataManager.instance.gameMode)
+            {
+                _mapMenu = menu;
+                break;
+            }
+        }
+    }
+
+    private void SetupGameplay()
+    {
+        PlayerDataManager.instance.UsePlayerGold(_gameplayConfig.useGoldPerMatch);
+        _currentGameState = GameState.Countdown;
+        _currentGameResult = GameResult.None;
+        _currentRound = 1;
+        _timeCount = _gameplayConfig.timeCountdown;
+        _allBotCharacter = new List<GameObject>();
+        _createdAssaultPoints = new List<GameObject>();
+        _createdPatrolPoints = new List<GameObject>();
+    }
+
+    private void SetupMapPoint()
+    {
+        if (_createdAssaultPoints != null)
+        {
+            foreach (var data in _currentMapData._assaultCounter)
+            {
+                GameObject p = new GameObject($"AssaultPoint_{_createdAssaultPoints.Count}");
+                p.transform.SetParent(this.transform);
+                p.transform.position = data.position;
+                _createdAssaultPoints.Add(p);
+            }
+        }
+
+        if (_createdPatrolPoints != null)
+        {
+            foreach (var data in _currentMapData._patrolTerrorist)
+            {
+                GameObject p = new GameObject($"PatrolPoint_{_createdPatrolPoints.Count}");
+                p.transform.SetParent(this.transform);
+                p.transform.position = data.position;
+                _createdPatrolPoints.Add(p);
+            }
+        }
     }
 
     public void PauseMenu(bool isOpen)
@@ -95,187 +137,149 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
         }
     }
 
-    public void UpdatePlayerKilled(PlayerController player)
+    public void UpdatePlayerKilled(GameObject player)
     {
-        if (player == _playerController)
+        if (player == _player)
             _playerKilled++;
     }
 
-    public void UpdateTeamCount(TeamType teamType)
+    public void UpdateTeamCount(TeamName teamName)
     {
-        if (teamType == TeamType.Counter)
+        if (teamName == TeamName.Counter)
         {
-            _teamCTCount--;
+            _teamCounterCount--;
         }
-        if (teamType == TeamType.Terrorist)
+        if (teamName == TeamName.Terrorist)
         {
             _teamTerroristCount--;
         }
     }
 
-    private void PlayRadioVoiceReadyMission()
+    public void OnPlayerDeath()
     {
-        AudioManager.instance.PlayRadioOnReadyMission();
-    }
-
-    private void PlayRadioVoiceStartMission()
-    {
-        AudioManager.instance.PlayRadioOnStartMission();
-    }
-
-    private void PlayRadioVoiceEndMission(string resultMatch)
-    {
-        AudioManager.instance.PlayRadioOnEndMission(resultMatch);
-    }
-
-    private void SpawnTeams()
-    {
-        _teamCTCount = 0;
-        _teamTerroristCount = 0;
-
-        ShuffleTransform(_spawnCounter);
-        ShuffleTransform(_spawnTerrorist);
-
-        if (_player == null)
+        if (_currentGameState == GameState.RoundActive)
         {
-            int selectedTeamID = PlayerPrefs.GetInt("SelectedTeamID", 0);
-            int selectedCharacterID = PlayerPrefs.GetInt("SelectedCharacterID", 0);
+            StopAllCharacters();
+            _currentGameState = GameState.RoundEnd;
+            _timeCount = 5f;
 
-            Transform pSpawn;
-            if (selectedTeamID == 0)
+            if (_playerTeam == TeamName.Counter) _teamTerroristWin++;
+            else _teamCounterWin++;
+
+            UpdateResultRound();
+            UIGameManager_TeamDeathmatch.instance.OpenResultMenu(true);
+        }
+    }
+
+    private async UniTask SpawnMatch()
+    {
+        int mapID = PlayerPrefs.GetInt("SelectedMapID", 0);
+        _currentMapData = _mapMenu.GetMapDataByMapID(mapID);
+        Debug.Log("Map ID: " + mapID);
+
+        _spawnCounter = _currentMapData._spawnCounter;
+        _spawnTerrorist = _currentMapData._spawnTerrorist; 
+        int teamSize = _gameplayConfig.teamSize;
+        ShuffleArray(_spawnCounter);
+        ShuffleArray(_spawnTerrorist);
+
+        SetupMapPoint();
+        
+        var teamID = PlayerPrefs.GetInt("SelectedTeamID", 0);
+        var teamData = _teamMenu.GetTeamByID(teamID);
+        _playerTeam = teamData.teamName;
+        Debug.Log("Player Team: " + _playerTeam.ToString());
+
+        await SpawnPlayer(teamData);
+        await SpawnTeamBots(TeamName.Counter, teamSize);
+        await SpawnTeamBots(TeamName.Terrorist, teamSize);
+    }
+
+    private async UniTask SpawnPlayer(TeamDataSO teamData)
+    {
+        int charID = PlayerPrefs.GetInt("SelectedCharacterID", 0);
+        var charData = teamData.GetCharacterDataByCharacterID(charID);
+
+        if (charData != null)
+        {
+            _player = await AddressableManager.instance.InstantiatePrefabAsync(charData.characterPlayerPrefab);
+            
+            if (_player != null)
             {
-                _teamType = TeamType.Counter;
-                pSpawn = _spawnCounter[0];
-                _player = Instantiate(_counterPrefabs[selectedCharacterID], pSpawn.position, pSpawn.rotation);
-                _teamCTCount++;
-            }             
-            if (selectedTeamID == 1)
-            {
-                _teamType = TeamType.Terrorist;
-                pSpawn = _spawnTerrorist[0];
-                _player = Instantiate(_terroristPrefabs[selectedCharacterID], pSpawn.position, pSpawn.rotation);
-                _teamTerroristCount++;
+                SpawnData spawnData = (_playerTeam == TeamName.Counter) ? _spawnCounter[0] : _spawnTerrorist[0];
+                _player.transform.position = spawnData.position;
+                _player.transform.rotation = Quaternion.Euler(spawnData.rotation);
             }
-                
-            _playerController = _player.GetComponent<PlayerController>();
-            _playerInventory = _player.GetComponent<PlayerInventory>();
-            _playerHealth = _player.GetComponent<PlayerHealth>();
-            _playerAnimationEvents = _player.GetComponent<PlayerAnimationEvents>();
-            _playerTeam = _player.GetComponent<PlayerTeam>();
-            _playerTeam._playerID = 0;
 
-            MiniMap.instance.SetupPlayerTransform(_player.transform);
+            if (_playerTeam == TeamName.Counter) _teamCounterCount++; else _teamTerroristCount++;
+        }
+    }
+
+    private async UniTask SpawnTeamBots(TeamName teamName, int teamSize)
+    {
+        TeamDataSO teamData = _teamMenu.GetTeamByTeamName(teamName);
+        if (teamData == null) return;
+
+        // Trừ đi 1 nếu team đó có Player
+        int _teamSize = (teamName == _playerTeam) ? teamSize - 1 : teamSize;
+        int startIndex = (teamName == _playerTeam) ? 1 : 0;
+        SpawnData[] spawnPoints = (teamName == TeamName.Counter) ? _spawnCounter : _spawnTerrorist;
+
+        List<UniTask<GameObject>> tasks = new List<UniTask<GameObject>>();
+
+        for (int i = 0; i < _teamSize; i++)
+        {
+            var charData = teamData.characterData[Random.Range(0, teamData.characterData.Length)];
+            tasks.Add(AddressableManager.instance.InstantiatePrefabAsync(charData.characterAIPrefab));
+        }
+
+        GameObject[] spawnedBots = await UniTask.WhenAll(tasks);
+
+        for (int i = 0; i < spawnedBots.Length; i++)
+        {
+            GameObject bot = spawnedBots[i];
+            SpawnData sPoint = spawnPoints[i + startIndex];
+            bot.transform.position = sPoint.position;
+            bot.transform.rotation = Quaternion.Euler(sPoint.rotation);
+
+            SetupBotAI(bot, teamName, i);
+           
+            _allBotCharacter.Add(bot);
+            if (teamName == TeamName.Counter) _teamCounterCount++; else _teamTerroristCount++;
+        }
+    }
+
+    private void SetupBotAI(GameObject bot, TeamName team, int index)
+    {
+        if (!bot.TryGetComponent<BehaviorGraphAgent>(out var behavior)) return;
+
+        if (bot.TryGetComponent<NavMeshAgent>(out var agent))
+        {
+            agent.avoidancePriority = Mathf.Clamp(index, 0, 99);
+            agent.enabled = true;
+        }
+
+        List<GameObject> pointsForBlackboard = new List<GameObject>();
+
+        if (team == TeamName.Counter)
+        {
+            behavior.BlackboardReference.SetVariableValue("AssaultPoints", _createdAssaultPoints);
         }
         else
         {
-            Transform pSpawn = (_teamType == TeamType.Counter) ? _spawnCounter[0] : _spawnTerrorist[0];
-            _player.transform.position = pSpawn.position;
-            _player.transform.rotation = pSpawn.rotation;
-            if (_teamType == TeamType.Counter) _teamCTCount++;
-            else _teamTerroristCount++;
+            ShuffleArray(_createdPatrolPoints);
+            behavior.BlackboardReference.SetVariableValue("PatrolPoints", _createdPatrolPoints);
+        }
 
-            _playerController.ResetPlayerState();
-            _playerHealth.ResetHealth();
-        }
-    
-
-        if (_teamType == TeamType.Counter)
-        {
-            SpawnCounterBots(_cTSpawn - 1, 1);
-            SpawnTerroristBots(_terroristSpawn, 0);
-        }
-        else
-        {
-            SpawnTerroristBots(_terroristSpawn - 1, 1);
-            SpawnCounterBots(_cTSpawn, 0);
-        }
+        behavior.enabled = true;
     }
 
-    private void SpawnCounterBots(int count, int startIndex)
-    {
-        for (int i = 0; i < count; i++)
-        {
-            Transform spawn = _spawnCounter[i + startIndex];
-            int indexCharacter = Random.Range(0, _counterAIPrefabs.Length);
-            GameObject bot = Instantiate(_counterAIPrefabs[indexCharacter], spawn.position, spawn.rotation);
-
-            if (_assaultCounter != null && _assaultCounter.Length > 0)
-            {
-                List<GameObject> pointList = new List<GameObject>();
-                foreach (Transform child in _assaultCounter)
-                {
-                    pointList.Add(child.gameObject);
-                }
-                if (bot.TryGetComponent<BehaviorGraphAgent>(out var behaviorAgent))
-                {
-                    behaviorAgent.BlackboardReference.SetVariableValue("AssaultPoints", pointList);
-                }
-                if (bot.TryGetComponent<PlayerTeam>(out var playerTeam))
-                {
-                    playerTeam._playerID = i + startIndex;
-                }
-            }
-            _allBotCharacter.Add(bot);
-            _teamCTCount++;
-        }
-    }
-
-    private void SpawnTerroristBots(int count, int startIndex)
-    {
-        ShuffleTransform(_patrolTerrorist);
-
-        for (int i = 0; i < count; i++)
-        {
-            Transform spawn = _spawnTerrorist[i + startIndex];
-            int indexCharacter = Random.Range(0, _terroristAIPrefabs.Length);
-            GameObject bot = Instantiate(_terroristAIPrefabs[indexCharacter], spawn.position, spawn.rotation);
-
-            if (_patrolTerrorist != null && _patrolTerrorist.Length > 0)
-            {
-                Transform assignedPatrolGroup = _patrolTerrorist[i % _patrolTerrorist.Length];
-
-                List<GameObject> pointList = new List<GameObject>();
-                foreach (Transform child in assignedPatrolGroup)
-                {
-                    pointList.Add(child.gameObject);
-                }
-
-                ShuffleList(pointList);
-
-                if (bot.TryGetComponent<BehaviorGraphAgent>(out var behaviorAgent))
-                {
-                    behaviorAgent.BlackboardReference.SetVariableValue("PatrolPoints", pointList);
-                }
-
-                if (bot.TryGetComponent<PlayerTeam>(out var playerTeam))
-                {
-                    playerTeam._playerID = i + startIndex;
-                }
-            }
-            _allBotCharacter.Add(bot);
-            _teamTerroristCount++;
-        }
-    }
-
-    private void ShuffleTransform(Transform[] transform)
-    {
-        for (int i = 0; i < transform.Length; i++)
-        {
-            Transform temp = transform[i];
-            int randomIndex = Random.Range(i, transform.Length);
-            transform[i] = transform[randomIndex];
-            transform[randomIndex] = temp;
-        }
-    }
-
-    private void ShuffleList(List<GameObject> list)
+    private void ShuffleArray<T>(IList<T> list)
     {
         for (int i = 0; i < list.Count; i++)
         {
-            GameObject temp = list[i];
-            int randomIndex = Random.Range(i, list.Count);
-            list[i] = list[randomIndex];
-            list[randomIndex] = temp;
+            int rnd = Random.Range(i, list.Count);
+            (list[rnd], list[i]) = (list[i], list[rnd]);
         }
     }
 
@@ -285,53 +289,35 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
         {
             _timeCount -= Time.deltaTime;
             _timeCount = Mathf.Clamp(_timeCount, 0, Mathf.Infinity);
-            if (_currentGameState == GameState.RoundActive || _currentGameState == GameState.Countdown)
-            {
-                UIGameManager_TeamDeathmatch.instance.UpdateUITime(_timeCount);
-            }
+            UIGameManager_TeamDeathmatch.instance.UpdateUITime(_timeCount, _currentGameState);
         }
     }
 
     private void UpdateRound()
     {
-        if (_currentGameState == GameState.Countdown)
+        switch (_currentGameState)
         {
-            if (_timeCount <= 0)
-            {
-                _currentGameState = GameState.RoundActive;
-                _timeCount = _timeRoundActive;
-                PlayRadioVoiceStartMission();
-            }
-        }
-        else if (_currentGameState == GameState.RoundActive)
-        {
-            if (_timeCount <= 0 || _teamCTCount <= 0 || _teamTerroristCount <= 0)
-            {
-                _playerController.ResetPlayerState();
-
-                if (_teamCTCount <= 0) _teamTerroristWin++;
-                else if (_teamTerroristCount <= 0) _teamCTWin++;
-
-                _currentGameState = GameState.RoundEnd;
-                _timeCount = 5f;
-
-                foreach (GameObject bot in _allBotCharacter)
+            case GameState.Countdown:
+                if (_timeCount <= 0)
                 {
-                    if (bot.TryGetComponent<BotAIController>(out var controller))
-                        controller.enabled = false;
-
-                    if (bot.TryGetComponent<BehaviorGraphAgent>(out var agent))
-                        agent.enabled = false;
-
-                    if (bot.TryGetComponent<CharacterController>(out var charCtrl))
-                        charCtrl.Move(Vector3.zero);
-
-                    if (bot.TryGetComponent<Animator>(out var animator))
-                        animator.SetFloat("Speed", 0f);                       
+                    _currentGameState = GameState.RoundActive;
+                    _timeCount = _gameplayConfig.timeRoundActive;
+                    if (_currentRound > 0) return;
+                    AudioManager.instance.PlayRadioTeam(_currentGameState, _currentGameResult);
                 }
-                UIGameManager_TeamDeathmatch.instance.UpdateUIResultRound();
-                UIGameManager_TeamDeathmatch.instance.OpenResultMenu(true);
-            }
+                break;
+            case GameState.RoundActive:
+                if (_timeCount <= 0 || _teamCounterCount <= 0 || _teamTerroristCount <= 0)
+                {
+                    StopAllCharacters();
+                    if (_teamCounterCount <= _teamTerroristCount) _teamTerroristWin++;
+                    else if (_teamTerroristCount <= _teamCounterCount) _teamCounterWin++;
+                    _currentGameState = GameState.RoundEnd;      
+                    _timeCount = 5f;
+                    UpdateResultRound();
+                    UIGameManager_TeamDeathmatch.instance.OpenResultMenu(true);
+                }
+                break;
         }
     }
 
@@ -341,74 +327,114 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
         {
             if (_timeCount <= 0)
             {
-                if (_currentRound < _totalRound)
+                if (_currentRound < _gameplayConfig.totalRound)
                 {
-                    UIGameManager_TeamDeathmatch.instance.OpenResultMenu(false);
+                    StopAllCharacters();
                     PrepareNextRound();
-                    _currentRound++;
-                    _currentGameState = GameState.Countdown;
-                    _timeCount = _timeCountdown;
                 }
                 else
                 {
-                    if (!_isMatchEnded)
-                    {
-                        StartCoroutine(UpdateResultMatch());
-                    }
+                    StopAllCharacters();
+                    _currentGameState = GameState.MatchEnd;
+                    StartCoroutine(UpdateResultMatch());
                 }
             }
         }
     }
 
-    private void PrepareNextRound()
+    private void UpdateResultRound()
     {
-        ClearOldBots();
-        SpawnTeams();
+        if (_teamCounterWin > _teamTerroristWin) UIGameManager_TeamDeathmatch.instance.UpdateUIResultRound(TeamName.Counter);
+        else if (_teamTerroristWin > _teamCounterWin) UIGameManager_TeamDeathmatch.instance.UpdateUIResultRound(TeamName.Terrorist);
+        else UIGameManager_TeamDeathmatch.instance.UpdateUIResultRound(TeamName.None);
     }
 
-    private void ClearOldBots()
+    private IEnumerator UpdateResultMatch()
     {
-        if (_playerHealth._currentHealth <= 0)
+        StopAllCharacters();
+        yield return StartCoroutine(CalculateMatchRewards());
+        yield return StartCoroutine(UIGameManager_TeamDeathmatch.instance.ShowUIResultMatch(_currentGameResult));
+    }
+
+    private void StopAllCharacters()
+    {
+        if (_player.TryGetComponent<PlayerController>(out var playerController)) playerController.ResetPlayerState();
+
+        foreach (var bot in _allBotCharacter)
         {
-            Destroy(_player);
+            if (bot == null) continue;
+            if (bot.TryGetComponent<BotAIController>(out var botAI)) botAI.enabled = false; 
+            if (bot.TryGetComponent<BehaviorGraphAgent>(out var behavior)) behavior.enabled = false;
+            if (bot.TryGetComponent<NavMeshAgent>(out var navMeshAgent)) navMeshAgent.enabled = false;
+            if (bot.TryGetComponent<Animator>(out var animator)) animator.SetFloat("Speed", 0);
+        }
+    }
+
+    private async void PrepareNextRound()
+    {
+        _currentGameState = GameState.Setup;
+
+        UIGameManager_TeamDeathmatch.instance.OpenResultMenu(false);
+        _currentRound++;
+
+        if (_player != null)
+        {
+            AddressableManager.instance.ReleaseInstance(_player);
             _player = null;
         }
 
-        foreach (GameObject bot in _allBotCharacter)
+        for (int i = _allBotCharacter.Count - 1; i >= 0; i--)
         {
-            Destroy(bot);
+            if (_allBotCharacter[i] != null)
+            {
+                AddressableManager.instance.ReleaseInstance(_allBotCharacter[i]);
+            }
         }
         _allBotCharacter.Clear();
+
+        UIGameManager_TeamDeathmatch.instance.OnLoadingScreen(true);
+        await SpawnMatch();
+        UIGameManager_TeamDeathmatch.instance.OnLoadingScreen(false);
+
+        _timeCount = _gameplayConfig.timeCountdown;
+        _currentGameState = GameState.Countdown;
     }
 
-    public IEnumerator UpdateResultMatch()
+    private IEnumerator CalculateMatchRewards()
     {
-        _isMatchEnded = true;
-        _currentGameState = GameState.MatchEnd;
-        CalculateMatchRewards();
-        yield return new WaitForSecondsRealtime(5f);
-        UIGameManager_TeamDeathmatch.instance.ShowUIResultMatch();
-    }
+        if (_playerTeam == TeamName.Counter)
+            _currentGameResult = (_teamCounterWin > _teamTerroristWin) ? GameResult.Win : GameResult.Lose;
+        else
+            _currentGameResult = (_teamTerroristWin > _teamCounterWin) ? GameResult.Win : GameResult.Lose;
 
-    private void CalculateMatchRewards()
-    {
-        string resultMatch = null;
-        int bonusGoldPerKill = GameplayDataManager.instance.GetBonusGoldPerKill();
-        int rewardKills = _playerKilled * GameplayDataManager.instance.GetBonusGoldPerKill();
-        bool isPlayerCT = (_teamType == TeamType.Counter);
-
-        if (_teamCTWin > _teamTerroristWin)
-        {
-            resultMatch = isPlayerCT ? "WIN" : "LOSE";
-        }
-        else if (_teamTerroristWin > _teamCTWin)
-        {
-            resultMatch = !isPlayerCT ? "WIN" : "LOSE";
-        }
-
-        int rewardMatch = GameplayDataManager.instance.GetBonusGoldByMatchResult(resultMatch);
+        int rewardKills = _playerKilled * _gameplayConfig.bonusGoldPerKill;
+        int rewardMatch = _gameplayConfig.GetGoldByResult(_currentGameResult);
         int totalReward = rewardMatch + rewardKills;
+
         PlayerDataManager.instance.AddPlayerGold(totalReward);
-        PlayRadioVoiceEndMission(resultMatch);
+        AudioManager.instance.PlayRadioTeam(_currentGameState, _currentGameResult);
+        yield return new WaitForSecondsRealtime(5f);
+    }
+
+    private void OnDestroy()
+    {
+        if (_player != null)
+        {
+            AddressableManager.instance.ReleaseInstance(_player);
+            _player = null;
+        }
+
+        if (_allBotCharacter != null)
+        {
+            foreach (var bot in _allBotCharacter)
+            {
+                if (bot != null)
+                {
+                    AddressableManager.instance.ReleaseInstance(bot);
+                }
+            }
+
+            _allBotCharacter.Clear();
+        }
     }
 }

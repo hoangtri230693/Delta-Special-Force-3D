@@ -4,6 +4,8 @@ using UnityEngine.InputSystem;
 
 public class PlayerCamera : MonoBehaviour
 {
+    PlayerController _playerController;
+
     [Header("Cinemachine Components")]
     [SerializeField] private CinemachineCamera _freeLookCamera;
     [SerializeField] private CinemachineCamera _aimCamera;
@@ -15,9 +17,6 @@ public class PlayerCamera : MonoBehaviour
     [SerializeField] private Transform _pitchWrapper;
     [SerializeField] private Transform _pitchTarget;
 
-    [Header("Settings")]
-    [SerializeField] private CameraStatsSO _cameraStats;
-
     private float _yaw;
     private float _pitch;
     private float _targetCameraSide = 1f;
@@ -25,6 +24,7 @@ public class PlayerCamera : MonoBehaviour
 
     private void Awake()
     {
+        _playerController = GetComponent<PlayerController>();
         Vector3 angles = _yawTarget.rotation.eulerAngles;
         _yaw = angles.y;
         _pitch = angles.x;
@@ -37,7 +37,7 @@ public class PlayerCamera : MonoBehaviour
             _aimFollow.CameraSide = Mathf.Lerp(
                 _aimFollow.CameraSide,
                 _targetCameraSide,
-                Time.deltaTime * _cameraStats.ShoulderSwitchSpeed);
+                Time.deltaTime * _playerController.CameraStats.ShoulderSwitchSpeed);
         }
     }
 
@@ -45,30 +45,30 @@ public class PlayerCamera : MonoBehaviour
     {
         if (Mouse.current != null && Mouse.current.delta.IsActuated())
         {
-            lookInput *= _cameraStats.MouseSensitivity;
+            lookInput *= _playerController.CameraStats.MouseSensitivity;
         }
         else if (Gamepad.current != null && Gamepad.current.rightStick.IsActuated())
         {
-            lookInput *= _cameraStats.GamepadSensitivity;
+            lookInput *= _playerController.CameraStats.GamepadSensitivity;
         }
 
-        _yaw += lookInput.x * _cameraStats.Sensitivity;
-        _pitch -= lookInput.y * _cameraStats.Sensitivity;
+        _yaw += lookInput.x * _playerController.CameraStats.Sensitivity;
+        _pitch -= lookInput.y * _playerController.CameraStats.Sensitivity;
 
         _yawTarget.rotation = Quaternion.Euler(0f, _yaw, 0f);
 
         if (transform.root.CompareTag("Terrorist"))
         {
             _pitchWrapper.localRotation = Quaternion.Euler(
-                Mathf.Clamp(_pitch, _cameraStats.PitchMin, _cameraStats.PitchMax), 0f, 0f);
+                Mathf.Clamp(_pitch, _playerController.CameraStats.PitchMin, _playerController.CameraStats.PitchMax), 0f, 0f);
 
             _pitchTarget.localRotation = Quaternion.Euler(
-                0f, 90f, Mathf.Clamp(_pitch, -_cameraStats.PitchMax, -_cameraStats.PitchMin) - 75f);
+                0f, 90f, Mathf.Clamp(_pitch, -_playerController.CameraStats.PitchMax, -_playerController.CameraStats.PitchMin) - 75f);
         }
         else
         {
             _pitchTarget.localRotation = Quaternion.Euler(
-                Mathf.Clamp(_pitch, _cameraStats.PitchMin, _cameraStats.PitchMax), 0f, 0f);
+                Mathf.Clamp(_pitch, _playerController.CameraStats.PitchMin, _playerController.CameraStats.PitchMax), 0f, 0f);
         }
     }
 

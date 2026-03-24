@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7604969201229747407}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: GrenadeAttack_Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -43,7 +43,7 @@ GameObject:
   - component: {fileID: 8246648380261579917}
   - component: {fileID: 7146005024943113285}
   - component: {fileID: 9164920834649125711}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Grenade03
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -129,7 +129,7 @@ GameObject:
   - component: {fileID: 1652919050020854916}
   - component: {fileID: 7825240579373213407}
   - component: {fileID: 4841278996310230341}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Grenade04
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -215,7 +215,7 @@ GameObject:
   - component: {fileID: 2577519682599474971}
   - component: {fileID: 5270998295662388373}
   - component: {fileID: 7703968184304025590}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Grenade00
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -299,7 +299,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3196313429385256137}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Skin
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -337,7 +337,7 @@ GameObject:
   - component: {fileID: 5529198076505795577}
   - component: {fileID: 108044293780847808}
   - component: {fileID: 7437759867730718028}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Grenade02
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -423,7 +423,7 @@ GameObject:
   - component: {fileID: 2249807227030782558}
   - component: {fileID: 5227538932439110116}
   - component: {fileID: 373894969755574708}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Grenade01
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -1,5 +1,6 @@
 ﻿using Unity.Cinemachine;
 using UnityEngine;
+using DeltaSpecialForce3D.Enums;
 
 public class WeaponShootController : MonoBehaviour
 {   
@@ -26,11 +27,6 @@ public class WeaponShootController : MonoBehaviour
 
     private void Start() => RefreshUI();    
 
-    private void Update()
-    {
-        CheckActionShoot();
-    }
-
     private void LateUpdate()
     {
         if (_currentFireSmoke != null && _currentFireSmoke.isPlaying)
@@ -51,7 +47,7 @@ public class WeaponShootController : MonoBehaviour
         }
     }
 
-    public void InitializeAmmo()
+    public void InitializeShoot()
     {
         _currentAmmo = _weaponController.WeaponStats.ammoPerMag;
         _currentReverse = _weaponController.WeaponStats.ammoReverse;
@@ -67,6 +63,26 @@ public class WeaponShootController : MonoBehaviour
         {
             playerAnimationEvents._secondaryShootController = this;
         }
+    }
+
+    public void ActiveCombat(CombatState combatState)
+    {
+        switch (combatState)
+        {
+            case CombatState.Aim:
+                _barrelPointController.enabled = true;
+                _barrelPointController.EnableCrosshair();
+                break;
+            case CombatState.None:
+                _barrelPointController.DisableCrosshair();
+                _barrelPointController.enabled = false;
+                break;
+        }
+    }
+
+    public void ZoomControl(float zoomDelta)
+    {
+        _barrelPointController.ScopeZoom(zoomDelta);
     }
 
     public void HandleReload()
@@ -86,38 +102,16 @@ public class WeaponShootController : MonoBehaviour
         RefreshUI();
     }
 
-    private void CheckActionShoot()
+    public void TryShoot()
     {
-        bool isShooting = _weaponController._playerController._actionState == ActionState.AutomaticShoot ||
-                          _weaponController._playerController._actionState == ActionState.ManualShoot;
+        if (Time.time < _nextAttackTime) return;
 
-        if (_weaponController._playerController._actionState == ActionState.AutomaticShoot)
-        {
-            if (Time.time >= _nextAttackTime)
-            {
-                Shoot();
-                float fireDelay = 60f / _weaponController.WeaponStats.fireRate;
-                _nextAttackTime = Time.time + fireDelay;
-                GenerateFireSmoke();
-            }
-        }
-        else if (_weaponController._playerController._actionState == ActionState.ManualShoot)
-        {
-            if (Time.time >= _nextAttackTime)
-            {
-                Shoot();
-                float fireDelay = 60f / _weaponController.WeaponStats.fireRate;
-                _nextAttackTime = Time.time + fireDelay;
-                _weaponController._playerController._actionState = ActionState.None;
-                GenerateFireSmoke();
-            }
-            else
-            {
-                _weaponController._playerController._actionState = ActionState.None;
-            }
-        }
+        Shoot();
+        float fireDelay = 60f / _weaponController.WeaponStats.fireRate;
+        _nextAttackTime = Time.time + fireDelay;
+        GenerateFireSmoke();
 
-        if (!isShooting && _currentFireSmoke != null && _currentFireSmoke.isPlaying)
+        if (_currentFireSmoke != null && _currentFireSmoke.isPlaying)
         {
             StopFireSmoke();
         }
@@ -253,7 +247,7 @@ public class WeaponShootController : MonoBehaviour
         PlayerHealth playerHealth = _barrelPointController._playerHealth;
         ZombieHealth zombieHealth = _barrelPointController._zombieHealth;
 
-        if (playerHealth != null)
+        if (playerHealth != null && playerHealth._currentHealth > 0)
         {
             HandleAudioHit();
             float damage = _weaponController.WeaponStats.damage;
@@ -266,7 +260,7 @@ public class WeaponShootController : MonoBehaviour
             }
         }
 
-        if (zombieHealth != null)
+        if (zombieHealth != null && zombieHealth._currentHealth > 0)
         {
             HandleAudioHit();
             float damage = _weaponController.WeaponStats.damage;

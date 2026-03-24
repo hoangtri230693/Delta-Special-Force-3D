@@ -1,16 +1,6 @@
+using DeltaSpecialForce3D.Enums;
 using UnityEngine;
 
-public enum WeaponSoundType
-{
-    Fire,
-    DryFire,
-    Reload,
-    Cock,
-    Melee,
-    Hit,
-    Throw,
-    Explosion
-}
 
 public class WeaponAudio : MonoBehaviour
 {

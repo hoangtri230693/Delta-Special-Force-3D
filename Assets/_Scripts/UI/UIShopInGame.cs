@@ -1,18 +1,16 @@
-﻿using System.Collections;
+﻿using DeltaSpecialForce3D.Enums;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
 
-public enum ShopState
-{
-    SelectType,
-    SelectWeapon
-}
 
 public class UIShopInGame : MonoBehaviour
 {
     public static UIShopInGame instance;
+
+    [SerializeField] private GameObject _shopInGame;
 
     [Header("UI - Weapon Type (1-9)")]
     [SerializeField] private TextMeshProUGUI[] _weaponTypeSlots;
@@ -36,18 +34,17 @@ public class UIShopInGame : MonoBehaviour
     private Dictionary<WeaponType, List<WeaponStatsSO>> _weaponByType;
     private List<WeaponType> _availableType;
 
-    private WeaponType _currentType;
+    private WeaponType _currentWeaponType;
     private WeaponStatsSO _currentWeapon;
     private GameObject _currentPreview;
-
-    public ShopState shopState = ShopState.SelectType;
+    private ShopState shopState = ShopState.SelectType;
 
 
     private void Awake()
     {
         instance = this;
 
-        _weaponByType = WeaponStatsManager.instance.weaponStats
+        _weaponByType = WeaponDataManager.instance.weaponStatsSO
             .GroupBy(w => w.weaponType)
             .ToDictionary(g => g.Key, g => g.ToList());
 
@@ -55,13 +52,13 @@ public class UIShopInGame : MonoBehaviour
     }
 
     // ================= SHOP FLOW =================
-    public void OnEnableTable()
+    public void OnEnableTable(int currentCash)
     {
         shopState = ShopState.SelectType;
         SetupWeaponTypeUI();
         ClearWeaponListUI();
         HidePreviewAndStats();
-        UpdateCash();
+        UpdateUICash(currentCash);
     }
 
     public void OnEscape()
@@ -83,28 +80,21 @@ public class UIShopInGame : MonoBehaviour
         if (!IsUnlocked(id)) return;
 
         if (GameManager_TeamDeathmatch.instance != null)
-        {
-            BuyWeapon(id, GameManager_TeamDeathmatch.instance._player.GetComponent<PlayerController>(),
-                          GameManager_TeamDeathmatch.instance._player.GetComponent<PlayerInventory>(),
-                          GameManager_TeamDeathmatch.instance._player.GetComponent<PlayerHealth>());
-        }
+            BuyWeapon(id, GameManager_TeamDeathmatch.instance._player);
         if (GameManager_ZombieSurvival.instance != null)
-        {
-            BuyWeapon(id, GameManager_ZombieSurvival.instance._player.GetComponent<PlayerController>(),
-                          GameManager_ZombieSurvival.instance._player.GetComponent<PlayerInventory>(),
-                          GameManager_ZombieSurvival.instance._player.GetComponent<PlayerHealth>());
-        }
+            BuyWeapon(id, GameManager_ZombieSurvival.instance._player);
 
-        AudioManager.instance.PlaySfx(SFXType.MetalClick);
+        AudioManager.instance.PlaySfx(SFXSoundType.MetalClick);
         StartCoroutine(FlashAndFadeColor(_textBuy));
     }
 
-    public void BuyWeapon(int weaponID, PlayerController playerController,
-                                        PlayerInventory playerInventory,
-                                        PlayerHealth playerHealth)
+    public void BuyWeapon(int weaponID, GameObject player)
     {
-        WeaponStatsSO weapon = WeaponStatsManager.instance.weaponStats
-            .FirstOrDefault(w => w.weaponID == weaponID);
+        WeaponStatsSO weapon = WeaponDataManager.instance.GetWeaponStatsByID(weaponID);
+        PlayerController playerController = player.GetComponent<PlayerController>();
+        PlayerInventory playerInventory = player.GetComponent<PlayerInventory>();
+        PlayerHealth playerHealth = player.GetComponent<PlayerHealth>();
+        BotAIController botAIController = player.GetComponent<BotAIController>();
 
         if (playerController._currentCash < weapon.cash)
             return;
@@ -129,32 +119,23 @@ public class UIShopInGame : MonoBehaviour
                 break;
 
             case ItemType.ArmorItem:
-                playerHealth._currentArmorHealth = weapon.armorHealth;
-
-                if (playerHealth == GameManager_TeamDeathmatch.instance?._playerHealth)
-                {
-                    UIGameManager_TeamDeathmatch.instance
-                        .UpdateUIArmorHealth(playerHealth._currentArmorHealth, playerHealth);
-                }
-                else if (playerHealth == GameManager_ZombieSurvival.instance?._playerHealth)
-                {
-                    UIGameManager_ZombieSurvival.instance
-                        .UpdateUIArmorHealth(playerHealth._currentArmorHealth, playerHealth);
-                }
+                playerHealth._currentArmorHealth = Mathf.Clamp(playerHealth._currentArmorHealth + weapon.armorHealth, 0, 100);
+                playerHealth.UpdateUIArmorHealth();
+                //Debug.Log("Armor Health: " + playerHealth._currentArmorHealth);
                 break;
         }
 
         if (inventory != null && inventory.childCount > 0)
         {
+
+
             for (int i = inventory.childCount - 1; i >= 0; i--)
             {
                 Transform child = inventory.GetChild(i);
                 WeaponController weaponController = child.GetComponent<WeaponController>();
 
                 if (weaponController != null)
-                {
                     weaponController.DropWeapon();
-                }
             }
         }
 
@@ -164,12 +145,18 @@ public class UIShopInGame : MonoBehaviour
             weaponPrefab.transform.SetParent(inventory);
             weaponPrefab.transform.localPosition = Vector3.zero;
             weaponPrefab.transform.localRotation = Quaternion.identity;
+            weaponPrefab.GetComponent<WeaponController>().InitializeWeapon(player);
         }
 
         playerController._currentCash -= weapon.cash;
-        playerController._itemType = weapon.itemType;
+        if (botAIController != null)
+            UpdateUICash(playerController._currentCash);
+
         if (weapon.itemType != ItemType.ArmorItem)
+        {
+            playerController._itemType = weapon.itemType;
             playerController.SwitchItem();
+        }
     }
 
     public void OnNumberInput(int index)
@@ -186,19 +173,8 @@ public class UIShopInGame : MonoBehaviour
         }
     }
 
-    public void UpdateCash()
+    public void UpdateUICash(int cash)
     {
-        int cash = 0;
-
-        if (GameManager_TeamDeathmatch.instance != null)
-        {
-            cash = GameManager_TeamDeathmatch.instance._playerController._currentCash;
-        }
-        else if (GameManager_ZombieSurvival.instance != null)
-        {
-            cash = GameManager_ZombieSurvival.instance._playerController._currentCash;
-        }
-
         _textCash.text = "$" + cash;
     }
 
@@ -209,7 +185,7 @@ public class UIShopInGame : MonoBehaviour
         {
             if (i < _availableType.Count)
             {
-                _weaponTypeSlots[i].text = _availableType[i].ToString().ToUpper();
+                _weaponTypeSlots[i].text = _availableType[i].ToString();
                 _weaponTypeSlots[i].gameObject.SetActive(true);
             }
             else
@@ -223,10 +199,10 @@ public class UIShopInGame : MonoBehaviour
     {
         if (index >= _availableType.Count) return;
 
-        _currentType = _availableType[index];
+        _currentWeaponType = _availableType[index];
         shopState = ShopState.SelectWeapon;
 
-        List<WeaponStatsSO> weapons = _weaponByType[_currentType];
+        List<WeaponStatsSO> weapons = _weaponByType[_currentWeaponType];
 
         for (int i = 0; i < _weaponMenuSlots.Length; i++)
         {
@@ -240,7 +216,7 @@ public class UIShopInGame : MonoBehaviour
                 _weaponMenuSlots[i].gameObject.SetActive(false);
             }
         }
-        AudioManager.instance.PlaySfx(SFXType.MetalClick);
+        AudioManager.instance.PlaySfx(SFXSoundType.MetalClick);
         StartCoroutine(FlashAndFadeColor(_weaponTypeSlots[index]));
         HidePreviewAndStats();
     }
@@ -254,7 +230,7 @@ public class UIShopInGame : MonoBehaviour
     // ================= WEAPON =================
     private void SelectWeapon(int index)
     {
-        var weapons = _weaponByType[_currentType];
+        var weapons = _weaponByType[_currentWeaponType];
         if (index >= weapons.Count) return;
 
         _currentWeapon = weapons[index];
@@ -263,19 +239,8 @@ public class UIShopInGame : MonoBehaviour
         ShowStats(_currentWeapon);
         UpdateLockedState(_currentWeapon.weaponID);
 
-        AudioManager.instance.PlaySfx(SFXType.MetalClick);
+        AudioManager.instance.PlaySfx(SFXSoundType.MetalClick);
         StartCoroutine(FlashAndFadeColor(_weaponMenuSlots[index]));
-
-        if (GameManager_TeamDeathmatch.instance != null)
-        {
-            var playerController = GameManager_TeamDeathmatch.instance._playerController;
-            playerController._itemType = _currentWeapon.itemType;
-        }
-        if (GameManager_ZombieSurvival.instance != null)
-        {
-            var playerController = GameManager_ZombieSurvival.instance._playerController;
-            playerController._itemType = _currentWeapon.itemType;
-        }
     }
 
     private void ShowPreview(WeaponStatsSO weapon)
@@ -296,8 +261,8 @@ public class UIShopInGame : MonoBehaviour
             case WeaponType.Pistol:
             case WeaponType.Shotgun:
             case WeaponType.SMG:
-            case WeaponType.AssaultRifle:
-            case WeaponType.SniperRifle:
+            case WeaponType.Assault:
+            case WeaponType.Sniper:
                 ShowGunStats(w);
                 break;
 
@@ -313,10 +278,10 @@ public class UIShopInGame : MonoBehaviour
 
     private void ShowGunStats(WeaponStatsSO w)
     {
-        SetStat(0, "Damage:", w.damage);
-        SetStat(1, "Fire Rate:", $"{w.fireRate} RPM");
-        SetStat(2, "Recoil:", w.recoilAmount);
-        SetStat(3, "Price:", $"${w.cash}");
+        SetStat(0, "Damage", w.damage);
+        SetStat(1, "Fire Rate", $"{w.fireRate} RPM");
+        SetStat(2, "Recoil", w.recoilAmount);
+        SetStat(3, "Price", $"${w.cash}");
     }
 
     private void ShowThrowableStats(WeaponStatsSO w)
@@ -324,13 +289,13 @@ public class UIShopInGame : MonoBehaviour
         SetStat(0, "Damage", w.damage);
         SetStat(1, "Radius", $"{w.attackRadius}m");
         SetStat(2, "Force", w.shakeIntensity);
-        SetStat(3, "Price:", $"${w.cash}");
+        SetStat(3, "Price", $"${w.cash}");
     }
 
     private void ShowArmorStats(WeaponStatsSO w)
     {
         SetStat(0, "Health", w.armorHealth);
-        SetStat(1, "Price:", $"${w.cash}");
+        SetStat(1, "Price", $"${w.cash}");
     }
 
     private void SetStat(int index, string label, object value)

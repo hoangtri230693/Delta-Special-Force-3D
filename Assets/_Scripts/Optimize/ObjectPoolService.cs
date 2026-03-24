@@ -9,8 +9,8 @@ public class ObjectPoolService : MonoBehaviour
     private Dictionary<GameObject, IObjectPool<GameObject>> _pools = new Dictionary<GameObject, IObjectPool<GameObject>>();
 
     [Header("Pool Settings")]
-    [SerializeField] private int _defaultCapacity = 45;
-    [SerializeField] private int _maxSize = 60;
+    [SerializeField] private int _defaultCapacity = 10;
+    [SerializeField] private int _maxSize = 100;
 
     private void Awake()
     {
@@ -72,6 +72,7 @@ public class ObjectPoolService : MonoBehaviour
         _pools.Add(prefab, newPool);
         //Debug.Log($"Created new pool for prefab: {prefab.name}");
     }
+
     private GameObject CreatePooledItem(GameObject prefab, IObjectPool<GameObject> pool)
     {
         GameObject item = Instantiate(prefab);
@@ -84,6 +85,7 @@ public class ObjectPoolService : MonoBehaviour
         item.SetActive(false);
         return item;
     }
+
     private void OnTakeFromPool(GameObject item)
     {
         item.SetActive(true);
@@ -100,10 +102,12 @@ public class ObjectPoolService : MonoBehaviour
             rb.angularVelocity = Vector3.zero;
         }
     }
+
     private void OnReturnedToPool(GameObject item)
     {
         item.SetActive(false);
     }
+
     private void OnDestroyPoolObject(GameObject item)
     {
         Destroy(item);

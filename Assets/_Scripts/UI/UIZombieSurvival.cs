@@ -1,16 +1,16 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using DeltaSpecialForce3D.Enums;
+using System.Threading.Tasks;
+
 
 public class UIZombieSurvival : MonoBehaviour
 {
-    [Header("Addressable Main Data")]
-    [SerializeField] private AssetReferenceT<TeamMenu> _teamMenuRef;
-    [SerializeField] private AssetReferenceT<MapMenu> _mapMenuRef;
+    private readonly GameMode _gameMode = GameMode.ZombieSurvival;
+    [SerializeField] private TeamMenuSO _teamMenu;
+    [SerializeField] private MapMenuSO _mapMenu;
 
     [Header("UI References")]
     [SerializeField] private TextMeshProUGUI _teamNameText;
@@ -20,119 +20,99 @@ public class UIZombieSurvival : MonoBehaviour
     [SerializeField] private Transform _characterPreview;
     [SerializeField] private GameObject _backgroundLoading;
 
-    private TeamMenu _teamMenu;
-    private MapMenu _mapMenu;
-    private CancellationTokenSource _characterCts;
-
-    private int _currentTeamIndex = 0;
-    private int _currentCharacterIndex = 0;
-    private int _currentMapIndex = 0;
+    private int _currentTeamID = 0;
+    private int _currentCharacterID = 0;
+    private int _currentMapID = 0;
     private string _selectedSceneName;
     private GameObject _spawnedCharacterModel;
 
 
-    private void Awake() => _backgroundLoading.SetActive(true);
-
-    private async void Start() => await InitUIAsync();
-
-    private async Task InitUIAsync()
+    private void Awake()
     {
-        var charTask = AddressableManager.instance.LoadAssetAsync<TeamMenu>(_teamMenuRef);
-        var mapTask = AddressableManager.instance.LoadAssetAsync<MapMenu>(_mapMenuRef);
+        GetTeamMenu();
+        GetMapMenu();
+        _backgroundLoading.SetActive(true);
+    }
 
-        await Task.WhenAll(charTask, mapTask);
-
-        _teamMenu = charTask.Result;
-        _mapMenu = mapTask.Result;
-
-        if (_teamMenu != null && _mapMenu != null)
-        {
-            ShowTeam(_currentTeamIndex);
-            ShowMap(_currentMapIndex);
-        }
-
+    private async void Start()
+    {
+        ShowMap(_currentMapID);
+        await ShowTeam(_currentTeamID);    
         _backgroundLoading.SetActive(false);
     }
 
-    private void ShowTeam(int index)
+    private void GetTeamMenu()
+    {
+        _teamMenu = GameplayDataManager.instance._teamMenuSO;
+    }
+
+    private void GetMapMenu()
+    {
+        foreach (var menu in GameplayDataManager.instance._mapMenuSO)
+        {
+            if (menu.gameMode == _gameMode)
+            {
+                _mapMenu = menu;
+                break;
+            }
+        }
+    }
+
+    private async Task ShowTeam(int id)
     {
         if (_teamMenu == null || _teamMenu._menuTeam.Length == 0) return;
 
-        _currentTeamIndex = index;
-        TeamData data = _teamMenu._menuTeam[_currentTeamIndex];
+        TeamDataSO teamData = _teamMenu.GetTeamByID(id);
+
+        if (teamData.teamName == TeamName.Zombie) return;
 
         if (_teamNameText != null)
-            _teamNameText.text = data.teamName;
+            _teamNameText.text = teamData.teamDisplayName;
 
-        // Reset nhân vật về 0 khi đổi Team
-        _currentCharacterIndex = 0;
-        ShowCharacter(_currentCharacterIndex);
+        // Reset nhân vật về 0 khi đổi Tea
+        _currentCharacterID = 0;
+        await ShowCharacter(_currentCharacterID);
 
-        PlayerPrefs.SetInt("SelectedTeamID", _currentTeamIndex);
+        PlayerPrefs.SetInt("SelectedTeamID", teamData.teamID);
     }
 
-    private async void ShowCharacter(int index)
+    private async Task ShowCharacter(int id)
     {
-        // 1. Hủy bỏ tác vụ load trước đó nếu người dùng click quá nhanh
-        _characterCts?.Cancel();
-        _characterCts?.Dispose();
-        _characterCts = new CancellationTokenSource();
-        var token = _characterCts.Token;
-
         if (_teamMenu == null) return;
-        TeamData currentTeam = _teamMenu._menuTeam[_currentTeamIndex];
-        if (currentTeam.characterData == null || currentTeam.characterData.Length == 0) return;
+        CharacterDataSO data = _teamMenu._menuTeam[_currentTeamID].GetCharacterDataByCharacterID(id);
 
-        _currentCharacterIndex = index;
-        CharacterData data = currentTeam.characterData[_currentCharacterIndex];
-
-        // 2. Dọn dẹp model cũ ngay lập tức để trống chỗ
         if (_spawnedCharacterModel != null)
         {
             AddressableManager.instance.ReleaseInstance(_spawnedCharacterModel);
             _spawnedCharacterModel = null;
         }
 
-        // 3. Cập nhật UI Text trước cho mượt
-        _characterNameText.text = data.characterName;
+        //Cập nhật UI Character Name
+        _characterNameText.text = data.characterDisplayName;
 
-        // 4. Tải model
-        if (data.characterModelPrefab != null)
+        GameObject prefab = await AddressableManager.instance.LoadAssetAsync<GameObject>(data.characterModelPrefab);
+
+        if (prefab != null)
         {
-            try
+            _spawnedCharacterModel = await AddressableManager.instance.InstantiatePrefabAsync(data.characterModelPrefab, _characterPreview);
+
+            if (_spawnedCharacterModel != null)
             {
-                // Bước này sẽ rất nhanh nếu asset đã có trong cache của AddressableManager
-                GameObject prefab = await AddressableManager.instance.LoadAssetAsync<GameObject>(data.characterModelPrefab);
-
-                // Kiểm tra xem đã bị hủy task chưa (người dùng click tiếp cái khác)
-                if (token.IsCancellationRequested) return;
-
-                if (prefab != null)
-                {
-                    _spawnedCharacterModel = await AddressableManager.instance.InstantiatePrefabAsync(data.characterModelPrefab, _characterPreview);
-
-                    if (token.IsCancellationRequested)
-                    {
-                        AddressableManager.instance.ReleaseInstance(_spawnedCharacterModel);
-                        return;
-                    }
-
-                    _spawnedCharacterModel.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
-                    _spawnedCharacterModel.transform.localScale = Vector3.one;
-                }
+                _spawnedCharacterModel.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+                _spawnedCharacterModel.transform.localScale = Vector3.one;
             }
-            catch (System.OperationCanceledException) { }
         }
 
-        PlayerPrefs.SetInt("SelectedCharacterID", _currentCharacterIndex);
+        PlayerPrefs.SetInt("SelectedCharacterID", data.characterID);
+
     }
 
-    private void ShowMap(int index)
+    private void ShowMap(int id)
     {
         if (_mapMenu == null || _mapMenu._menuMap.Length == 0) return;
 
-        _currentMapIndex = index;
-        MapData data = _mapMenu._menuMap[_currentMapIndex];
+        MapDataSO data = _mapMenu.GetMapDataByMapID(id);
+        PlayerPrefs.SetInt("SelectedMapID", id);
 
         _mapNameText.text = data.mapName;
         _selectedSceneName = data.mapName;
@@ -150,84 +130,80 @@ public class UIZombieSurvival : MonoBehaviour
 
     #region Button Events
 
-    // --- QUẢN LÝ TEAM ---
-    public void OnClickNextTeam()
+    public async void OnClickNextTeam()
     {
         if (_teamMenu == null) return;
-        int nextIndex = (_currentTeamIndex + 1) % _teamMenu._menuTeam.Length;
-        ShowTeam(nextIndex);
-        AudioManager.instance.PlaySfx(SFXType.MetalClick);
+        int nextID = (_currentTeamID + 1) % _teamMenu._menuTeam.Length;
+        _currentTeamID = nextID;
+        await ShowTeam(nextID);
+        AudioManager.instance.PlaySfx(SFXSoundType.MetalClick);
     }
 
-    public void OnClickPreviousTeam()
+    public async void OnClickPreviousTeam()
     {
         if (_teamMenu == null) return;
-        int prevIndex = _currentTeamIndex - 1;
-        if (prevIndex < 0) prevIndex = _teamMenu._menuTeam.Length - 1;
-        ShowTeam(prevIndex);
-        AudioManager.instance.PlaySfx(SFXType.MetalClick);
+        int prevID = _currentTeamID - 1;
+        if (prevID < 0) prevID = _teamMenu._menuTeam.Length - 1;
+        _currentTeamID = prevID;
+        await ShowTeam(prevID);
+        AudioManager.instance.PlaySfx(SFXSoundType.MetalClick);
     }
 
-    // --- QUẢN LÝ NHÂN VẬT ---
-    public void OnClickNextCharacter()
+    public async void OnClickNextCharacter()
     {
         if (_teamMenu == null) return;
-        var characters = _teamMenu._menuTeam[_currentTeamIndex].characterData;
-        int nextIndex = (_currentCharacterIndex + 1) % characters.Length;
-        ShowCharacter(nextIndex);
-        AudioManager.instance.PlaySfx(SFXType.MetalClick);
+        var characters = _teamMenu._menuTeam[_currentTeamID].characterData;
+        int nextID = (_currentCharacterID + 1) % characters.Length;
+        _currentCharacterID = nextID;
+        await ShowCharacter(nextID);
+        AudioManager.instance.PlaySfx(SFXSoundType.MetalClick);
     }
 
-    public void OnClickPreviousCharacter()
+    public async void OnClickPreviousCharacter()
     {
         if (_teamMenu == null) return;
-        var characters = _teamMenu._menuTeam[_currentTeamIndex].characterData;
-        int prevIndex = _currentCharacterIndex - 1;
-        if (prevIndex < 0) prevIndex = characters.Length - 1;
-        ShowCharacter(prevIndex);
-        AudioManager.instance.PlaySfx(SFXType.MetalClick);
+        var characters = _teamMenu._menuTeam[_currentTeamID].characterData;
+        int prevID = _currentCharacterID - 1;
+        if (prevID < 0) prevID = characters.Length - 1;
+        _currentCharacterID = prevID;
+        await ShowCharacter(prevID);
+        AudioManager.instance.PlaySfx(SFXSoundType.MetalClick);
     }
 
-    // --- QUẢN LÝ MAP ---
     public void OnClickNextMap()
     {
         if (_mapMenu == null) return;
-        int nextIndex = (_currentMapIndex + 1) % _mapMenu._menuMap.Length;
-        ShowMap(nextIndex);
-        AudioManager.instance.PlaySfx(SFXType.MetalClick);
+        int nextID = (_currentMapID + 1) % _mapMenu._menuMap.Length;
+        _currentMapID = nextID;
+        ShowMap(nextID);
+        AudioManager.instance.PlaySfx(SFXSoundType.MetalClick);
     }
 
     public void OnClickPreviousMap()
     {
         if (_mapMenu == null) return;
-        int prevIndex = _currentMapIndex - 1;
-        if (prevIndex < 0) prevIndex = _mapMenu._menuMap.Length - 1;
-        ShowMap(prevIndex);
-        AudioManager.instance.PlaySfx(SFXType.MetalClick);
+        int prevID = _currentMapID - 1;
+        if (prevID < 0) prevID = _mapMenu._menuMap.Length - 1;
+        _currentMapID = prevID;
+        ShowMap(prevID);
+        AudioManager.instance.PlaySfx(SFXSoundType.MetalClick);
     }
 
     public void OnClickDone()
     {
-        AudioManager.instance.PlaySfx(SFXType.DefaultClick);
-        _backgroundLoading.SetActive(true);
-
+        AudioManager.instance.PlaySfx(SFXSoundType.DefaultClick);
         SceneManager.LoadScene("" + _selectedSceneName);
     }
 
     public void OnClickBack()
     {
-        AudioManager.instance.PlaySfx(SFXType.MetalClick);
+        AudioManager.instance.PlaySfx(SFXSoundType.MetalClick);
         SceneManager.LoadScene("PlayGame");
     }
     #endregion
 
     private void OnDestroy()
     {
-        _characterCts?.Cancel();
-        _characterCts?.Dispose();
-
-        if (_teamMenuRef.IsValid()) AddressableManager.instance.ReleaseAsset(_teamMenuRef);
-        if (_mapMenuRef.IsValid()) AddressableManager.instance.ReleaseAsset(_mapMenuRef);
         if (_spawnedCharacterModel != null) AddressableManager.instance.ReleaseInstance(_spawnedCharacterModel);
     }
 }

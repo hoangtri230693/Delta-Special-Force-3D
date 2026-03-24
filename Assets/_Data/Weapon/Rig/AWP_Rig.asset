@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03012a87c24b99e47aba48766aebf7cc, type: 3}
   m_Name: AWP_Rig
   m_EditorClassIdentifier: 
+  weaponID: 13
   weaponName: AWP
   alpha_Weapon_Pos: {x: -0.42, y: 0.08, z: 0.57}
   alpha_Weapon_Rot: {x: 0, y: -45, z: 0}

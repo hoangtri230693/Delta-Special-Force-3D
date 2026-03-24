@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03012a87c24b99e47aba48766aebf7cc, type: 3}
   m_Name: M16A4_Rig
   m_EditorClassIdentifier: 
+  weaponID: 9
   weaponName: M16A4
   alpha_Weapon_Pos: {x: -0.194, y: 0.012, z: 0.406}
   alpha_Weapon_Rot: {x: 0, y: -45, z: 5}

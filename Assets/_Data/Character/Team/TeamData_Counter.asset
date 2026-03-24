@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db488a80c5b11c54c93909b46e1e95fd, type: 3}
+  m_Name: TeamData_Counter
+  m_EditorClassIdentifier: 
+  teamID: 0
+  teamDisplayName: Counter
+  teamName: 1
+  characterData:
+  - {fileID: 11400000, guid: b9558797e58202d4a9c61348b9069e71, type: 2}
+  - {fileID: 11400000, guid: 18942628b8b966c4393d397824ac0de9, type: 2}
+  - {fileID: 11400000, guid: fc97355355c9cf748a845647ed910fcd, type: 2}

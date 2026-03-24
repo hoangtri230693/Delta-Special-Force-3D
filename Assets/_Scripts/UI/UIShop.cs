@@ -1,6 +1,7 @@
-﻿using TMPro;
+﻿using DeltaSpecialForce3D.Enums;
+using TMPro;
 using UnityEngine;
-using System.Linq;
+
 
 public class UIShop : MonoBehaviour
 {
@@ -12,73 +13,78 @@ public class UIShop : MonoBehaviour
     [SerializeField] private GameObject _backgroundLocked;
     [SerializeField] private TextMeshProUGUI _textGoldCount;
 
-    private int _currentIndex;
+    private int _currentWeaponID;
+    private WeaponStatsSO _currentWeapon;
     private GameObject _currentPreview;
 
     // =================== UNITY ===================
 
     private void OnEnable()
     {
-        _currentIndex = 0;
-        ShowWeaponByIndex(_currentIndex);
+        _currentWeaponID = 0;
+        ShowWeaponByID(_currentWeaponID);
         UpdatePlayerGold();
     }
 
     // =================== BUTTON ===================
     public void OnClickNext()
     {
-        _currentIndex = (_currentIndex + 1) % WeaponStatsManager.instance.weaponStats.Length;
-        ShowWeaponByIndex(_currentIndex);
+        _currentWeaponID = (_currentWeaponID + 1) % WeaponDataManager.instance.weaponStatsSO.Length;
+        ShowWeaponByID(_currentWeaponID);
     }
 
     public void OnClickPrevious()
     {
-        _currentIndex--;
-        if (_currentIndex < 0)
-            _currentIndex = WeaponStatsManager.instance.weaponStats.Length - 1;
+        _currentWeaponID--;
+        if (_currentWeaponID < 0)
+            _currentWeaponID = WeaponDataManager.instance.weaponStatsSO.Length - 1;
 
-        ShowWeaponByIndex(_currentIndex);
+        ShowWeaponByID(_currentWeaponID);
     }
 
     public void OnClickPurchase()
     {
-        WeaponStatsSO weapon = WeaponStatsManager.instance.weaponStats[_currentIndex];
-        int weaponID = weapon.weaponID;
+        int weaponID = _currentWeapon.weaponID;
 
         if (IsUnlocked(weaponID))
             return;
 
         int gold = PlayerDataManager.instance.playerSaveData.Gold;
 
-        if (gold >= weapon.gold)
+        if (gold >= _currentWeapon.gold)
         {
-            PlayerDataManager.instance.playerSaveData.Gold -= weapon.gold;
+            PlayerDataManager.instance.playerSaveData.Gold -= _currentWeapon.gold;
             PlayerDataManager.instance.playerSaveData.UnlockedWeaponIDs.Add(weaponID);
             PlayerDataManager.instance.SaveData();
 
             UpdatePlayerGold();
             UpdateLockedState(weaponID);
 
-            AudioManager.instance.PlaySfx(SFXType.DefaultClick);
+            AudioManager.instance.PlaySfx(SFXSoundType.DefaultClick);
         }
         else
         {
-            AudioManager.instance.PlaySfx(SFXType.MetalClick);
+            AudioManager.instance.PlaySfx(SFXSoundType.MetalClick);
         }
     }
 
+
     // =================== CORE ===================
-    private void ShowWeaponByIndex(int index)
+    private void ShowWeaponByID(int id)
     {
-        WeaponStatsSO weapon = WeaponStatsManager.instance.weaponStats[index];
+        foreach (var weapon in WeaponDataManager.instance.weaponStatsSO)
+        {
+            if (weapon.weaponID == id)
+                _currentWeapon = weapon;
+        }
 
-        _weaponName.text = weapon.weaponName;
+        _weaponName.text = _currentWeapon.weaponName;
 
-        ShowPreview(weapon);
+        ShowPreview(_currentWeapon);
         HideAllStats();
-        ShowStatsByType(weapon);
+        ShowStatsByType(_currentWeapon);
 
-        UpdateLockedState(weapon.weaponID);
+        UpdateLockedState(_currentWeapon.weaponID);
     }
 
     private void UpdateLockedState(int weaponID)
@@ -101,6 +107,7 @@ public class UIShop : MonoBehaviour
             _textGoldCount.text = PlayerDataManager.instance.playerSaveData.Gold.ToString();
     }
 
+
     // =================== PREVIEW ===================
     private void ShowPreview(WeaponStatsSO weapon)
     {
@@ -111,7 +118,6 @@ public class UIShop : MonoBehaviour
         _currentPreview.transform.SetParent(_weaponPreview, true);
     }
 
-    // =================== STATS ===================
     private void ShowStatsByType(WeaponStatsSO weapon)
     {
         switch (weapon.weaponType)
@@ -119,8 +125,8 @@ public class UIShop : MonoBehaviour
             case WeaponType.Pistol:
             case WeaponType.Shotgun:
             case WeaponType.SMG:
-            case WeaponType.AssaultRifle:
-            case WeaponType.SniperRifle:
+            case WeaponType.Assault:
+            case WeaponType.Sniper:
                 ShowGunStats(weapon);
                 break;
 
@@ -158,6 +164,7 @@ public class UIShop : MonoBehaviour
         SetStat(1, "Gold:", weapon.gold.ToString());
         SetStat(2, "Type:", weapon.weaponType.ToString());
     }
+
 
     // =================== UTILS ===================
     private void HideAllStats()

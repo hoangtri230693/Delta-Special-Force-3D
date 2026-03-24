@@ -1,7 +1,10 @@
-﻿using UnityEngine;
+﻿using DeltaSpecialForce3D.Enums;
+using UnityEngine;
 
 public class PlayerInventory : MonoBehaviour
 {
+    private WeaponController _weaponController;
+
     [Header("Inventory")]
     public GameObject _primaryItem;
     public GameObject _secondaryItem;
@@ -11,57 +14,66 @@ public class PlayerInventory : MonoBehaviour
 
     public void UpdateItem(ItemType itemType)
     {
-        _primaryItem.SetActive(itemType == ItemType.PrimaryItem);
-        _secondaryItem.SetActive(itemType == ItemType.SecondaryItem);
-        _meleeItem.SetActive(itemType == ItemType.MeleeItem);
-        _throwItem.SetActive(itemType == ItemType.ThrowItem);
+        _primaryItem.SetActive(false);
+        _secondaryItem.SetActive(false);
+        _meleeItem.SetActive(false);
+        _throwItem.SetActive(false);
+
+        switch (itemType)
+        {
+            case ItemType.PrimaryItem:
+                _primaryItem.SetActive(true);
+                _weaponController = GetWeaponInSlot(_primaryItem);
+                break;
+            case ItemType.SecondaryItem:
+                _secondaryItem.SetActive(true);
+                _weaponController = GetWeaponInSlot(_secondaryItem);
+                break;
+            case ItemType.MeleeItem:
+                _meleeItem.SetActive(true);
+                _weaponController = GetWeaponInSlot(_meleeItem);
+                break;
+            case ItemType.ThrowItem:
+                _throwItem.SetActive(true);
+                _weaponController = GetWeaponInSlot(_throwItem);
+                break;
+        }
+        
     }
 
     public void DropCurrentItem(ItemType itemType)
     {
-        WeaponController weapon = GetWeaponInSlot(itemType);
-        if (weapon != null)
+        if (_weaponController != null)
         {
-            weapon.DropWeapon();
-        }
+            _weaponController.DropWeapon();
+            _weaponController = null;
+        }       
     }
 
-    public void ActiveCombatItem(ItemType itemType, CombatState combatState)
+    public void ActiveCombatItem(CombatState combatState)
     {
-        WeaponController weapon = GetWeaponInSlot(itemType);
-        if (weapon != null)
-        {
-            weapon.ActiveCombat(combatState);
-        }
+        if (_weaponController != null)
+            _weaponController.HandleActiveCombat(combatState);
     }
 
-    public void UpdateHandleZoom(ItemType itemType, float zoomDelta)
+    public void UpdateHandleZoom(float zoomDelta)
     {
-        WeaponController weapon = GetWeaponInSlot(itemType);
-        if (weapon != null)
-        {
-            weapon.ZoomControl(zoomDelta);
-        }
+        if (_weaponController != null)
+            _weaponController.HandleZoomControl(zoomDelta);
     }
 
-    public bool HasWeapon(ItemType itemType)
+    public void HandleShoot()
     {
-        return GetWeaponInSlot(itemType) != null;
+        _weaponController.HandleWeaponShoot();
     }
 
-    private WeaponController GetWeaponInSlot(ItemType itemType)
+    public bool HasWeapon()
     {
-        GameObject slot = itemType switch
-        {
-            ItemType.PrimaryItem => _primaryItem,
-            ItemType.SecondaryItem => _secondaryItem,
-            ItemType.MeleeItem => _meleeItem,
-            ItemType.ThrowItem => _throwItem,
-            _ => null
-        };
+        return _weaponController != null;
+    }
 
-        if (slot == null) return null;
-
-        return slot.GetComponentInChildren<WeaponController>();
+    private WeaponController GetWeaponInSlot(GameObject itemSlot)
+    {
+        return itemSlot.GetComponentInChildren<WeaponController>();
     }
 }

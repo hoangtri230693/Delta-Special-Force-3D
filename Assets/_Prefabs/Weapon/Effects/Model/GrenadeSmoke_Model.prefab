@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8078974966047916044}
   - component: {fileID: 1896895004946151838}
   - component: {fileID: 8096449669607059252}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: FlashBang04
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -97,7 +97,7 @@ GameObject:
   - component: {fileID: 3884222427360112048}
   - component: {fileID: 975620488566237442}
   - component: {fileID: 6432977108354116141}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: FlashBang00
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -183,7 +183,7 @@ GameObject:
   - component: {fileID: 6553747568717381027}
   - component: {fileID: 7428565498458087203}
   - component: {fileID: 2941204941837428051}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: FlashBang06
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -267,7 +267,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3330327936929204985}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: GrenadeSmoke_Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -306,7 +306,7 @@ GameObject:
   - component: {fileID: 4130242609979617684}
   - component: {fileID: 5473366596531347070}
   - component: {fileID: 3050955607552583674}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: FlashBang05
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -392,7 +392,7 @@ GameObject:
   - component: {fileID: 8361281228134423444}
   - component: {fileID: 8743415453687291904}
   - component: {fileID: 7917952670541302419}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: FlashBang02
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -478,7 +478,7 @@ GameObject:
   - component: {fileID: 6451327493174123869}
   - component: {fileID: 6763924159620378869}
   - component: {fileID: 5870574855337211901}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: FlashBang03
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -1,17 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using Unity.Behavior;
 using Unity.Cinemachine;
 using UnityEngine;
-using UnityEngine.AI;
+using DeltaSpecialForce3D.Enums;
+
 
 public class WeaponThrowController : MonoBehaviour
 {
     [SerializeField] private WeaponController _weaponController;
     [SerializeField] private CinemachineImpulseSource _shakeCamera;
     [SerializeField] private WeaponAudio _weaponAudio;
-
-    private Camera _playerCamera;
 
     public int _currentAmmo;
     public int _currentReverse;
@@ -20,8 +18,6 @@ public class WeaponThrowController : MonoBehaviour
 
     private void Start()
     {
-        _playerCamera = Camera.main;
-
         RefreshUI();
     }
 
@@ -56,8 +52,8 @@ public class WeaponThrowController : MonoBehaviour
         _weaponAudio.PlayWeaponSound(WeaponSoundType.Throw);
         HandleAmmo();
 
-        Vector3 cameraForward = _playerCamera.transform.forward;
-        Vector3 throwDirection = (cameraForward + _playerCamera.transform.up * 0.3f).normalized;
+        Vector3 cameraForward = Camera.main.transform.forward;
+        Vector3 throwDirection = (cameraForward + Camera.main.transform.up * 0.3f).normalized;
 
         float safeDistance = 0.5f;
         transform.position += throwDirection * safeDistance;
@@ -123,6 +119,7 @@ public class WeaponThrowController : MonoBehaviour
 
         Collider[] colliders = Physics.OverlapSphere(explosionPosition, radius);
 
+        // Đảm bảo mỗi object chỉ bị xử lý 1 lần
         HashSet<GameObject> hitObjects = new HashSet<GameObject>();
 
         foreach (Collider hitCollider in colliders)
@@ -130,10 +127,10 @@ public class WeaponThrowController : MonoBehaviour
             GameObject root = hitCollider.transform.root.gameObject;
             if (hitObjects.Contains(root)) continue;
 
-            PlayerHealth playerHealth = hitCollider.GetComponent<PlayerHealth>();
-            ZombieHealth zombieHealth = hitCollider.GetComponent<ZombieHealth>();
+            PlayerHealth player = hitCollider.GetComponent<PlayerHealth>();
+            ZombieHealth zombie = hitCollider.GetComponent<ZombieHealth>();
 
-            if (playerHealth == null && zombieHealth == null) continue;
+            if (player == null && zombie == null) continue;
 
             float distance = Vector3.Distance(explosionPosition, hitCollider.bounds.center);
             float fallOffMultiplier = 1f;
@@ -155,33 +152,30 @@ public class WeaponThrowController : MonoBehaviour
                 if (hit.collider != hitCollider) continue;
             }
 
-            if (playerHealth != null)
+            float finalDamage = Mathf.RoundToInt(baseDamage * fallOffMultiplier);
+
+            // -------- Apply damage --------
+
+            if (player != null && player._currentHealth > 0)
             {
-                float finalDamage = Mathf.RoundToInt(baseDamage * fallOffMultiplier);
-                playerHealth.UpdateHealth(finalDamage, _weaponController.WeaponStats.itemType);
+                player.UpdateHealth(finalDamage, _weaponController.WeaponStats.itemType);
 
-                if (playerHealth._currentHealth <= 0)
-                    _weaponController._playerController.IncrementKillCount();
-
-                hitObjects.Add(root);
+                if (player._currentHealth > 0) _weaponController._playerController.IncrementKillCount();
             }
-            
-            if (zombieHealth != null)
-            {
-                float finalDamage = Mathf.RoundToInt(baseDamage * fallOffMultiplier);
-                zombieHealth.UpdateHealth(finalDamage);
 
-                if (zombieHealth._currentHealth <= 0)
+            if (zombie != null && zombie._currentHealth > 0)
+            {
+                zombie.UpdateHealth(finalDamage);
+
+                if (zombie._currentHealth <= 0)
                 {
-                    Rigidbody[] childrenRbs = zombieHealth.GetComponentsInChildren<Rigidbody>();
-                    foreach (Rigidbody rb in childrenRbs)
+                    Rigidbody[] rbs = zombie.GetComponentsInChildren<Rigidbody>();
+                    foreach (Rigidbody rb in rbs)
                     {
                         rb.AddExplosionForce(explosionForce, explosionPosition, radius, 1f, ForceMode.Impulse);
                     }
 
                     _weaponController._playerController.IncrementKillCount();
-
-                    hitObjects.Add(root);
                 }
             }
         }
@@ -194,7 +188,7 @@ public class WeaponThrowController : MonoBehaviour
 
     private void HandleShakeCamera()
     {
-        float distance = Vector3.Distance(_weaponController._player.transform.position, transform.position);
+        float distance = Vector3.Distance(Camera.main.transform.position, transform.position);
         if (distance > _weaponController.WeaponStats.attackRadius) return;
 
         float falloffMultiplier = 1 - (distance / _weaponController.WeaponStats.attackRadius);

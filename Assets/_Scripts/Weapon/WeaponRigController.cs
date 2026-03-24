@@ -1,32 +1,30 @@
 ﻿using UnityEngine;
+using DeltaSpecialForce3D.Enums;
 
-public enum NameTeam { None, Alpha, Bravo, Delta, Terrorist }
 
 public class WeaponRigController : MonoBehaviour
 {
-    [SerializeField] private WeaponRigSO _weaponRigData;
     [SerializeField] private WeaponController _weaponController;
 
     private Transform _leftHandTarget;
     private Transform _rightHandTarget;
-    private NameTeam _currentTeam = NameTeam.None;
 
-    public void InitializeRig(PlayerRig playerRig)
+
+    public void InitializeRig(GameObject player)
     {
-        ApplyRigTargets(playerRig);
-        UpdatePlayerTeam();         
-        UpdateDataRig();
+        ApplyRigTargets(player);        
+        UpdateDataRig(player);
     }
 
     public void ResetRig()
     {
         _leftHandTarget = null;
         _rightHandTarget = null;
-        _currentTeam = NameTeam.None;
     }
 
-    private void ApplyRigTargets(PlayerRig playerRig)
+    private void ApplyRigTargets(GameObject player)
     {
+        PlayerRig playerRig = player.GetComponent<PlayerRig>();
         ItemType itemType = _weaponController.WeaponStats.itemType;
 
         switch (itemType)
@@ -50,21 +48,9 @@ public class WeaponRigController : MonoBehaviour
         }
     }
 
-    private void UpdatePlayerTeam()
+    private void UpdateDataRig(GameObject player)
     {
-        GameObject rootPlayer = transform.root.gameObject;
-
-        if (rootPlayer.CompareTag("AlphaTeam")) _currentTeam = NameTeam.Alpha;
-        else if (rootPlayer.CompareTag("BravoTeam")) _currentTeam = NameTeam.Bravo;
-        else if (rootPlayer.CompareTag("DeltaTeam")) _currentTeam = NameTeam.Delta;
-        else if (rootPlayer.CompareTag("Terrorist")) _currentTeam = NameTeam.Terrorist;
-        else _currentTeam = NameTeam.None;
-    }
-
-    private void UpdateDataRig()
-    {
-        WeaponRigSO data = _weaponRigData;
-
+        WeaponRigSO data = _weaponController.WeaponRig;
         Vector3 weaponPos = Vector3.zero;
         Vector3 weaponRot = Vector3.zero;
         Vector3 lhPos = Vector3.zero;
@@ -72,24 +58,30 @@ public class WeaponRigController : MonoBehaviour
         Vector3 rhPos = Vector3.zero;
         Vector3 rhRot = Vector3.zero;
 
-        switch (_currentTeam)
+        PlayerTeam playerTeam = player.GetComponent<PlayerTeam>();
+        CharacterName characterName = playerTeam.Name;
+
+        switch (characterName)
         {
-            case NameTeam.Alpha:
+            case CharacterName.Alpha:
                 weaponPos = data.alpha_Weapon_Pos; weaponRot = data.alpha_Weapon_Rot;
                 lhPos = data.alpha_LeftHand_Pos; lhRot = data.alpha_LeftHand_Rot;
                 rhPos = data.alpha_RightHand_Pos; rhRot = data.alpha_RightHand_Rot;
                 break;
-            case NameTeam.Bravo:
+            case CharacterName.Bravo:
                 weaponPos = data.bravo_Weapon_Pos; weaponRot = data.bravo_Weapon_Rot;
                 lhPos = data.bravo_LeftHand_Pos; lhRot = data.bravo_LeftHand_Rot;
                 rhPos = data.bravo_RightHand_Pos; rhRot = data.bravo_RightHand_Rot;
                 break;
-            case NameTeam.Delta:
+            case CharacterName.Delta:
                 weaponPos = data.delta_Weapon_Pos; weaponRot = data.delta_Weapon_Rot;
                 lhPos = data.delta_LeftHand_Pos; lhRot = data.delta_LeftHand_Rot;
                 rhPos = data.delta_RightHand_Pos; rhRot = data.delta_RightHand_Rot;
                 break;
-            case NameTeam.Terrorist:
+            case CharacterName.BlackViper:
+            case CharacterName.IronBlood:
+            case CharacterName.RedFang:
+            case CharacterName.ShadowDawn:
                 weaponPos = data.terrorist_Weapon_Pos; weaponRot = data.terrorist_Weapon_Rot;
                 lhPos = data.terrorist_LeftHand_Pos; lhRot = data.terrorist_LeftHand_Rot;
                 rhPos = data.terrorist_RightHand_Pos; rhRot = data.terrorist_RightHand_Rot;

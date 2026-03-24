@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 52637086640554616}
   - component: {fileID: 6292511920649825710}
   - component: {fileID: 8598773971623271630}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Revolver_Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}

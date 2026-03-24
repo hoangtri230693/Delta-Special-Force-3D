@@ -1,14 +1,6 @@
+using DeltaSpecialForce3D.Enums;
 using UnityEngine;
 
-public enum ZombieSoundType
-{
-    FootStep,
-    Growl,
-    Attack,
-    Hit,
-    Hurt,
-    Fall
-}
 
 public class ZombieAudio : MonoBehaviour
 {

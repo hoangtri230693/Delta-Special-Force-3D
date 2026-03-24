@@ -1,18 +1,23 @@
+using DeltaSpecialForce3D.Enums;
 using Unity.Behavior;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class ZombieController : MonoBehaviour
 {
-    [SerializeField] private ZombieStatsSO _zombieStats;
-    public ZombieStatsSO ZombieStats => _zombieStats;
+    public ZombieStatsSO ZombieStats { get; private set; }
 
-    private ZombieAudio _zombieAudio;
+    [SerializeField] private ZombieAudio _zombieAudio;
 
     private void Awake()
     {
-        _zombieAudio = GetComponent<ZombieAudio>();
+        GetZombieStats();
     }
+
+    private void GetZombieStats()
+    {
+        ZombieStats = GameplayDataManager.instance._zombieStatsSO;
+    }    
 
     public void HandleHurt()
     {

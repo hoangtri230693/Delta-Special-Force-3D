@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4cecfc5e59d089441991276a2baec95c, type: 3}
   m_Name: MapMenu_TeamDeathmatch
   m_EditorClassIdentifier: 
+  gameMode: 1
   _menuMap:
-  - {fileID: 11400000, guid: 7df816bd5fef87d4290cefc1487d0781, type: 2}
-  - {fileID: 11400000, guid: bc8cc3f832f144549b718eccb975bb7a, type: 2}
+  - {fileID: 11400000, guid: 6165fd7addcd1c746b7eef3b1a2ee459, type: 2}
+  - {fileID: 11400000, guid: 663591d5a5b506b4a8eebfae00dee21b, type: 2}

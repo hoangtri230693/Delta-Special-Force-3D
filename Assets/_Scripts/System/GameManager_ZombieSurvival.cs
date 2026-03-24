@@ -3,44 +3,27 @@ using System.Collections.Generic;
 using Unity.Behavior;
 using UnityEngine;
 using UnityEngine.AI;
+using DeltaSpecialForce3D.Enums;
+using Cysharp.Threading.Tasks;
 
 
 public class GameManager_ZombieSurvival : MonoBehaviour
 {
     public static GameManager_ZombieSurvival instance;
 
-    [Header("Gameplay UI")]
-    [SerializeField] private float _timeCountdown;
-    [SerializeField] private float _timeRoundActive;
-    [SerializeField] private int _totalRound;
-
     [Header("Gameplay Data")]
-    [SerializeField] private GameObject[] _counterPrefabs;
-    [SerializeField] private GameObject[] _terroristPrefabs;
-    [SerializeField] private GameObject[] _zombiePrefabs;
-    [SerializeField] private Transform _spawnPoint;
-    [SerializeField] private List<GameObject> _allBotCharacter;
-
-    [Header("Zombie Settings")]
-    [SerializeField] private int _zombiesPerWave = 10;
-    [SerializeField] private int _incrementZombiesPerWave = 10;
-    [SerializeField] private float _distanceBetweenWaves = 30f;
-    [SerializeField] private float _initialDistanceFromPlayer = 60f;
-
-    [Header("Player Component References")]
-    public PlayerController _playerController;
-    public PlayerInventory _playerInventory;
-    public PlayerHealth _playerHealth;
-    public PlayerTeam _playerTeam;
-    public PlayerAnimationEvents _playerAnimationEvents;
+    [SerializeField] private GameplayConfigSO _gameplayConfig;
+    [SerializeField] private TeamMenuSO _teamMenu;
+    [SerializeField] private MapMenuSO _mapMenu;
 
     [Header("Game Manager")]
-    public GameObject _player;
-    public GameState _currentGameState = GameState.Setup;
-    public int _playerKilled = 0;
+    private List<GameObject> _allBotCharacter;
+    public GameState _currentGameState { get; private set; }
+    public GameResult _currentGameResult { get; private set; }
 
+    public GameObject _player;
+    public int _playerKilled = 0;
     private float _timeCount;
-    
     private Vector3 _baseSpawnDirection;
     private Vector3 _initialSpawnPoint;
     private int _spawnWaveCount = 0;
@@ -53,21 +36,51 @@ public class GameManager_ZombieSurvival : MonoBehaviour
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
 
-        _currentGameState = GameState.Countdown;
-        _timeCount = _timeCountdown;
+        GetDataGameplay();
     }
 
-    private void Start()
+    private void OnEnable()
     {
-        SpawnPlayer();
-        SpawnZombieWave();
-        PlayRadioVoiceReadyMission();
+        SetupGameplay();
+    }
+
+    private async void Start()
+    {
+        await SpawnPlayer();
+        await SpawnZombieWave();
+
+        UIGameManager_ZombieSurvival.instance.OnLoadingScreen(false);
+        UIGameManager_ZombieSurvival.instance.SetupMiniMap(_player);
+        AudioManager.instance.PlayRadioZombie(_currentGameState, _currentGameResult);
     }
 
     private void Update()
     {
         UpdateMatch();
         UpdateTime();
+    }
+
+    private void GetDataGameplay()
+    {
+        _gameplayConfig = GameplayDataManager.instance._gameplayConfigSO;
+        _teamMenu = GameplayDataManager.instance._teamMenuSO;
+        foreach (var menu in GameplayDataManager.instance._mapMenuSO)
+        {
+            if (menu.gameMode == GameplayDataManager.instance.gameMode)
+            {
+                _mapMenu = menu;
+                break;
+            }          
+        }
+    }
+
+    private void SetupGameplay()
+    {
+        PlayerDataManager.instance.UsePlayerGold(_gameplayConfig.useGoldPerMatch);
+        _currentGameState = GameState.Countdown;
+        _currentGameResult = GameResult.None;
+        _timeCount = _gameplayConfig.timeCountdown;
+        _allBotCharacter = new List<GameObject>();
     }
 
     public void PauseMenu(bool isOpen)
@@ -94,154 +107,14 @@ public class GameManager_ZombieSurvival : MonoBehaviour
         _zombieWaveCount--;    
     }
 
-    private void PlayRadioVoiceReadyMission()
+    public void OnPlayerDeath()
     {
-        AudioManager.instance.PlayRadioOnReadyMission();
-    }
-
-    private void PlayRadioVoiceStartMission()
-    {
-        AudioManager.instance.PlayRadioOnStartMission();
-    }
-
-    private void PlayRadioVoiceEndMission(string resultMatch)
-    {
-        AudioManager.instance.PlayRadioOnEndMission(resultMatch);
-    }
-
-    private void SpawnPlayer()
-    {
-        int selectedTeamID = PlayerPrefs.GetInt("SelectedTeamID", 0);
-        int selectedCharacterID = PlayerPrefs.GetInt("SelectedCharacterID", 0);
-
-        if (selectedTeamID == 0)
+        if (_currentGameState == GameState.RoundActive)
         {
-            _player = Instantiate(_counterPrefabs[selectedCharacterID], _spawnPoint.position, _spawnPoint.rotation);
+            _currentGameState = GameState.MatchEnd;
+            _currentGameResult = GameResult.Lose;
+            StartCoroutine(UpdateResultMatch());
         }
-        if (selectedTeamID == 1)
-        {
-            _player = Instantiate(_terroristPrefabs[selectedCharacterID], _spawnPoint.position, _spawnPoint.rotation);                                             
-        }
-
-        _player.layer = LayerMask.NameToLayer("Player");
-        _playerController = _player.GetComponent<PlayerController>();
-        _playerInventory = _player.GetComponent<PlayerInventory>();
-        _playerHealth = _player.GetComponent<PlayerHealth>();
-        _playerAnimationEvents = _player.GetComponent<PlayerAnimationEvents>();
-
-        MiniMap.instance.SetupPlayerTransform(_player.transform);
-    }
-
-    private void SpawnZombieWave()
-    {
-        if (_spawnWaveCount == 0)
-        {
-            _baseSpawnDirection = _spawnPoint.transform.forward;
-            _initialSpawnPoint = _spawnPoint.transform.position + (_baseSpawnDirection * _initialDistanceFromPlayer);
-        }
-
-        Vector3 waveSpawnPosition = _initialSpawnPoint + (_baseSpawnDirection * _distanceBetweenWaves * _spawnWaveCount);
-        waveSpawnPosition.y = _spawnPoint.position.y;
-
-        int zombieCountThisWave = _zombiesPerWave + (_incrementZombiesPerWave * _spawnWaveCount);
-        for (int i = 0; i < zombieCountThisWave; i++)
-        {
-            Vector3 randomOffset = new Vector3(Random.Range(-5f, 5f), 0, Random.Range(-5f, 5f));
-            Vector3 finalSpawnPos = GetGroundPosition(waveSpawnPosition + randomOffset);
-            int randomIndexPrefabs = Random.Range(0, _zombiePrefabs.Length);
-            GameObject zombie = Instantiate(_zombiePrefabs[randomIndexPrefabs], finalSpawnPos, Quaternion.identity);
-            _zombieWaveCount++;
-
-            if (zombie.TryGetComponent<BehaviorGraphAgent>(out var behaviorAgent))
-            {
-                behaviorAgent.BlackboardReference.SetVariableValue("Target", _player);
-            }
-
-            _allBotCharacter.Add(zombie);
-        }
-
-        _spawnWaveCount++;
-    }
-
-    private void UpdateTime()
-    {
-        if (_timeCount > 0)
-        {
-            _timeCount -= Time.deltaTime;
-            _timeCount = Mathf.Clamp(_timeCount, 0, Mathf.Infinity);
-            if (_currentGameState == GameState.RoundActive || _currentGameState == GameState.Countdown)
-            {
-                UIGameManager_ZombieSurvival.instance.UpdateUITime(_timeCount);
-            }
-        }
-    }
-
-    private void UpdateMatch()
-    {
-        if (_currentGameState == GameState.Countdown)
-        {
-            if (_timeCount <= 0)
-            {
-                _currentGameState = GameState.RoundActive;
-                _timeCount = _timeRoundActive;
-                PlayRadioVoiceStartMission();
-            }
-        }
-        else if (_currentGameState == GameState.RoundActive)
-        {
-            if (_timeCount <= 0)
-            {
-                StartCoroutine(UpdateResultMatch());
-            }
-            else
-            {
-                if (_zombieWaveCount <= 0)
-                {
-                    SpawnZombieWave();
-                }
-            }
-        }
-    }
-
-    public IEnumerator UpdateResultMatch()
-    {
-        _currentGameState = GameState.MatchEnd;
-        foreach (var bot in _allBotCharacter)
-        {
-            if (bot == null) continue;
-
-            if (bot.TryGetComponent<BehaviorGraphAgent>(out var behaviorAgent))
-            {
-                behaviorAgent.enabled = false;
-            }
-            if (bot.TryGetComponent<NavMeshAgent>(out var agent))
-            {
-                agent.isStopped = true;
-                agent.velocity = Vector3.zero;
-            }
-            if (bot.TryGetComponent<Animator>(out var anim))
-            {
-                anim.SetFloat("Speed", 0);
-            }
-        }
-        CalculateMatchRewards();
-        yield return new WaitForSecondsRealtime(5f);
-        UIGameManager_ZombieSurvival.instance.ShowUIResultMatch();
-    }
-
-    private void CalculateMatchRewards()
-    {
-        string resultMatch = null;
-        if (IsPlayerVictorious()) resultMatch = "WIN";
-        else resultMatch = "LOSE";
-
-        int bonusGoldPerKill = GameplayDataManager.instance.GetBonusGoldPerKill();
-        int rewardKills = _playerKilled * GameplayDataManager.instance.GetBonusGoldPerKill();
-
-        int rewardMatch = GameplayDataManager.instance.GetBonusGoldByMatchResult(resultMatch);
-        int totalReward = rewardMatch + rewardKills;
-        PlayerDataManager.instance.AddPlayerGold(totalReward);
-        PlayRadioVoiceEndMission(resultMatch);
     }
 
     private Vector3 GetGroundPosition(Vector3 spawnPos)
@@ -257,10 +130,168 @@ public class GameManager_ZombieSurvival : MonoBehaviour
         return spawnPos;
     }
 
-    public bool IsPlayerVictorious()
+    private async UniTask SpawnPlayer()
     {
-        if (_timeCount <= 0 && _playerController._lifeState == LifeState.Alive)
-            return true;
-        return false;
+        int teamID = PlayerPrefs.GetInt("SelectedTeamID", 0);
+        int charID = PlayerPrefs.GetInt("SelectedCharacterID", 0);
+        int mapID = PlayerPrefs.GetInt("SelectedMapID", 0);
+        Debug.Log("Map ID: " + mapID);
+
+        var teamData = _teamMenu.GetTeamByID(teamID);
+        var charData = teamData?.GetCharacterDataByCharacterID(charID);
+        var mapData = _mapMenu.GetMapDataByMapID(mapID);
+
+        if (charData != null && charData.characterPlayerPrefab != null)
+        {
+            _player = await AddressableManager.instance.InstantiatePrefabAsync(charData.characterPlayerPrefab);
+
+            if (_player != null)
+            {
+                SpawnData spawnData = mapData._spawnPoint;
+                _player.transform.position = spawnData.position;
+                _player.transform.rotation = Quaternion.Euler(spawnData.rotation);
+                _player.layer = LayerMask.NameToLayer("Player");
+            }
+        }
+    }
+
+    private async UniTask SpawnZombieWave()
+    {
+        if (_spawnWaveCount == 0)
+        {
+            _baseSpawnDirection = _player.transform.forward;
+            _initialSpawnPoint = _player.transform.position + (_baseSpawnDirection * _gameplayConfig.initialDistanceFromPlayer);
+        }
+
+        Vector3 waveSpawnPos = _initialSpawnPoint + (_baseSpawnDirection * _gameplayConfig.distanceBetweenWaveUp * _spawnWaveCount);
+       
+        TeamDataSO zombieTeam = _teamMenu.GetTeamByTeamName(TeamName.Zombie);
+        if (zombieTeam == null) return;
+
+        List<UniTask<GameObject>> tasks = new List<UniTask<GameObject>>();
+
+        int zombieCountThisWave = _gameplayConfig.zombiePerWave + (_gameplayConfig.incrementZombiePerWave * _spawnWaveCount);
+        for (int i = 0; i < zombieCountThisWave; i++)
+        {
+            var charData = zombieTeam.characterData[Random.Range(0, zombieTeam.characterData.Length)];
+            tasks.Add(AddressableManager.instance.InstantiatePrefabAsync(charData.characterAIPrefab));
+        }
+
+        GameObject[] spawnedZombies = await UniTask.WhenAll(tasks);
+
+        foreach (var zombie in spawnedZombies)
+        {
+            if (zombie == null) continue;
+
+            Vector3 randomOffset = new Vector3(Random.Range(-5f, 5f), 0, Random.Range(-5f, 5f));
+            zombie.transform.position = GetGroundPosition(waveSpawnPos + randomOffset);
+
+            if (zombie.TryGetComponent<NavMeshAgent>(out var navMesh)) navMesh.enabled = true;
+
+            if (zombie.TryGetComponent<BehaviorGraphAgent>(out var behavior))
+            {
+                behavior.BlackboardReference.SetVariableValue("Target", _player);
+                behavior.enabled = true;
+            }
+        
+            _allBotCharacter.Add(zombie);
+            _zombieWaveCount++;
+        }
+
+        _spawnWaveCount++;
+    }
+
+    private void UpdateTime()
+    {
+        if (_timeCount > 0)
+        {
+            _timeCount -= Time.deltaTime;
+            _timeCount = Mathf.Clamp(_timeCount, 0, Mathf.Infinity);
+            UIGameManager_ZombieSurvival.instance.UpdateUITime(_timeCount, _currentGameState);
+        }
+    }
+
+    private void UpdateMatch()
+    {
+        switch (_currentGameState)
+        {
+            case GameState.Countdown:
+                if (_timeCount <= 0)
+                {
+                    _currentGameState = GameState.RoundActive;
+                    _timeCount = _gameplayConfig.timeRoundActive;
+                    AudioManager.instance.PlayRadioZombie(_currentGameState, _currentGameResult);
+                }
+                break;
+            case GameState.RoundActive:
+                if (_timeCount <= 0)
+                {
+                    _currentGameState = GameState.MatchEnd;
+                    _currentGameResult = GameResult.Win;
+                    StartCoroutine(UpdateResultMatch());
+                }
+                else
+                {
+                    if (_zombieWaveCount <= 0)
+                    {
+                        SpawnZombieWave().Forget();
+                    }
+                }
+                break;
+        }
+    }
+
+    private IEnumerator UpdateResultMatch()
+    {
+        StopAllCharacter();
+        yield return StartCoroutine(CalculateMatchRewards());     
+        yield return StartCoroutine(UIGameManager_ZombieSurvival.instance.ShowUIResultMatch(_currentGameResult));
+    }
+
+    private void StopAllCharacter()
+    {
+        _player.GetComponent<PlayerController>().ResetPlayerState();
+
+        foreach (var bot in _allBotCharacter)
+        {
+            if (bot == null) continue;
+
+            if (bot.TryGetComponent<BehaviorGraphAgent>(out var behaviorAgent)) behaviorAgent.enabled = false;
+            if (bot.TryGetComponent<NavMeshAgent>(out var agent)) agent.enabled = false;
+            if (bot.TryGetComponent<Animator>(out var anim)) anim.SetFloat("Speed", 0);
+        }
+    }
+
+    private IEnumerator CalculateMatchRewards()
+    {
+        int rewardKills = _playerKilled * _gameplayConfig.bonusGoldPerKill;
+        int rewardMatch = _gameplayConfig.GetGoldByResult(_currentGameResult);
+        int totalReward = rewardMatch + rewardKills;
+
+        PlayerDataManager.instance.AddPlayerGold(totalReward);
+        AudioManager.instance.PlayRadioZombie(_currentGameState, _currentGameResult);
+        yield return new WaitForSecondsRealtime(5f);
+    }
+
+    private void OnDestroy()
+    {
+        if (_player != null)
+        {
+            AddressableManager.instance.ReleaseInstance(_player);
+            _player = null;
+        }
+
+        if (_allBotCharacter != null)
+        {
+            foreach (var bot in _allBotCharacter)
+            {
+                if (bot != null)
+                {
+                    AddressableManager.instance.ReleaseInstance(bot);
+                }
+            }
+
+            _allBotCharacter.Clear();
+        }
     }
 }

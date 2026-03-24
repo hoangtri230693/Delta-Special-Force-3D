@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6844737928870793082}
   - component: {fileID: 3919866326277573312}
   - component: {fileID: 9017865980098388693}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: DesertEagle_Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}

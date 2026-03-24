@@ -4,12 +4,12 @@
 public class BarrelPointController : MonoBehaviour
 {
     [SerializeField] private WeaponController _weaponController;
-    [SerializeField] private float _crosshairOffset = 0.01f;
+    [SerializeField] private CrosshairController _crosshairController;
+    [SerializeField] private ScopeAimController _scopeAimController;
     [SerializeField] private RectTransform _crosshair;
     [SerializeField] private RectTransform _scopeCrosshair;
     [SerializeField] private Camera _aimScopeCamera;
-    [SerializeField] private CrosshairController _crosshairController;
-    [SerializeField] private ScopeAimController _scopeAimController;
+    [SerializeField] private float _crosshairOffset = 0.01f;
 
     public Vector3 _targetPosition;
     public Quaternion _targetRotation;
@@ -83,9 +83,9 @@ public class BarrelPointController : MonoBehaviour
         }
     }
 
-    public void HandleZoomControl(float zoomDelta)
+    public void ScopeZoom(float zoomDelta)
     {
         if (_scopeAimController != null)
-            _scopeAimController.UpdateZoomControl(zoomDelta);
+            _scopeAimController.Zoom(zoomDelta);
     }
 }

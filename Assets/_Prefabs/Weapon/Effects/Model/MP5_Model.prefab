@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2360374195487949474}
   - component: {fileID: 955474319965179223}
   - component: {fileID: 4952390133927427441}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: MP5_Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}

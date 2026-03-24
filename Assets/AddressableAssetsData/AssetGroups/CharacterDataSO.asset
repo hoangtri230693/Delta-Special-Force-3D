@@ -15,38 +15,53 @@ MonoBehaviour:
   m_GroupName: CharacterDataSO
   m_GUID: e2d708b1c7f27754981b53665416e1d4
   m_SerializeEntries:
-  - m_GUID: 01b773807bfc51f479591cecfcb00dc5
-    m_Address: Assets/_Data/Character/Model/TerroristShadowDawn.asset
+  - m_GUID: 18942628b8b966c4393d397824ac0de9
+    m_Address: CharacterData_BravoGroup
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 22fa2eccceb57f248b6a0511261fe166
-    m_Address: Assets/_Data/Character/Model/AlphaGroup.asset
+  - m_GUID: 2548f0eec3d9b4247bc90589bb92d73d
+    m_Address: CharacterData_ZombieRunner
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 2d9af8ed0c8fa7a4c9aeb7f93461b37d
-    m_Address: Assets/_Data/Character/Model/TerroristRedFang.asset
+  - m_GUID: 27fb2a8500bd5594995ae691e19aec95
+    m_Address: CharacterData_ZombieShambler
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 4eaf4dd80177eeb4086d6422fae306dc
-    m_Address: Assets/_Data/Character/Model/DeltaGroup.asset
+  - m_GUID: a350fbad2156e23478fc4e3179d8e6dd
+    m_Address: CharacterData_ZombieWalker
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: d02c78438e74b074a8ad10da4322c308
-    m_Address: Assets/_Data/Character/Model/BravoGroup.asset
+  - m_GUID: ac58cd1eae49adf45b2f45aead46fad5
+    m_Address: CharacterData_BlackViper
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: e2fc7b861b2d4524cb7e371e893a8d9d
-    m_Address: Assets/_Data/Character/Model/TerroristBlackViper.asset
+  - m_GUID: b9558797e58202d4a9c61348b9069e71
+    m_Address: CharacterData_AlphaGroup
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: e32b40a9e454a45439a3a8b5e723fb15
-    m_Address: Assets/_Data/Character/Model/TerroristIronBlood.asset
+  - m_GUID: bc41a74999a64574d8b17d23d1d15169
+    m_Address: CharacterData_IronBlood
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e1390e27471f2b0439e648265476ac76
+    m_Address: CharacterData_RedFang
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fc97355355c9cf748a845647ed910fcd
+    m_Address: CharacterData_DeltaGroup
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fd584e48f82fbcf49b6c31b15cb07472
+    m_Address: CharacterData_ShadowDawn
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

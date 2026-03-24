@@ -16,22 +16,22 @@ MonoBehaviour:
   m_GUID: 8f4b872c51116b149a32eaddbcd56998
   m_SerializeEntries:
   - m_GUID: 31bcb669703482a4aa6a48aedc92c199
-    m_Address: Assets/_Prefabs/Map/Greenland_Map.prefab
+    m_Address: Greenland
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 476e842252a2d6944992cfe2142ab4e6
-    m_Address: Assets/_Prefabs/Map/IndustrialAsia.prefab
+    m_Address: IndustrialAsia
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 7e96953c6d797104689bb56d701012f4
-    m_Address: Assets/_Prefabs/Map/Desert_Map.prefab
+    m_Address: Desert
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: dddd2e32035db4345b142bcff8c5422d
-    m_Address: Assets/_Prefabs/Map/IndustrialEurope.prefab
+    m_Address: IndustrialEurope
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

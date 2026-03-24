@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using DeltaSpecialForce3D.Enums;
+using UnityEngine;
 
 public class PlayerHealth : MonoBehaviour
 {
@@ -10,32 +11,21 @@ public class PlayerHealth : MonoBehaviour
 
 
     private void Awake()
-    {     
+    {
         _playerController = GetComponent<PlayerController>();
         _botAIController = GetComponent<BotAIController>();
-        GetHealth();
-
     }
 
     private void Start()
     {
-        if (UIGameManager_TeamDeathmatch.instance != null)
-        {
-            UIGameManager_TeamDeathmatch.instance.UpdateUIArmorHealth(_currentArmorHealth, this);
-            UIGameManager_TeamDeathmatch.instance.UpdateUIPlayerHealth(_currentHealth, this);
-        }
-        
-        if (UIGameManager_ZombieSurvival.instance != null)
-        {
-            UIGameManager_ZombieSurvival.instance.UpdateUIArmorHealth(_currentArmorHealth, this);
-            UIGameManager_ZombieSurvival.instance.UpdateUIPlayerHealth(_currentHealth, this);
-        }
+        GetHealth();
+        UpdateUIArmorHealth();
+        UpdateUIHealth();
     }
 
     private void GetHealth()
     {
-        _currentHealth = _playerController.CharacterStas.health;
-        _currentArmorHealth = 0;
+        _currentHealth = _playerController.CharacterStats.health;
     }
 
     public void UpdateHealth(float damage, ItemType itemType)
@@ -55,20 +45,18 @@ public class PlayerHealth : MonoBehaviour
                 _currentArmorHealth = 0;
             }
 
-            UIGameManager_TeamDeathmatch.instance?.UpdateUIArmorHealth(_currentArmorHealth, this);
-            UIGameManager_ZombieSurvival.instance?.UpdateUIArmorHealth(_currentArmorHealth, this);
+            UpdateUIArmorHealth();
         }
 
         if (damage > 0)
         {
             _currentHealth -= damage;
-            _currentHealth = Mathf.Clamp(_currentHealth, 0, _playerController.CharacterStas.health);
+            _currentHealth = Mathf.Clamp(_currentHealth, 0, _playerController.CharacterStats.health);
 
-            UIGameManager_TeamDeathmatch.instance?.UpdateUIPlayerHealth(_currentHealth, this);
-            UIGameManager_ZombieSurvival.instance?.UpdateUIPlayerHealth(_currentHealth, this);
+            UpdateUIHealth();
         }
 
-        if (_currentHealth <= _playerController.CharacterStas.health / 2)
+        if (_currentHealth <= _playerController.CharacterStats.health / 2)
         {
             if (_botAIController != null) _botAIController.SetShouldDefend(true);
         }
@@ -76,7 +64,7 @@ public class PlayerHealth : MonoBehaviour
         UpdateLifeState(itemType);
     }
 
-    private void UpdateLifeState(ItemType itemType)
+    public void UpdateLifeState(ItemType itemType)
     {
         if (_currentHealth <= 0)
         {
@@ -102,10 +90,30 @@ public class PlayerHealth : MonoBehaviour
         }
     }
 
+    public void UpdateUIHealth()
+    {
+        if (_botAIController != null) return;
+
+        if (UIGameManager_TeamDeathmatch.instance != null)
+            UIGameManager_TeamDeathmatch.instance.UpdateUIPlayerHealth(_currentHealth);
+        if (UIGameManager_ZombieSurvival.instance != null)
+            UIGameManager_ZombieSurvival.instance?.UpdateUIPlayerHealth(_currentHealth);
+
+    }
+
+    public void UpdateUIArmorHealth()
+    {
+        if (_botAIController != null) return;
+
+        if (UIGameManager_TeamDeathmatch.instance != null)
+            UIGameManager_TeamDeathmatch.instance.UpdateUIArmorHealth(_currentArmorHealth);
+        if (UIGameManager_ZombieSurvival.instance != null)
+            UIGameManager_ZombieSurvival.instance?.UpdateUIArmorHealth(_currentArmorHealth);
+    }
+
     public void ResetHealth()
     {
-        _currentHealth = _playerController.CharacterStas.health;
-        UIGameManager_TeamDeathmatch.instance?.UpdateUIPlayerHealth(_currentHealth, this);
-        UIGameManager_ZombieSurvival.instance?.UpdateUIPlayerHealth(_currentHealth, this);
+        _currentHealth = _playerController.CharacterStats.health;
+        UpdateUIHealth();
     }
 }

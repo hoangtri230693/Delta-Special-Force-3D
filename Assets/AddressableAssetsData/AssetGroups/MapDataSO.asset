@@ -15,23 +15,23 @@ MonoBehaviour:
   m_GroupName: MapDataSO
   m_GUID: 345ea0f7131be284ca9cc6eee9b62bf2
   m_SerializeEntries:
-  - m_GUID: 7df816bd5fef87d4290cefc1487d0781
-    m_Address: Assets/_Data/Map/Industrial1_Map.asset
+  - m_GUID: 6165fd7addcd1c746b7eef3b1a2ee459
+    m_Address: MapData_IndustrialAsia
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 9ffaa9392c6183e4fb8c97e295ec16d2
-    m_Address: Assets/_Data/Map/Desert_Map.asset
+  - m_GUID: 663591d5a5b506b4a8eebfae00dee21b
+    m_Address: MapData_IndustrialEurope
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: b1454ea7c5583db409d41fa4c2838eea
-    m_Address: Assets/_Data/Map/Greenland_Map.asset
+  - m_GUID: 83bfb3195f83c804487f2cc9118a1c96
+    m_Address: MapData_Desert
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: bc8cc3f832f144549b718eccb975bb7a
-    m_Address: Assets/_Data/Map/Industrial2_Map.asset
+  - m_GUID: bf93e86c1eaaa9d49b062066332c5dd6
+    m_Address: MapData_Greenland
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

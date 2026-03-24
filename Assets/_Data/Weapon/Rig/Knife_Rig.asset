@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03012a87c24b99e47aba48766aebf7cc, type: 3}
   m_Name: Knife_Rig
   m_EditorClassIdentifier: 
+  weaponID: 100
   weaponName: Knife
   alpha_Weapon_Pos: {x: 0.016, y: 0.084, z: 0.029}
   alpha_Weapon_Rot: {x: 10, y: 90, z: -180}

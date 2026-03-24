@@ -1,3 +1,4 @@
+using DeltaSpecialForce3D.Enums;
 using UnityEngine;
 
 
@@ -9,14 +10,13 @@ public class PlayerAnimator : MonoBehaviour
     private int _meleeItemLayerIndex;
     private int _throwItemLayerIndex;
 
-
     private void Awake()
     {
-        _animator = GetComponentInChildren<Animator>();
+        _animator = GetComponent<Animator>();
     }
 
     private void Start()
-    {    
+    {
         _primaryItemLayerIndex = _animator.GetLayerIndex("Primary Item Layer");
         _meleeItemLayerIndex = _animator.GetLayerIndex("Melee Item Layer");
         _throwItemLayerIndex = _animator.GetLayerIndex("Throw Item Layer");
@@ -36,10 +36,10 @@ public class PlayerAnimator : MonoBehaviour
             switch (movementState)
             {
                 case MovementState.Walk:
-                    targetSpeed = 1f;
+                    targetSpeed = 3f;
                     break;
                 case MovementState.Run:
-                    targetSpeed = 2f;
+                    targetSpeed = 6f;
                     break;
                 case MovementState.Idle:
                 default:

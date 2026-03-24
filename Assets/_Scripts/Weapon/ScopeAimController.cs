@@ -20,7 +20,7 @@ public class ScopeAimController : MonoBehaviour
         _aimScopeCamera.fieldOfView = _currentFOV;
     }
 
-    public void UpdateZoomControl(float zoomDelta)
+    public void Zoom(float zoomDelta)
     {
         _currentFOV -= zoomDelta * _zoomSpeed;
         _currentFOV = Mathf.Clamp(_currentFOV, 5f, 25f);

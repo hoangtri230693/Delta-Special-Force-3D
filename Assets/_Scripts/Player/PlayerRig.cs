@@ -1,10 +1,10 @@
+using DeltaSpecialForce3D.Enums;
 using UnityEngine;
 using UnityEngine.Animations.Rigging;
 
 public class PlayerRig : MonoBehaviour
 {
-    [Header("Character Rig Data")]
-    [SerializeField] private CharacterRigSO _characterRigData;
+    private PlayerController _playerController;
 
     [Header("Rig References")]
     [SerializeField] private Rig _primaryItemRig;
@@ -33,6 +33,11 @@ public class PlayerRig : MonoBehaviour
     private float _currentIKWeight = 1f;
     private ItemType _activeIKType;
 
+
+    private void Awake()
+    {
+        _playerController = GetComponent<PlayerController>();
+    }
 
     private void LateUpdate()
     {
@@ -98,16 +103,16 @@ public class PlayerRig : MonoBehaviour
                 switch (currentItem)
                 {
                     case ItemType.PrimaryItem:
-                        newOffset = _characterRigData._offsetBodyStandingPrimary;
+                        newOffset = _playerController.CharacterRig._offsetBodyStandingPrimary;
                         break;
                     case ItemType.SecondaryItem:
-                        newOffset = _characterRigData._offsetBodyStandingSecondary;
+                        newOffset = _playerController.CharacterRig._offsetBodyStandingSecondary;
                         break;
                     case ItemType.MeleeItem:
-                        newOffset = _characterRigData._offsetBodyStandingMelee;
+                        newOffset = _playerController.CharacterRig._offsetBodyStandingMelee;
                         break;
                     case ItemType.ThrowItem:
-                        newOffset = _characterRigData._offsetBodyStandingThrow;
+                        newOffset = _playerController.CharacterRig._offsetBodyStandingThrow;
                         break;
                     default:
                         newOffset = Vector3.zero;
@@ -118,16 +123,16 @@ public class PlayerRig : MonoBehaviour
                 switch (currentItem)
                 {
                     case ItemType.PrimaryItem:
-                        newOffset = _characterRigData._offsetBodyCrouchingPrimary;
+                        newOffset = _playerController.CharacterRig._offsetBodyCrouchingPrimary;
                         break;
                     case ItemType.SecondaryItem:
-                        newOffset = _characterRigData._offsetBodyCrouchingSecondary;
+                        newOffset = _playerController.CharacterRig._offsetBodyCrouchingSecondary;
                         break;
                     case ItemType.MeleeItem:
-                        newOffset = _characterRigData._offsetBodyCrouchingMelee;
+                        newOffset = _playerController.CharacterRig._offsetBodyCrouchingMelee;
                         break;
                     case ItemType.ThrowItem:
-                        newOffset = _characterRigData._offsetBodyCrouchingThrow;
+                        newOffset = _playerController.CharacterRig._offsetBodyCrouchingThrow;
                         break;
                     default:
                         newOffset = Vector3.zero;

@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e51d37e1deb698547b7e3ab4183816c1, type: 3}
+  m_Name: CharacterData_BravoGroup
+  m_EditorClassIdentifier: 
+  characterID: 1
+  characterDisplayName: Bravo Group
+  characterName: 2
+  teamName: 1
+  characterPlayerPrefab:
+    m_AssetGUID: 7357413047294c04a82a58d879899f3a
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
+  characterAIPrefab:
+    m_AssetGUID: d2d513610e470294faf8e7693a552836
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
+  characterModelPrefab:
+    m_AssetGUID: 508f375dde7070d4495ec7f2dcf86939
+    m_SubObjectName: 
+    m_SubObjectType: 
+    m_SubObjectGUID: 
+    m_EditorAssetChanged: 0

@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
+using DeltaSpecialForce3D.Enums;
+
 
 public class UIPlayGame : MonoBehaviour
 {
@@ -9,6 +11,11 @@ public class UIPlayGame : MonoBehaviour
 
 
     private void Start()
+    {
+        OnMainMenu();
+    }
+
+    private void OnMainMenu()
     {
         _panelShop.SetActive(false);
         _panelMain.SetActive(true);
@@ -24,32 +31,34 @@ public class UIPlayGame : MonoBehaviour
             _panelShop.SetActive(false);
             _buttonBack.SetActive(true);
             _panelMain.SetActive(true);
-            AudioManager.instance.PlaySfx(SFXType.MetalClick);
+            AudioManager.instance.PlaySfx(SFXSoundType.MetalClick);
         }
         else
         {
             _panelShop.SetActive(true);
             _buttonBack.SetActive(false);
             _panelMain.SetActive(false);
-            AudioManager.instance.PlaySfx(SFXType.MetalClick);
+            AudioManager.instance.PlaySfx(SFXSoundType.MetalClick);
         }
     }
 
     public void OnClickDeathmatch()
     {
+        GameplayDataManager.instance.gameMode = GameMode.TeamDeathmatch;
         SceneManager.LoadScene("TeamDeathmatch");
-        AudioManager.instance.PlaySfx(SFXType.DefaultClick);
+        AudioManager.instance.PlaySfx(SFXSoundType.DefaultClick);
     }
 
     public void OnClickSurvival()
     {
+        GameplayDataManager.instance.gameMode = GameMode.ZombieSurvival;
         SceneManager.LoadScene("ZombieSurvival");
-        AudioManager.instance.PlaySfx(SFXType.DefaultClick);
+        AudioManager.instance.PlaySfx(SFXSoundType.DefaultClick);
     }
 
     public void OnClickBack()
     {
         SceneManager.LoadScene("StartGame");
-        AudioManager.instance.PlaySfx(SFXType.MetalClick);
+        AudioManager.instance.PlaySfx(SFXSoundType.MetalClick);
     }
 }

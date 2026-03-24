@@ -2,30 +2,28 @@
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.InputSystem;
-
-public enum MovementState { Idle, Walk, Run, JumpOI, JumpOM, Fall }
-public enum StanceState { Stand, Crouch }
-public enum CombatState { None, Aim}
-public enum ActionState { None, ManualShoot, AutomaticShoot, Melee, Throw, Reload, Drop }
-public enum ItemType { None, PrimaryItem, SecondaryItem, MeleeItem, ThrowItem, ArmorItem }
-public enum LifeState { None, Alive, Hurt, DeathShoot, DeathMelee, DeathThrow }
-public enum TeamType { None, Counter, Terrorist }
+using DeltaSpecialForce3D.Enums;
 
 
 public class PlayerController : MonoBehaviour
 {
-    [Header("References")]
-    [SerializeField] private CharacterController _characterController;
     [SerializeField] private CharacterStatsSO _characterStats;
-    public CharacterStatsSO CharacterStas => _characterStats;
-
+    [SerializeField] private CharacterRigSO _characterRig;
+    [SerializeField] private CharacterDataSO _characterData;
+    [SerializeField] private CameraStatsSO _cameraStats;
+    public CharacterStatsSO CharacterStats => _characterStats;
+    public CharacterRigSO CharacterRig => _characterRig;
+    public CharacterDataSO CharacterData => _characterData;
+    public CameraStatsSO CameraStats => _cameraStats;
+    
     [Header("Player Component Group")]
-    private PlayerAnimator _playerAnimator;
-    private PlayerInventory _playerInventory;
-    private PlayerRig _playerRig;
-    private PlayerCamera _playerCamera;
-    private PlayerAudio _playerAudio;
-    private PlayerTeam _playerTeam;
+    [SerializeField] private CharacterController _characterController;
+    [SerializeField] private PlayerAnimator _playerAnimator;
+    [SerializeField] private PlayerInventory _playerInventory;
+    [SerializeField] private PlayerRig _playerRig;
+    [SerializeField] private PlayerCamera _playerCamera;
+    [SerializeField] private PlayerAudio _playerAudio;
+    [SerializeField] private PlayerTeam _playerTeam;
 
     [Header("Player Movement Data")]
     private Vector3 _forward = Vector3.zero;
@@ -59,19 +57,13 @@ public class PlayerController : MonoBehaviour
 
     private void Awake()
     {
-        _playerAnimator = GetComponent<PlayerAnimator>();
-        _playerInventory = GetComponent<PlayerInventory>();
-        _playerRig = GetComponent<PlayerRig>();
-        _playerCamera = GetComponent<PlayerCamera>();
-        _playerAudio = GetComponent<PlayerAudio>();
-        _playerTeam = GetComponent<PlayerTeam>();     
-
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
+        GetDataCharacter();
     }
 
     private void Start()
-    {
+    {      
         SwitchItem();
     }
 
@@ -98,7 +90,7 @@ public class PlayerController : MonoBehaviour
         _playerAudio.PlayCharacterSound(CharacterSoundType.SwitchItem);
         _playerAnimator.UpdateItemType(_itemType);
         _playerInventory.UpdateItem(_itemType);
-        _playerInventory.ActiveCombatItem(_itemType, _combatState);
+        _playerInventory.ActiveCombatItem(_combatState);
         _playerRig.UpdateRigWeight(_itemType);
         _playerRig.UpdateBodyOffset(_itemType, _stanceState);
     }
@@ -120,7 +112,7 @@ public class PlayerController : MonoBehaviour
         _playerAnimator.UpdateAiming(_isAiming);
         _playerAnimator.UpdateStanceState(_stanceState);
         _playerAnimator.UpdateActionState(_actionState, _stanceState);
-        _playerInventory.ActiveCombatItem(_itemType, _combatState);
+        _playerInventory.ActiveCombatItem(_combatState);
     }
 
     public void IncrementKillCount()
@@ -129,8 +121,8 @@ public class PlayerController : MonoBehaviour
 
         if (UIGameManager_TeamDeathmatch.instance != null && GameManager_TeamDeathmatch.instance != null)
         {
-            UIGameManager_TeamDeathmatch.instance.UpdateKilledCount(_playerTeam._playerTeam, _playerTeam._playerID, _killedCount);
-            GameManager_TeamDeathmatch.instance.UpdatePlayerKilled(this);
+            UIGameManager_TeamDeathmatch.instance.UpdateKilledCount(_playerTeam.Team, _playerTeam.ID, _killedCount);
+            GameManager_TeamDeathmatch.instance.UpdatePlayerKilled(transform.gameObject);
         }
 
         if (UIGameManager_ZombieSurvival.instance != null && GameManager_ZombieSurvival.instance != null)
@@ -145,8 +137,8 @@ public class PlayerController : MonoBehaviour
         if (UIGameManager_TeamDeathmatch.instance != null)
         {
             _deathCount++;
-            UIGameManager_TeamDeathmatch.instance.UpdateDeathCount(_playerTeam._playerTeam, _playerTeam._playerID, _deathCount);
-            GameManager_TeamDeathmatch.instance.UpdateTeamCount(_playerTeam._playerTeam);
+            UIGameManager_TeamDeathmatch.instance.UpdateDeathCount(_playerTeam.Team, _playerTeam.ID, _deathCount);
+            GameManager_TeamDeathmatch.instance.UpdateTeamCount(_playerTeam.Team);
         }
     }
 
@@ -163,11 +155,11 @@ public class PlayerController : MonoBehaviour
         bool isRoundActive = false;
         if (GameManager_TeamDeathmatch.instance != null)
         {
-            isRoundActive = GameManager_TeamDeathmatch.instance?._currentGameState == GameState.RoundActive;
+            isRoundActive = GameManager_TeamDeathmatch.instance._currentGameState == GameState.RoundActive;
         }
         else if (GameManager_ZombieSurvival.instance != null)
         {
-            isRoundActive = GameManager_ZombieSurvival.instance?._currentGameState == GameState.RoundActive;
+            isRoundActive = GameManager_ZombieSurvival.instance._currentGameState == GameState.RoundActive;
         }
 
         if (isRoundActive)
@@ -219,12 +211,36 @@ public class PlayerController : MonoBehaviour
 
 
     //------------PRIVATE METHODS------------
+    private void GetDataCharacter()
+    {
+        _characterStats = GameplayDataManager.instance._characterStatsSO;
+
+        foreach (var characterRig in GameplayDataManager.instance._characterRigSO)
+        {
+            if (_playerTeam.Name == characterRig.nameTeam)
+            {
+                _characterRig = characterRig;
+                break;
+            }
+        }
+
+        foreach (var characterData in GameplayDataManager.instance._characterDataSO)
+        {
+            if (_playerTeam.Name == characterData.characterName)
+            {
+                _characterData = characterData;
+            }
+        }
+
+        _cameraStats = GameplayDataManager.instance._cameraStatsSO;
+    }
+
     private void HandleMovement(Vector2 input, bool isSprinting)
     {
         bool isMoving = input.magnitude > 0.1f;
 
         _currentSpeed = isMoving
-            ? (isSprinting ? _characterStats.runSpeed : _characterStats.walkSpeed)
+            ? (isSprinting ? CharacterStats.runSpeed : CharacterStats.walkSpeed)
             : 0f;
 
         if (_isAiming)
@@ -293,7 +309,7 @@ public class PlayerController : MonoBehaviour
             transform.rotation = Quaternion.Slerp(
                 transform.rotation,
                 targetRotation,
-                _characterStats.rotationSpeed * Time.deltaTime
+                CharacterStats.rotationSpeed * Time.deltaTime
             );
         }
     }
@@ -307,7 +323,7 @@ public class PlayerController : MonoBehaviour
                 if (isCrouching || _isCrouching) return;
 
                 _velocity.y = 0f;
-                _velocity.y += _characterStats.jumpForce;
+                _velocity.y += CharacterStats.jumpForce;
                 _movementState = (_currentSpeed > 0f) ? MovementState.JumpOM : MovementState.JumpOI;
                 _playerAnimator.UpdateJumping(_movementState);
             }
@@ -349,7 +365,7 @@ public class PlayerController : MonoBehaviour
             _isAiming = true;
             _combatState = CombatState.Aim;
             _playerAnimator.UpdateAiming(true);
-            _playerInventory.ActiveCombatItem(_itemType, _combatState);
+            _playerInventory.ActiveCombatItem(_combatState);
             _playerRig.UpdateAimRigWeight(true);
             _playerCamera.EnterAimMode();
         }
@@ -359,7 +375,7 @@ public class PlayerController : MonoBehaviour
             _isAiming = false;
             _combatState = CombatState.None;
             _playerAnimator.UpdateAiming(false);
-            _playerInventory.ActiveCombatItem(_itemType, _combatState);
+            _playerInventory.ActiveCombatItem(_combatState);
             _playerRig.UpdateAimRigWeight(false);
             _playerCamera.ExitAimMode();
         }       
@@ -376,7 +392,7 @@ public class PlayerController : MonoBehaviour
     {
         if (_combatState != CombatState.Aim) return;
         if (Mathf.Abs(zoomDelta) < 0.01f) return;
-        _playerInventory.UpdateHandleZoom(_itemType, zoomDelta);
+        _playerInventory.UpdateHandleZoom(zoomDelta);
     }
 
     private void HandleAttack(bool isManualAttacking, bool isAutomaticAttacking)
@@ -390,6 +406,8 @@ public class PlayerController : MonoBehaviour
                 case ItemType.PrimaryItem:
                 case ItemType.SecondaryItem:
                     _actionState = ActionState.ManualShoot;
+                    _playerInventory.HandleShoot();
+                    _actionState = ActionState.None;
                     break;
                 case ItemType.MeleeItem:
                     _actionState = ActionState.Melee;
@@ -408,6 +426,7 @@ public class PlayerController : MonoBehaviour
             if (_itemType == ItemType.PrimaryItem)
             {
                 _actionState = ActionState.AutomaticShoot;
+                _playerInventory.HandleShoot();
             }         
         }
         else
@@ -425,17 +444,15 @@ public class PlayerController : MonoBehaviour
         _moveDirection = Vector3.zero;
         _currentSpeed = 0;
         _currentDirection = 0;
-        _characterController.Move(_velocity * Time.deltaTime);
 
         if (TryGetComponent<BehaviorGraphAgent>(out var behaviorAgent)) behaviorAgent.enabled = false;
         if (TryGetComponent<NavMeshAgent>(out var navAgent)) navAgent.enabled = false;
         if (TryGetComponent<BotAIController>(out var botController)) botController.enabled = false;
-        if (TryGetComponent<BotNavAgent>(out var botNavAgent)) botNavAgent.enabled = false;
         if (TryGetComponent<RangeDetector>(out var rangeDetector)) rangeDetector.enabled = false;
         if (TryGetComponent<LineOfSightDetector>(out var lineOfSightDetector)) lineOfSightDetector.enabled = false;
 
         _combatState = CombatState.None;
-        _playerInventory.ActiveCombatItem(_itemType, _combatState);
+        _playerInventory.ActiveCombatItem(_combatState);
 
         _actionState = ActionState.None;
         _itemType = ItemType.None;
@@ -451,7 +468,7 @@ public class PlayerController : MonoBehaviour
         foreach (var col in allColliders)
         {
             col.enabled = false;
-        }
+        }       
     }
 
     private void HandleLifeState()
@@ -470,6 +487,20 @@ public class PlayerController : MonoBehaviour
                 HandleDeath();
                 IncrementDeadCount();
                 _lifeState = LifeState.None;
+                break;
+            case LifeState.None:
+                if (GetComponent<BotAIController>() == null)
+                {
+                    switch (GameplayDataManager.instance.gameMode)
+                    {
+                        case GameMode.TeamDeathmatch:
+                            GameManager_TeamDeathmatch.instance.OnPlayerDeath();
+                            break;
+                        case GameMode.ZombieSurvival:
+                            GameManager_ZombieSurvival.instance.OnPlayerDeath();
+                            break;
+                    }
+                }
                 break;
         }
     }
@@ -509,12 +540,12 @@ public class PlayerController : MonoBehaviour
         {
             if (_itemType == ItemType.PrimaryItem || _itemType == ItemType.SecondaryItem)
             {
-                if (!_playerInventory.HasWeapon(_itemType)) return;
+                if (!_playerInventory.HasWeapon()) return;
                 _playerAudio.PlayCharacterSound(CharacterSoundType.Zoom);
                 _isAiming = false;
                 _combatState = CombatState.None;
                 _playerAnimator.UpdateAiming(false);
-                _playerInventory.ActiveCombatItem(_itemType, _combatState);
+                _playerInventory.ActiveCombatItem(_combatState);
                 _playerRig.UpdateAimRigWeight(false);
                 _playerCamera.ExitAimMode();
                 _actionState = ActionState.Reload;
@@ -527,7 +558,7 @@ public class PlayerController : MonoBehaviour
     private void HandleDropping(bool isDropping)
     {
         if (!isDropping) return;
-      
+
         _playerInventory.DropCurrentItem(_itemType);
     }
 
@@ -554,15 +585,13 @@ public class PlayerController : MonoBehaviour
         {
             _canAction = false;
             _isOpeningShopInGame = true;
+
             if (UIGameManager_TeamDeathmatch.instance != null)
-                UIGameManager_TeamDeathmatch.instance.OpenMenuItem(true);
-
+                UIGameManager_TeamDeathmatch.instance.OpenShopInGame(true);
             if (UIGameManager_ZombieSurvival.instance != null)
-                UIGameManager_ZombieSurvival.instance.OpenMenuItem(true);
+                UIGameManager_ZombieSurvival.instance.OpenShopInGame(true);
 
-            if (UIShopInGame.instance != null)
-                UIShopInGame.instance.OnEnableTable();
-
+            UIShopInGame.instance.OnEnableTable(_currentCash);
             Cursor.visible = true;
             Cursor.lockState = CursorLockMode.None;
         }
@@ -570,11 +599,12 @@ public class PlayerController : MonoBehaviour
         {
             _canAction = true;
             _isOpeningShopInGame = false;
-            if (UIGameManager_TeamDeathmatch.instance != null)
-                UIGameManager_TeamDeathmatch.instance.OpenMenuItem(false);
 
+            if (UIGameManager_TeamDeathmatch.instance != null)
+                UIGameManager_TeamDeathmatch.instance.OpenShopInGame(false);
             if (UIGameManager_ZombieSurvival.instance != null)
-                UIGameManager_ZombieSurvival.instance.OpenMenuItem(false);
+                UIGameManager_ZombieSurvival.instance.OpenShopInGame(false);
+
             Cursor.visible = false;
             Cursor.lockState = CursorLockMode.Locked;
         }
@@ -607,11 +637,12 @@ public class PlayerController : MonoBehaviour
         if (_isSelectedItem)
         {
             UIShopInGame.instance.OnClickBuy();
-            UIShopInGame.instance.UpdateCash();
             _playerInventory.UpdateItem(_itemType);
             _playerRig.UpdateRigWeight(_itemType);
             _playerRig.UpdateBodyOffset(_itemType, _stanceState);                  
         }
+
+        HandleOpeningShopInGame(true);
     }
 
     private int GetNumberKeyPressed()

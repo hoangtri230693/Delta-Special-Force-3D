@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5611190797822160640}
   - component: {fileID: 6316897142947593141}
   - component: {fileID: 780474473925704275}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: FAMAS_Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4cecfc5e59d089441991276a2baec95c, type: 3}
   m_Name: MapMenu_ZombieSurvival
   m_EditorClassIdentifier: 
+  gameMode: 2
   _menuMap:
-  - {fileID: 11400000, guid: 9ffaa9392c6183e4fb8c97e295ec16d2, type: 2}
-  - {fileID: 11400000, guid: b1454ea7c5583db409d41fa4c2838eea, type: 2}
+  - {fileID: 11400000, guid: 83bfb3195f83c804487f2cc9118a1c96, type: 2}
+  - {fileID: 11400000, guid: bf93e86c1eaaa9d49b062066332c5dd6, type: 2}
