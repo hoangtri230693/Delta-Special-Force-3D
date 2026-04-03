@@ -37,7 +37,6 @@ public class RangeDetector : MonoBehaviour
 
     private void UpdateBlackboard()
     {
-        behaviorAgent.BlackboardReference.SetVariableValue("Target", detectedTarget ? detectedTarget.gameObject : null);
         behaviorAgent.BlackboardReference.SetVariableValue("IsTargetInRange", IsTargetInRange);
     }
 

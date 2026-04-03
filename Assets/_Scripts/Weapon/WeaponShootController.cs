@@ -14,6 +14,7 @@ public class WeaponShootController : MonoBehaviour
 
     private float _nextAttackTime = 0f;
     private ParticleSystem _currentFireSmoke;
+    private float _smokeStopDelay = 0.2f;
 
     public int _currentAmmo;
     public int _currentReverse;
@@ -29,10 +30,18 @@ public class WeaponShootController : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (_currentFireSmoke != null && _currentFireSmoke.isPlaying)
+        if (_currentFireSmoke != null)
         {
-            _currentFireSmoke.transform.position = _barrelPoint.position;
-            _currentFireSmoke.transform.rotation = _barrelPoint.rotation;
+            if (_currentFireSmoke.isPlaying)
+            {
+                _currentFireSmoke.transform.position = _barrelPoint.position;
+                _currentFireSmoke.transform.rotation = _barrelPoint.rotation;
+            }
+
+            if (Time.time > _nextAttackTime + _smokeStopDelay)
+            {
+                StopFireSmoke();
+            }
         }
     }
 
@@ -110,11 +119,6 @@ public class WeaponShootController : MonoBehaviour
         float fireDelay = 60f / _weaponController.WeaponStats.fireRate;
         _nextAttackTime = Time.time + fireDelay;
         GenerateFireSmoke();
-
-        if (_currentFireSmoke != null && _currentFireSmoke.isPlaying)
-        {
-            StopFireSmoke();
-        }
     }
 
     private void Shoot()
@@ -126,8 +130,8 @@ public class WeaponShootController : MonoBehaviour
             GenerateMuzzleFlash();
             GenerateBulletImpact();
             HandleHitTarget();
-            HandleAmmo();
             HandleAudio();
+            HandleAmmo();         
         }
         else
         {
@@ -155,6 +159,7 @@ public class WeaponShootController : MonoBehaviour
     private void HandleRecoil()
     {
         if (_gunRecoilController == null) return;
+        _gunRecoilController.enabled = true;
 
         float recoilValue = _weaponController.WeaponStats.recoilAmount;
 
@@ -215,7 +220,7 @@ public class WeaponShootController : MonoBehaviour
     {
         if (_currentFireSmoke != null)
         {
-            _currentFireSmoke.Stop();
+            _currentFireSmoke.Stop(true, ParticleSystemStopBehavior.StopEmitting);
             _currentFireSmoke = null;
         }
     }
@@ -283,8 +288,7 @@ public class WeaponShootController : MonoBehaviour
 
     private void HandleAmmo()
     {
-        _currentAmmo -= 1;
-        Mathf.Clamp(_currentAmmo, 0, _weaponController.WeaponStats.ammoPerMag);
+        _currentAmmo = Mathf.Max(0, _currentAmmo - 1);
         RefreshUI();
     }
 }

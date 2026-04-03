@@ -3145,9 +3145,9 @@ GameObject:
   - component: {fileID: 7074410257593061148}
   - component: {fileID: 1979607994171996047}
   - component: {fileID: 274210618087123772}
+  - component: {fileID: 7549069185629807664}
   - component: {fileID: 1770015028578523089}
   - component: {fileID: 7052382657021699680}
-  - component: {fileID: 7549069185629807664}
   - component: {fileID: 1334238987452756246}
   - component: {fileID: 2683579051824200524}
   - component: {fileID: 1131779210520871391}
@@ -3248,7 +3248,7 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.28
+  m_Radius: 0.3
   m_Height: 1.8
   m_Direction: 1
   m_Center: {x: 0, y: 0.9, z: 0}
@@ -3373,60 +3373,6 @@ MonoBehaviour:
   - m_Rig: {fileID: 4274260854739524088}
     m_Active: 1
   m_Effectors: []
---- !u!114 &1770015028578523089
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4710494832922726410}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fd4d421bae61b36498aee7b0160fa79c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _characterStats: {fileID: 0}
-  _characterRig: {fileID: 0}
-  _characterData: {fileID: 0}
-  _characterController: {fileID: 5100590509009025407}
-  _playerAnimator: {fileID: 1334238987452756246}
-  _playerInventory: {fileID: 2683579051824200524}
-  _playerRig: {fileID: 4556434768034504317}
-  _playerCamera: {fileID: 7052382657021699680}
-  _playerAudio: {fileID: 5340286907654984427}
-  _playerTeam: {fileID: 1905138117473343909}
-  _canAction: 1
-  _movementState: 0
-  _stanceState: 0
-  _combatState: 0
-  _actionState: 0
-  _itemType: 2
-  _lifeState: 1
-  _killedCount: 0
-  _deathCount: 0
-  _currentSpeed: 0
-  _currentDirection: 0
-  _currentCash: 20000
---- !u!114 &7052382657021699680
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4710494832922726410}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54a8e72eae4f8504ca1ae19847ef8707, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _cameraStats: {fileID: 11400000, guid: c372f8909913b414d98e5e09c2c2c933, type: 2}
-  _freeLookCamera: {fileID: 1620813422706855030}
-  _aimCamera: {fileID: 7798785953070659143}
-  _inputAxisController: {fileID: 419898019611146456}
-  _aimFollow: {fileID: 5905109232966705689}
-  _yawTarget: {fileID: 734758796661398380}
-  _pitchWrapper: {fileID: 5269654909928092299}
-  _pitchTarget: {fileID: 101692798638989251}
 --- !u!114 &7549069185629807664
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3456,6 +3402,61 @@ MonoBehaviour:
   _selectItemAction: {fileID: -939615163248408758, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   _buyItemAction: {fileID: -3176644520795862588, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   _openResultTableAction: {fileID: -7052245931314845813, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+--- !u!114 &1770015028578523089
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4710494832922726410}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd4d421bae61b36498aee7b0160fa79c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _characterStats: {fileID: 0}
+  _characterRig: {fileID: 0}
+  _characterData: {fileID: 0}
+  _cameraStats: {fileID: 0}
+  _characterController: {fileID: 5100590509009025407}
+  _playerAnimator: {fileID: 1334238987452756246}
+  _playerInventory: {fileID: 2683579051824200524}
+  _playerRig: {fileID: 4556434768034504317}
+  _playerCamera: {fileID: 7052382657021699680}
+  _playerAudio: {fileID: 5340286907654984427}
+  _playerTeam: {fileID: 1905138117473343909}
+  _roundActive: 0
+  _canAction: 1
+  _movementState: 0
+  _stanceState: 0
+  _combatState: 0
+  _actionState: 0
+  _itemType: 2
+  _lifeState: 1
+  _killedCount: 0
+  _deathCount: 0
+  _currentSpeed: 0
+  _currentDirection: 0
+  _currentCash: 20000
+--- !u!114 &7052382657021699680
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4710494832922726410}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54a8e72eae4f8504ca1ae19847ef8707, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _freeLookCamera: {fileID: 1620813422706855030}
+  _aimCamera: {fileID: 7798785953070659143}
+  _inputAxisController: {fileID: 419898019611146456}
+  _aimFollow: {fileID: 5905109232966705689}
+  _yawTarget: {fileID: 734758796661398380}
+  _pitchWrapper: {fileID: 5269654909928092299}
+  _pitchTarget: {fileID: 101692798638989251}
 --- !u!114 &1334238987452756246
 MonoBehaviour:
   m_ObjectHideFlags: 0

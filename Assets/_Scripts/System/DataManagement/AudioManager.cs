@@ -89,6 +89,7 @@ public class AudioManager : MonoBehaviour
     public void SetSFXVolume(float volume)
     {
         _sfxSounds.volume = volume;
+        _radioSounds.volume = volume;
         PlayerPrefs.SetFloat("SFXVolume", volume);
         PlayerPrefs.Save();
     }

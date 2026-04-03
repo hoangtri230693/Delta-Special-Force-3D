@@ -7,7 +7,7 @@ public class WeaponAudio : MonoBehaviour
     [SerializeField] private WeaponController _weaponController;
     [SerializeField] private AudioSource _audioSource;
 
-    private void Start()
+    private void OnEnable()
     {
         _audioSource.volume = PlayerPrefs.GetFloat("SFXVolume", 1f);
     }

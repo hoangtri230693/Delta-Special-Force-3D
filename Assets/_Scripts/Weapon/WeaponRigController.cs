@@ -1,5 +1,6 @@
-﻿using UnityEngine;
-using DeltaSpecialForce3D.Enums;
+﻿using DeltaSpecialForce3D.Enums;
+using UnityEngine;
+using UnityEngine.Animations.Rigging;
 
 
 public class WeaponRigController : MonoBehaviour
@@ -14,6 +15,12 @@ public class WeaponRigController : MonoBehaviour
     {
         ApplyRigTargets(player);        
         UpdateDataRig(player);
+
+        var rigBuilder = player.GetComponentInParent<RigBuilder>();
+        if (rigBuilder != null)
+        {
+            rigBuilder.Evaluate(Time.deltaTime);
+        }
     }
 
     public void ResetRig()
@@ -24,7 +31,7 @@ public class WeaponRigController : MonoBehaviour
 
     private void ApplyRigTargets(GameObject player)
     {
-        PlayerRig playerRig = player.GetComponent<PlayerRig>();
+        PlayerRig playerRig = player.GetComponentInParent<PlayerRig>();
         ItemType itemType = _weaponController.WeaponStats.itemType;
 
         switch (itemType)
@@ -58,8 +65,9 @@ public class WeaponRigController : MonoBehaviour
         Vector3 rhPos = Vector3.zero;
         Vector3 rhRot = Vector3.zero;
 
-        PlayerTeam playerTeam = player.GetComponent<PlayerTeam>();
+        PlayerTeam playerTeam = player.GetComponentInParent<PlayerTeam>();
         CharacterName characterName = playerTeam.Name;
+        Debug.Log($"Character: {characterName}, Team: {playerTeam.Team}");
 
         switch (characterName)
         {
@@ -89,7 +97,8 @@ public class WeaponRigController : MonoBehaviour
         }
 
         transform.localPosition = weaponPos;
-        transform.localRotation = Quaternion.Euler(weaponRot);
+        transform.localEulerAngles = weaponRot;
+        Debug.Log("Weapon Rotation = " + weaponRot);
 
         if (_leftHandTarget != null)
         {

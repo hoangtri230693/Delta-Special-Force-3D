@@ -26,6 +26,7 @@ public class PlayerAudio : MonoBehaviour
     {
         AudioClip clipToPlay = null;
         var stats = _playerController.CharacterStats;
+        float volumeScale = 1f;
 
         switch (type)
         {
@@ -33,6 +34,7 @@ public class PlayerAudio : MonoBehaviour
                 if (Time.time - _lastStepTime < _stepCooldown) return;
                 _lastStepTime = Time.time;
                 clipToPlay = stats.footStepSound[Random.Range(0, stats.footStepSound.Length)];
+                volumeScale = 0.2f;
                 break;
             case CharacterSoundType.LandStep:
                 clipToPlay = stats.landStepSound;
@@ -53,7 +55,7 @@ public class PlayerAudio : MonoBehaviour
 
         if (clipToPlay != null)
         {
-            _audioSource.PlayOneShot(clipToPlay);
+            _audioSource.PlayOneShot(clipToPlay, volumeScale);
         }
     }
 }

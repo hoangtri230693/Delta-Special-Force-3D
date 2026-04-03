@@ -24,6 +24,7 @@ public class ZombieAudio : MonoBehaviour
     public void PlayZombieSound(ZombieSoundType type)
     {
         AudioClip clipToPlay = null;
+        float volumeScale = 1f;
         var stats = _zombieController.ZombieStats;
 
         switch (type)
@@ -32,6 +33,7 @@ public class ZombieAudio : MonoBehaviour
                 if (Time.time - _lastStepTime < _stepCooldown) return;
                 _lastStepTime = Time.time;
                 clipToPlay = stats.footStepSounds[Random.Range(0, stats.footStepSounds.Length)];
+                volumeScale = 0.2f;
                 break;
             case ZombieSoundType.Growl:
                 clipToPlay = stats.growlSounds[Random.Range(0, stats.growlSounds.Length)];
@@ -52,7 +54,7 @@ public class ZombieAudio : MonoBehaviour
 
         if (clipToPlay != null)
         {
-            _audioSource.PlayOneShot(clipToPlay);
+            _audioSource.PlayOneShot(clipToPlay, volumeScale);
         }
     }
 }

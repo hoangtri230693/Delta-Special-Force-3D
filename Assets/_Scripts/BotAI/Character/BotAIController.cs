@@ -15,11 +15,11 @@ public class BotAIController : MonoBehaviour
 
     [Header("Movement & Aiming Settings")]
     private Transform _target; 
-    private float _rotationSpeed = 5f;
+    private float _rotationSpeed = 1f;
     private float _scanSpeed = 35f;
     private float _scanAngle = 45f;
 
-    private bool _roundActive => GameManager_TeamDeathmatch.instance._currentGameState == GameState.RoundActive;
+    public bool _roundActive = false;
     private bool _shouldDefend = false;
     public bool _canShoot = false;
     private bool _shouldReloadAmmo = false;
@@ -154,8 +154,9 @@ public class BotAIController : MonoBehaviour
     {
         Vector3 desiredVelocity = _navMeshAgent.desiredVelocity;
 
-        // ===== ROTATION =====
-        if (_target != null && !_canShoot)
+        if (_canShoot) return;
+
+        if (_target != null)
         {
             RotateTowardsTarget();
         }

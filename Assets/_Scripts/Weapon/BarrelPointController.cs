@@ -34,8 +34,7 @@ public class BarrelPointController : MonoBehaviour
             _playerHealth = hit.collider.GetComponentInParent<PlayerHealth>();
             _zombieHealth = hit.collider.GetComponentInParent<ZombieHealth>();
             _targetPosition = hit.point + hit.normal * _crosshairOffset;
-            if (_playerHealth != null && _weaponController._botAIController != null)
-                _weaponController._botAIController.SetCanShoot(true);
+
             Debug.DrawLine(barrelRay.origin, hit.point, Color.red);
         }
         else
@@ -44,9 +43,14 @@ public class BarrelPointController : MonoBehaviour
             _playerHealth = null;
             _zombieHealth = null;
             _targetPosition = barrelRay.GetPoint(_weaponController.WeaponStats.maxDistance);
-            if (_playerHealth == null && _weaponController._botAIController != null)
-                _weaponController._botAIController.SetCanShoot(false);
+
             Debug.DrawLine(barrelRay.origin, _targetPosition, Color.green);
+        }
+
+        if (_weaponController._botAIController != null)
+        {
+            bool canHitTarget = (_playerHealth != null || _zombieHealth != null);
+            _weaponController._botAIController.SetCanShoot(canHitTarget);
         }
 
         if (_crosshairController != null)

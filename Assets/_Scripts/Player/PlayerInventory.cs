@@ -41,7 +41,7 @@ public class PlayerInventory : MonoBehaviour
         
     }
 
-    public void DropCurrentItem(ItemType itemType)
+    public void DropCurrentItem()
     {
         if (_weaponController != null)
         {

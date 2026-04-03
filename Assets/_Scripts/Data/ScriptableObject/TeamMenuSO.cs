@@ -7,7 +7,7 @@ public class TeamMenuSO : ScriptableObject
 {
     public TeamDataSO[] _menuTeam;
 
-    public TeamDataSO GetTeamByID(int teamID)
+    public TeamDataSO GetTeamByTeamID(int teamID)
     {
         foreach (var team in _menuTeam)
         {

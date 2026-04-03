@@ -203,9 +203,8 @@ public class WeaponThrowController : MonoBehaviour
     }
 
     private void HandleAmmo()
-    { 
-        _currentAmmo -= 1;
-        Mathf.Clamp(_currentAmmo, 0, _weaponController.WeaponStats.ammoPerMag);
+    {
+        _currentAmmo = Mathf.Max(0, _currentAmmo - 1);
         RefreshUI();
     }
     #endregion

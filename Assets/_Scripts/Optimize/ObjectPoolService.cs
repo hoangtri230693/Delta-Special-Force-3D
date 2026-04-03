@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Pool;
 
@@ -90,12 +90,14 @@ public class ObjectPoolService : MonoBehaviour
     {
         item.SetActive(true);
 
+        // Reset Particle: Đảm bảo hiệu ứng phát lại từ đầu
         if (item.TryGetComponent(out ParticleSystem ps))
         {
             ps.Clear(true);
             ps.Play(true);
         }
 
+        // Reset Vật lý: Xóa lực quán tính cũ
         if (item.TryGetComponent(out Rigidbody rb))
         {
             rb.linearVelocity = Vector3.zero;

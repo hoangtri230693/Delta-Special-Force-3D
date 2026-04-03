@@ -37,6 +37,20 @@ public class UIZombieSurvival : MonoBehaviour
     private async void Start()
     {
         ShowMap(_currentMapID);
+
+        // Nếu ID mặc định không hợp lệ, tìm cái đầu tiên hợp lệ
+        if (!IsValidTeam(_currentTeamID))
+        {
+            for (int i = 0; i < _teamMenu._menuTeam.Length; i++)
+            {
+                if (IsValidTeam(i))
+                {
+                    _currentTeamID = i;
+                    break;
+                }
+            }
+        }
+
         await ShowTeam(_currentTeamID);    
         _backgroundLoading.SetActive(false);
     }
@@ -62,7 +76,7 @@ public class UIZombieSurvival : MonoBehaviour
     {
         if (_teamMenu == null || _teamMenu._menuTeam.Length == 0) return;
 
-        TeamDataSO teamData = _teamMenu.GetTeamByID(id);
+        TeamDataSO teamData = _teamMenu.GetTeamByTeamID(id);
 
         if (teamData.teamName == TeamName.Zombie) return;
 
@@ -128,12 +142,34 @@ public class UIZombieSurvival : MonoBehaviour
         }
     }
 
+    private bool IsValidTeam(int id)
+    {
+        if (_teamMenu == null || id < 0 || id >= _teamMenu._menuTeam.Length) return false;
+
+        TeamDataSO teamData = _teamMenu.GetTeamByTeamID(id);
+        // Loại bỏ Zombie hoặc các team không xác định
+        if (teamData.teamName == TeamName.Zombie || teamData.teamName == TeamName.None)
+        {
+            return false;
+        }
+        return true;
+    }
+
     #region Button Events
 
     public async void OnClickNextTeam()
     {
         if (_teamMenu == null) return;
-        int nextID = (_currentTeamID + 1) % _teamMenu._menuTeam.Length;
+        int nextID = _currentTeamID;
+        int safetyBreak = 0; // Tránh vòng lặp vô tận nếu không có team nào hợp lệ
+
+        do
+        {
+            nextID = (nextID + 1) % _teamMenu._menuTeam.Length;
+            safetyBreak++;
+        } 
+        while (!IsValidTeam(nextID) && safetyBreak < _teamMenu._menuTeam.Length);
+
         _currentTeamID = nextID;
         await ShowTeam(nextID);
         AudioManager.instance.PlaySfx(SFXSoundType.MetalClick);
@@ -142,8 +178,16 @@ public class UIZombieSurvival : MonoBehaviour
     public async void OnClickPreviousTeam()
     {
         if (_teamMenu == null) return;
-        int prevID = _currentTeamID - 1;
-        if (prevID < 0) prevID = _teamMenu._menuTeam.Length - 1;
+        int prevID = _currentTeamID;
+        int safetyBreak = 0;
+
+        do
+        {
+            prevID--;
+            if (prevID < 0) prevID = _teamMenu._menuTeam.Length - 1;
+            safetyBreak++;
+        } while (!IsValidTeam(prevID) && safetyBreak < _teamMenu._menuTeam.Length);
+
         _currentTeamID = prevID;
         await ShowTeam(prevID);
         AudioManager.instance.PlaySfx(SFXSoundType.MetalClick);

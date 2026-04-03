@@ -14,6 +14,11 @@ public class ZombieController : MonoBehaviour
         GetZombieStats();
     }
 
+    private void Start()
+    {
+        _zombieAudio.PlayZombieSound(ZombieSoundType.Growl);
+    }
+
     private void GetZombieStats()
     {
         ZombieStats = GameplayDataManager.instance._zombieStatsSO;

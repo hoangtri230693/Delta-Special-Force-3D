@@ -42,10 +42,10 @@ public class WeaponController : MonoBehaviour
     public void InitializeWeapon(GameObject player)
     {
         _player = player;
-        _playerController = player.GetComponent<PlayerController>();
-        _botAIController = player.GetComponent<BotAIController>();
-        PlayerRig _playerRig = player.GetComponent<PlayerRig>();
-        PlayerAnimationEvents _playerAnimationEvents = player.GetComponent<PlayerAnimationEvents>();   
+        _playerController = player.GetComponentInParent<PlayerController>();
+        _botAIController = player.GetComponentInParent<BotAIController>();
+        PlayerRig _playerRig = player.GetComponentInParent<PlayerRig>();
+        PlayerAnimationEvents _playerAnimationEvents = player.GetComponentInParent<PlayerAnimationEvents>();   
 
         if (_weaponShootController != null)
         {
@@ -72,6 +72,7 @@ public class WeaponController : MonoBehaviour
         }
 
         HandleActiveCombat(_playerController._combatState);
+        
         _weaponRigController.InitializeRig(player);
     }
 
@@ -95,12 +96,6 @@ public class WeaponController : MonoBehaviour
         float ejectAngle = Random.Range(30f, 60f);
         Vector3 forceDirection = Quaternion.Euler(0, ejectAngle, 0) * Vector3.right;
         _rigidbody.AddForce(forceDirection * ejectForce, ForceMode.Impulse);
-
-        float randomTorqueX = Random.Range(-10f, 10f);
-        float randomTorqueY = Random.Range(-10f, 10f);
-        float randomTorqueZ = Random.Range(-10f, 10f);
-        Vector3 randomTorque = new Vector3(randomTorqueX, randomTorqueY, randomTorqueZ);
-        _rigidbody.AddTorque(randomTorque, ForceMode.Impulse);
 
         Collider weaponCol = GetComponent<Collider>();
         Collider playerCol = _playerController.GetComponent<Collider>();
@@ -138,8 +133,6 @@ public class WeaponController : MonoBehaviour
         _rigidbody.isKinematic = true;
 
         transform.SetParent(inventory);
-        transform.localPosition = Vector3.zero;
-        transform.localRotation = Quaternion.identity;
 
         InitializeWeapon(newPlayer.gameObject);
 

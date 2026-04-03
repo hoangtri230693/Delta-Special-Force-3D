@@ -17,12 +17,12 @@ public class GameManager_ZombieSurvival : MonoBehaviour
     [SerializeField] private MapMenuSO _mapMenu;
 
     [Header("Game Manager")]
-    private List<GameObject> _allBotCharacter;
-    public GameState _currentGameState { get; private set; }
-    public GameResult _currentGameResult { get; private set; }
+    public GameObject _player;  
+    [SerializeField] private GameState _currentGameState;
+    [SerializeField] private GameResult _currentGameResult;
+    [SerializeField] private List<GameObject> _allBotCharacter;
 
-    public GameObject _player;
-    public int _playerKilled = 0;
+    private int _playerKilled = 0;
     private float _timeCount;
     private Vector3 _baseSpawnDirection;
     private Vector3 _initialSpawnPoint;
@@ -74,6 +74,14 @@ public class GameManager_ZombieSurvival : MonoBehaviour
         }
     }
 
+    private void SetCharactersRoundState(bool isActive)
+    {
+        if (_player != null && _player.TryGetComponent<PlayerController>(out var playerController))
+        {
+            playerController._roundActive = isActive;
+        }
+    }
+
     private void SetupGameplay()
     {
         PlayerDataManager.instance.UsePlayerGold(_gameplayConfig.useGoldPerMatch);
@@ -113,6 +121,7 @@ public class GameManager_ZombieSurvival : MonoBehaviour
         {
             _currentGameState = GameState.MatchEnd;
             _currentGameResult = GameResult.Lose;
+            SetCharactersRoundState(false);
             StartCoroutine(UpdateResultMatch());
         }
     }
@@ -137,7 +146,7 @@ public class GameManager_ZombieSurvival : MonoBehaviour
         int mapID = PlayerPrefs.GetInt("SelectedMapID", 0);
         Debug.Log("Map ID: " + mapID);
 
-        var teamData = _teamMenu.GetTeamByID(teamID);
+        var teamData = _teamMenu.GetTeamByTeamID(teamID);
         var charData = teamData?.GetCharacterDataByCharacterID(charID);
         var mapData = _mapMenu.GetMapDataByMapID(mapID);
 
@@ -220,6 +229,7 @@ public class GameManager_ZombieSurvival : MonoBehaviour
                 {
                     _currentGameState = GameState.RoundActive;
                     _timeCount = _gameplayConfig.timeRoundActive;
+                    SetCharactersRoundState(true);
                     AudioManager.instance.PlayRadioZombie(_currentGameState, _currentGameResult);
                 }
                 break;
@@ -228,6 +238,7 @@ public class GameManager_ZombieSurvival : MonoBehaviour
                 {
                     _currentGameState = GameState.MatchEnd;
                     _currentGameResult = GameResult.Win;
+                    SetCharactersRoundState(false);
                     StartCoroutine(UpdateResultMatch());
                 }
                 else

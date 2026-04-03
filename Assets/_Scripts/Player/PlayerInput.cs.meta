@@ -6,20 +6,21 @@ MonoImporter:
   defaultReferences:
   - _moveAction: {fileID: -1680190386980627800, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   - _lookAction: {fileID: -5630151704836100654, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  - _switchShoulderAction: {fileID: -2958764282487652952, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   - _sprintAction: {fileID: -7471211009204490832, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   - _jumpAction: {fileID: -2099379676528639254, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   - _crouchAction: {fileID: 7040659881675835329, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   - _aimAction: {fileID: 4275065855663605319, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  - _switchShoulderAction: {fileID: -2958764282487652952, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  - _zoomAction: {fileID: -2831689251083825379, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   - _attackAction: {fileID: 1120369429361536294, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   - _switchItemAction: {fileID: 1775394689035796912, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  - _reloadAction: {instanceID: 0}
-  - _dropAction: {instanceID: 0}
-  - _pauseAction: {instanceID: 0}
-  - _openBuyTableAction: {instanceID: 0}
-  - _selectBuyItemAction: {instanceID: 0}
-  - _buyAction: {instanceID: 0}
-  - _openResultTableAction: {instanceID: 0}
+  - _reloadAction: {fileID: -8854350581797777147, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  - _dropAction: {fileID: -2985758506974065851, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  - _pauseAction: {fileID: -7187328742538688586, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  - _openShopInGameAction: {fileID: 9078799884804059275, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  - _selectItemAction: {fileID: -939615163248408758, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  - _buyItemAction: {fileID: -3176644520795862588, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  - _openResultTableAction: {fileID: -7052245931314845813, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

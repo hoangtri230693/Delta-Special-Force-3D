@@ -3352,7 +3352,7 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.28
+  m_Radius: 0.3
   m_Height: 1.8
   m_Direction: 1
   m_Center: {x: 0, y: 0.9, z: 0}
@@ -3496,7 +3496,7 @@ NavMeshAgent:
   m_AutoBraking: 1
   m_AutoRepath: 1
   m_Height: 2
-  m_BaseOffset: 0
+  m_BaseOffset: -0.15
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
 --- !u!114 &6700251588636404022
@@ -3544,6 +3544,7 @@ MonoBehaviour:
   _animator: {fileID: 3003446393191295309}
   _behaviorGraphAgent: {fileID: 6700251588636404022}
   _navMeshAgent: {fileID: 7343599088744480845}
+  _roundActive: 0
   _canShoot: 0
 --- !u!114 &8738560385402695320
 MonoBehaviour:
@@ -3608,6 +3609,7 @@ MonoBehaviour:
   _playerCamera: {fileID: 0}
   _playerAudio: {fileID: 7208764881888310812}
   _playerTeam: {fileID: 1592787337988524941}
+  _roundActive: 0
   _canAction: 1
   _movementState: 0
   _stanceState: 0

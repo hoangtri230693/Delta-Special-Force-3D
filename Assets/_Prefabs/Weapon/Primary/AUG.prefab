@@ -45,12 +45,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _weaponController: {fileID: 2919862222155499795}
-  _crosshairOffset: 0.01
+  _crosshairController: {fileID: 236035263869483772}
+  _scopeAimController: {fileID: 0}
   _crosshair: {fileID: 5326700056946711486}
   _scopeCrosshair: {fileID: 0}
   _aimScopeCamera: {fileID: 0}
-  _crosshairController: {fileID: 236035263869483772}
-  _scopeAimController: {fileID: 0}
+  _crosshairOffset: 0.01
   _targetPosition: {x: 0, y: 0, z: 0}
   _targetRotation: {x: 0, y: 0, z: 0, w: 0}
   _playerHealth: {fileID: 0}
@@ -347,6 +347,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1332962ec5bc58247bf22eae166f9fca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _weaponStats: {fileID: 0}
+  _weaponRig: {fileID: 0}
   _weaponID: 11
   _weaponRigController: {fileID: 4133136130856581179}
   _weaponShootController: {fileID: 8402349224180150040}
@@ -354,11 +356,8 @@ MonoBehaviour:
   _weaponThrowController: {fileID: 0}
   _weaponCollision: {fileID: 394291963846870769}
   _rigidbody: {fileID: 6803217827570825665}
-  _barrelPointController: {fileID: 1988411089010235560}
   _player: {fileID: 0}
   _playerController: {fileID: 0}
-  _playerRig: {fileID: 0}
-  _playerAnimationEvents: {fileID: 0}
   _botAIController: {fileID: 0}
 --- !u!114 &4133136130856581179
 MonoBehaviour:
@@ -428,7 +427,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2790849852225643442}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 29283991f586db8468b4ed358a2b8b37, type: 3}
   m_Name: 
@@ -659,7 +658,7 @@ AudioSource:
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
-  Priority: 128
+  Priority: 0
   DopplerLevel: 1
   MinDistance: 10
   MaxDistance: 150

@@ -2669,7 +2669,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 15940
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 8600000, guid: c803899aa6a5c4d42b9c303d661dcf82, type: 2}
   m_TargetDisplay: 0
@@ -3478,7 +3478,9 @@ MonoBehaviour:
   _teamMenu: {fileID: 0}
   _mapMenu: {fileID: 0}
   _player: {fileID: 0}
-  _playerKilled: 0
+  _currentGameState: 0
+  _currentGameResult: 0
+  _allBotCharacter: []
 --- !u!4 &1743365432
 Transform:
   m_ObjectHideFlags: 0

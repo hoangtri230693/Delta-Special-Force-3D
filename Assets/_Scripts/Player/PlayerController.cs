@@ -32,6 +32,7 @@ public class PlayerController : MonoBehaviour
     private Vector3 _moveDirection = Vector3.zero;
 
     [Header("Player Flags")]
+    public bool _roundActive = false;
     public bool _canAction = true;
     private bool _isAiming = false;
     private bool _isCrouching = false;
@@ -152,17 +153,7 @@ public class PlayerController : MonoBehaviour
 
         if (_lifeState == LifeState.None) return;
 
-        bool isRoundActive = false;
-        if (GameManager_TeamDeathmatch.instance != null)
-        {
-            isRoundActive = GameManager_TeamDeathmatch.instance._currentGameState == GameState.RoundActive;
-        }
-        else if (GameManager_ZombieSurvival.instance != null)
-        {
-            isRoundActive = GameManager_ZombieSurvival.instance._currentGameState == GameState.RoundActive;
-        }
-
-        if (isRoundActive)
+        if (_roundActive)
         {
             if (_canAction)
             {
@@ -335,7 +326,6 @@ public class PlayerController : MonoBehaviour
         else
         {
             _velocity.y += Physics.gravity.y * Time.deltaTime;
-            _movementState = MovementState.Fall;
         }
     }
 
@@ -452,13 +442,15 @@ public class PlayerController : MonoBehaviour
         if (TryGetComponent<LineOfSightDetector>(out var lineOfSightDetector)) lineOfSightDetector.enabled = false;
 
         _combatState = CombatState.None;
-        _playerInventory.ActiveCombatItem(_combatState);
-
         _actionState = ActionState.None;
+        _itemType = ItemType.PrimaryItem;
+        _playerInventory.ActiveCombatItem(_combatState);
+        _playerInventory.UpdateItem(_itemType);
+        _playerInventory.DropCurrentItem();
+
         _itemType = ItemType.None;
         _playerAnimator.UpdateItemType(_itemType);  
         _playerInventory.UpdateItem(_itemType);
-        _playerInventory.DropCurrentItem(_itemType);
         _playerRig.UpdateRigWeight(_itemType);
         _playerRig.UpdateBodyOffset(_itemType, _stanceState);
         _playerAnimator.UpdateDeathState(_lifeState);
@@ -559,7 +551,7 @@ public class PlayerController : MonoBehaviour
     {
         if (!isDropping) return;
 
-        _playerInventory.DropCurrentItem(_itemType);
+        _playerInventory.DropCurrentItem();
     }
 
     private void HandleOpeningResultTable(bool isOpeningResultTable)

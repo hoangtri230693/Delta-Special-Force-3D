@@ -2,6 +2,7 @@
 using DeltaSpecialForce3D.Enums;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Unity.Behavior;
 using UnityEngine;
 using UnityEngine.AI;
@@ -17,27 +18,26 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
     [SerializeField] private MapMenuSO _mapMenu;
 
     [Header("Game Manager")]
-    private List<GameObject> _allBotCharacter;
-
     public GameObject _player;
-    public TeamName _playerTeam;
-    public GameState _currentGameState { get; private set; }
-    public GameResult _currentGameResult {  get; private set; }
+    [SerializeField] private TeamName _playerTeam;
+    [SerializeField] private GameState _currentGameState;
+    [SerializeField] private GameResult _currentGameResult;
+    [SerializeField] private List<GameObject> _allBotCharacter;
 
-    private MapDataSO _currentMapData;
     private SpawnData[] _spawnCounter;
     private SpawnData[] _spawnTerrorist;
+    private List<GameObject> _createdAssaultPoints;
+    private List<GameObject> _createdPatrolPoints;
+
     private int _teamCounterCount = 0;
     private int _teamTerroristCount = 0;
     private int _teamCounterWin = 0;
     private int _teamTerroristWin = 0;
-
     private float _timeCount;
     private int _currentRound = 0;
     private int _playerKilled = 0;
 
-    private List<GameObject> _createdAssaultPoints;
-    private List<GameObject> _createdPatrolPoints;
+    
 
     private void Awake()
     {
@@ -82,6 +82,27 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
         }
     }
 
+    private void SetCharactersRoundState(bool isActive)
+    {
+        // Set trạng thái cho Player
+        if (_player != null && _player.TryGetComponent<PlayerController>(out var playerController))
+        {
+            playerController._roundActive = isActive;
+        }
+
+        // Set trạng thái cho tất cả Bots trong danh sách đã lưu
+        if (_allBotCharacter != null)
+        {
+            foreach (var bot in _allBotCharacter)
+            {
+                if (bot != null && bot.TryGetComponent<BotAIController>(out var botAI))
+                {
+                    botAI._roundActive = isActive;
+                }
+            }
+        }
+    }
+
     private void SetupGameplay()
     {
         PlayerDataManager.instance.UsePlayerGold(_gameplayConfig.useGoldPerMatch);
@@ -94,11 +115,11 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
         _createdPatrolPoints = new List<GameObject>();
     }
 
-    private void SetupMapPoint()
+    private void SetupMapPoint(MapDataSO mapData)
     {
         if (_createdAssaultPoints != null)
         {
-            foreach (var data in _currentMapData._assaultCounter)
+            foreach (var data in mapData._assaultCounter)
             {
                 GameObject p = new GameObject($"AssaultPoint_{_createdAssaultPoints.Count}");
                 p.transform.SetParent(this.transform);
@@ -109,7 +130,7 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
 
         if (_createdPatrolPoints != null)
         {
-            foreach (var data in _currentMapData._patrolTerrorist)
+            foreach (var data in mapData._patrolTerrorist)
             {
                 GameObject p = new GameObject($"PatrolPoint_{_createdPatrolPoints.Count}");
                 p.transform.SetParent(this.transform);
@@ -161,6 +182,7 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
         {
             StopAllCharacters();
             _currentGameState = GameState.RoundEnd;
+            SetCharactersRoundState(false);
             _timeCount = 5f;
 
             if (_playerTeam == TeamName.Counter) _teamTerroristWin++;
@@ -173,20 +195,23 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
 
     private async UniTask SpawnMatch()
     {
+        _teamCounterCount = 0;
+        _teamTerroristCount = 0;
+
         int mapID = PlayerPrefs.GetInt("SelectedMapID", 0);
-        _currentMapData = _mapMenu.GetMapDataByMapID(mapID);
+        var mapData = _mapMenu.GetMapDataByMapID(mapID);
         Debug.Log("Map ID: " + mapID);
 
-        _spawnCounter = _currentMapData._spawnCounter;
-        _spawnTerrorist = _currentMapData._spawnTerrorist; 
+        _spawnCounter = mapData._spawnCounter;
+        _spawnTerrorist = mapData._spawnTerrorist; 
         int teamSize = _gameplayConfig.teamSize;
         ShuffleArray(_spawnCounter);
         ShuffleArray(_spawnTerrorist);
 
-        SetupMapPoint();
+        SetupMapPoint(mapData);
         
         var teamID = PlayerPrefs.GetInt("SelectedTeamID", 0);
-        var teamData = _teamMenu.GetTeamByID(teamID);
+        var teamData = _teamMenu.GetTeamByTeamID(teamID);
         _playerTeam = teamData.teamName;
         Debug.Log("Player Team: " + _playerTeam.ToString());
 
@@ -240,16 +265,17 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
             GameObject bot = spawnedBots[i];
             SpawnData sPoint = spawnPoints[i + startIndex];
             bot.transform.position = sPoint.position;
-            bot.transform.rotation = Quaternion.Euler(sPoint.rotation);
+            Vector3 spawnRotation = sPoint.rotation;
+            bot.transform.rotation = Quaternion.Euler(0, spawnRotation.y, 0);
 
-            SetupBotAI(bot, teamName, i);
+            await SetupBotAI(bot, teamName, i);
            
             _allBotCharacter.Add(bot);
             if (teamName == TeamName.Counter) _teamCounterCount++; else _teamTerroristCount++;
         }
     }
 
-    private void SetupBotAI(GameObject bot, TeamName team, int index)
+    private async Task SetupBotAI(GameObject bot, TeamName team, int index)
     {
         if (!bot.TryGetComponent<BehaviorGraphAgent>(out var behavior)) return;
 
@@ -259,6 +285,8 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
             agent.enabled = true;
         }
 
+        await UniTask.Yield();
+
         List<GameObject> pointsForBlackboard = new List<GameObject>();
 
         if (team == TeamName.Counter)
@@ -267,8 +295,9 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
         }
         else
         {
-            ShuffleArray(_createdPatrolPoints);
-            behavior.BlackboardReference.SetVariableValue("PatrolPoints", _createdPatrolPoints);
+            List<GameObject> randomizedPatrolPoints = new List<GameObject>(_createdPatrolPoints);
+            ShuffleArray(randomizedPatrolPoints);
+            behavior.BlackboardReference.SetVariableValue("PatrolPoints", randomizedPatrolPoints);
         }
 
         behavior.enabled = true;
@@ -302,6 +331,7 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
                 {
                     _currentGameState = GameState.RoundActive;
                     _timeCount = _gameplayConfig.timeRoundActive;
+                    SetCharactersRoundState(true);
                     if (_currentRound > 0) return;
                     AudioManager.instance.PlayRadioTeam(_currentGameState, _currentGameResult);
                 }
@@ -312,7 +342,8 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
                     StopAllCharacters();
                     if (_teamCounterCount <= _teamTerroristCount) _teamTerroristWin++;
                     else if (_teamTerroristCount <= _teamCounterCount) _teamCounterWin++;
-                    _currentGameState = GameState.RoundEnd;      
+                    _currentGameState = GameState.RoundEnd;
+                    SetCharactersRoundState(false);
                     _timeCount = 5f;
                     UpdateResultRound();
                     UIGameManager_TeamDeathmatch.instance.OpenResultMenu(true);

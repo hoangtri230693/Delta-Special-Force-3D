@@ -29,12 +29,14 @@ public class UIShop : MonoBehaviour
     // =================== BUTTON ===================
     public void OnClickNext()
     {
+        AudioManager.instance.PlaySfx(SFXSoundType.MetalClick);
         _currentWeaponID = (_currentWeaponID + 1) % WeaponDataManager.instance.weaponStatsSO.Length;
         ShowWeaponByID(_currentWeaponID);
     }
 
     public void OnClickPrevious()
     {
+        AudioManager.instance.PlaySfx(SFXSoundType.MetalClick);
         _currentWeaponID--;
         if (_currentWeaponID < 0)
             _currentWeaponID = WeaponDataManager.instance.weaponStatsSO.Length - 1;
@@ -47,7 +49,10 @@ public class UIShop : MonoBehaviour
         int weaponID = _currentWeapon.weaponID;
 
         if (IsUnlocked(weaponID))
+        {
+            AudioManager.instance.PlaySfx(SFXSoundType.MetalClick);
             return;
+        }         
 
         int gold = PlayerDataManager.instance.playerSaveData.Gold;
 

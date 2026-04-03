@@ -55,6 +55,7 @@ public class LineOfSightDetector : MonoBehaviour
     private void UpdateBlackboard()
     {
         behaviorAgent.BlackboardReference.SetVariableValue("HasLineOfSight", HasLineOfSight);
+        behaviorAgent.BlackboardReference.SetVariableValue("Target", detectedTarget ? detectedTarget.gameObject : null);
     }
 
     private void OnDrawGizmosSelected()

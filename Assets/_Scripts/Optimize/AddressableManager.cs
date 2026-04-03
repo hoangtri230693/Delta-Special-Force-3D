@@ -25,6 +25,18 @@ public class AddressableManager : MonoBehaviour
         }
     }
 
+    //public async UniTask<T> LoadAssetAsync<T>(object key) where T : Object
+    //{
+    //    // 1. Kiểm tra nếu tài nguyên đã được load trước đó (Caching)
+    //    if (_assetHandles.TryGetValue(key, out var handle))
+    //        return await handle.Convert<T>().ToUniTask();
+
+    //    // 2. Nếu chưa có, tiến hành load mới từ Addressables
+    //    var newHandle = Addressables.LoadAssetAsync<T>(key);
+    //    _assetHandles[key] = newHandle;
+    //    return await newHandle.ToUniTask();
+    //}
+
     public async UniTask<T> LoadAssetAsync<T>(object key) where T : Object
     {
         if (key == null) return null;
@@ -66,7 +78,6 @@ public class AddressableManager : MonoBehaviour
     {
         if (key == null) return null;
 
-        // Tương tự, dùng UniTask để có thể Cancel nếu người chơi click quá nhanh
         try
         {
             return await Addressables.InstantiateAsync(key, parent).ToUniTask();
@@ -101,18 +112,7 @@ public class AddressableManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        // 1. Hủy tất cả các tiến trình đang chạy để tránh lỗi truy cập bộ nhớ
-        foreach (var cts in _ctsDict.Values)
-        {
-            if (cts != null)
-            {
-                cts.Cancel();
-                cts.Dispose();
-            }
-        }
-        _ctsDict.Clear();
-
-        // 2. Quan trọng: Giải phóng toàn bộ tài nguyên đã load vào RAM
+        // Quan trọng: Giải phóng toàn bộ tài nguyên đã load vào RAM
         foreach (var handle in _assetHandles.Values)
         {
             if (handle.IsValid())
@@ -121,8 +121,5 @@ public class AddressableManager : MonoBehaviour
             }
         }
         _assetHandles.Clear();
-
-        // 3. Xóa instance singleton
-        if (instance == this) instance = null;
     }
 }
