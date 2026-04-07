@@ -109,10 +109,11 @@ public class GameManager_ZombieSurvival : MonoBehaviour
         }
     }
 
-    public void UpdatePlayerKilled()
+    public void UpdatePlayerKilled(int killedCount)
     {
-        _playerKilled++;
-        _zombieWaveCount--;    
+        _playerKilled ++;
+        _zombieWaveCount--;
+        UIGameManager_ZombieSurvival.instance.UpdateKilledCount(_playerKilled);
     }
 
     public void OnPlayerDeath()
@@ -144,7 +145,7 @@ public class GameManager_ZombieSurvival : MonoBehaviour
         int teamID = PlayerPrefs.GetInt("SelectedTeamID", 0);
         int charID = PlayerPrefs.GetInt("SelectedCharacterID", 0);
         int mapID = PlayerPrefs.GetInt("SelectedMapID", 0);
-        Debug.Log("Map ID: " + mapID);
+        //Debug.Log("Map ID: " + mapID);
 
         var teamData = _teamMenu.GetTeamByTeamID(teamID);
         var charData = teamData?.GetCharacterDataByCharacterID(charID);

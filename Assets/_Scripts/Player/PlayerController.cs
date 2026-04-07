@@ -49,10 +49,9 @@ public class PlayerController : MonoBehaviour
     public LifeState _lifeState = LifeState.Alive;
 
     [Header("Player Stats")]
-    public int _killedCount = 0;
-    public int _deathCount = 0;
-    public float _currentSpeed = 0;
-    public float _currentDirection = 0;
+    private int _killedCount = 0;
+    private int _deathCount = 0;
+    private float _currentSpeed = 0;
     public int _currentCash = 20000;
 
 
@@ -108,7 +107,6 @@ public class PlayerController : MonoBehaviour
         _actionState = ActionState.None;
         _combatState = CombatState.None;
         _currentSpeed = 0;
-        _currentDirection = 0;
         _playerAnimator.ResetMovementState();
         _playerAnimator.UpdateAiming(_isAiming);
         _playerAnimator.UpdateStanceState(_stanceState);
@@ -121,26 +119,18 @@ public class PlayerController : MonoBehaviour
         _killedCount++;
 
         if (UIGameManager_TeamDeathmatch.instance != null && GameManager_TeamDeathmatch.instance != null)
-        {
-            UIGameManager_TeamDeathmatch.instance.UpdateKilledCount(_playerTeam.Team, _playerTeam.ID, _killedCount);
-            GameManager_TeamDeathmatch.instance.UpdatePlayerKilled(transform.gameObject);
-        }
+            GameManager_TeamDeathmatch.instance.UpdatePlayerKilled(_playerTeam.Team, _playerTeam.ActorID, _killedCount);
 
         if (UIGameManager_ZombieSurvival.instance != null && GameManager_ZombieSurvival.instance != null)
-        {
-            UIGameManager_ZombieSurvival.instance.UpdateKilledCount(_killedCount);
-            GameManager_ZombieSurvival.instance.UpdatePlayerKilled();
-        }
+            GameManager_ZombieSurvival.instance.UpdatePlayerKilled(_killedCount);
     }
 
     public void IncrementDeadCount()
     {
+        _deathCount++;
+
         if (UIGameManager_TeamDeathmatch.instance != null)
-        {
-            _deathCount++;
-            UIGameManager_TeamDeathmatch.instance.UpdateDeathCount(_playerTeam.Team, _playerTeam.ID, _deathCount);
-            GameManager_TeamDeathmatch.instance.UpdateTeamCount(_playerTeam.Team);
-        }
+            GameManager_TeamDeathmatch.instance.UpdatePlayerDeath(_playerTeam.Team, _playerTeam.ActorID, _deathCount);
     }
 
     public void UpdateInputs(Vector2 moveInput, Vector2 lookInput, bool isSprinting, bool isJumping, bool isCrouching,
@@ -242,7 +232,6 @@ public class PlayerController : MonoBehaviour
             _right.y = 0;
 
             _moveDirection = (_forward * input.y + _right * input.x).normalized;
-            _currentDirection = input.y;
         }
         else
         {
@@ -260,8 +249,6 @@ public class PlayerController : MonoBehaviour
             _right.y = 0;
 
             _moveDirection = (_forward * input.y + _right * input.x).normalized;
-            if (isMoving) _currentDirection = 1;
-            else _currentDirection = 0;
         }
 
         if (isSprinting) _movementState = MovementState.Run;
@@ -433,7 +420,6 @@ public class PlayerController : MonoBehaviour
         _velocity = Vector3.zero;
         _moveDirection = Vector3.zero;
         _currentSpeed = 0;
-        _currentDirection = 0;
 
         if (TryGetComponent<BehaviorGraphAgent>(out var behaviorAgent)) behaviorAgent.enabled = false;
         if (TryGetComponent<NavMeshAgent>(out var navAgent)) navAgent.enabled = false;

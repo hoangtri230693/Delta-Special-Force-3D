@@ -17,9 +17,11 @@ public class UIGameManager_TeamDeathmatch : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _time;
     [SerializeField] private GameObject _shopInGame;
     [SerializeField] private GameObject _tableResult;
+    [SerializeField] private TextMeshProUGUI[] _nameCounter;
     [SerializeField] private TextMeshProUGUI[] _killedCounter;
     [SerializeField] private TextMeshProUGUI[] _deathCounter;
     [SerializeField] private TextMeshProUGUI[] _resultCounter;
+    [SerializeField] private TextMeshProUGUI[] _nameTerrorist;
     [SerializeField] private TextMeshProUGUI[] _killedTerrorist;
     [SerializeField] private TextMeshProUGUI[] _deathTerrorist;
     [SerializeField] private TextMeshProUGUI[] _resultTerrorist;
@@ -32,6 +34,7 @@ public class UIGameManager_TeamDeathmatch : MonoBehaviour
     [SerializeField] private Color _winColor = Color.green;
     [SerializeField] private Color _loseColor = Color.red;
     [SerializeField] private Color _drawColor = Color.gray;
+    [SerializeField] private Color _playerColor = Color.blue;
 
 
     private void Awake()
@@ -145,27 +148,27 @@ public class UIGameManager_TeamDeathmatch : MonoBehaviour
         OpenResultMenu(true);
     }
 
-    public void UpdateKilledCount(TeamName teamName, int playerID, int killedCount)
+    public void UpdateKilledCount(TeamName teamName, int actorID, int killedCount)
     {
         if (teamName == TeamName.Counter)
         {
-            _killedCounter[playerID].text = killedCount.ToString();
+            _killedCounter[actorID].text = killedCount.ToString();
         }
         else if (teamName == TeamName.Terrorist)
         {
-            _killedTerrorist[playerID].text = killedCount.ToString();
+            _killedTerrorist[actorID].text = killedCount.ToString();
         }
     }
 
-    public void UpdateDeathCount(TeamName teamName, int playerID, int deathCount)
+    public void UpdateDeathCount(TeamName teamName, int actorID, int deathCount)
     {
         if (teamName == TeamName.Counter)
         {
-            _deathCounter[playerID].text = deathCount.ToString();
+            _deathCounter[actorID].text = deathCount.ToString();
         }
         else if (teamName == TeamName.Terrorist)
         {
-            _deathTerrorist[playerID].text = deathCount.ToString();
+            _deathTerrorist[actorID].text = deathCount.ToString();
         }
     }
 
@@ -197,5 +200,53 @@ public class UIGameManager_TeamDeathmatch : MonoBehaviour
     public void UpdateUIPlayerHealth(float currentHealth)
     {
         _health.text = currentHealth.ToString();
+    }
+
+    public void SetColorPlayerResult(int actorID, TeamName playerTeam)
+    {
+        Color defaultColor = Color.white;
+
+        for (int i = 0; i < _nameCounter.Length; i++)
+        {
+            _nameCounter[i].color = defaultColor;
+            _killedCounter[i].color = defaultColor;
+            _deathCounter[i].color = defaultColor;
+        }
+
+        for (int i = 0; i < _nameTerrorist.Length; i++)
+        {
+            _nameTerrorist[i].color = defaultColor;
+            _killedTerrorist[i].color = defaultColor;
+            _deathTerrorist[i].color = defaultColor;
+        }
+
+        switch (playerTeam)
+        {
+            case TeamName.Counter:
+                _nameCounter[actorID].color = _playerColor;
+                _killedCounter[actorID].color = _playerColor;
+                _deathCounter[actorID].color = _playerColor;
+                break;
+            case TeamName.Terrorist:
+                _nameTerrorist[actorID].color = _playerColor;
+                _killedTerrorist[actorID].color = _playerColor;
+                _deathTerrorist[actorID].color = _playerColor;
+                break;
+        }
+    }
+
+    public void ResetResultMenu()
+    {
+        for (int i = 0; i < _nameCounter.Length; i++)
+        {
+            _killedCounter[i].text = "0";
+            _deathCounter[i].text = "0";
+        }
+
+        for (int i = 0; i < _nameTerrorist.Length; i++)
+        {
+            _killedTerrorist[i].text = "0";
+            _deathTerrorist[i].text = "0";
+        }
     }
 }

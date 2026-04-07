@@ -67,7 +67,7 @@ public class WeaponRigController : MonoBehaviour
 
         PlayerTeam playerTeam = player.GetComponentInParent<PlayerTeam>();
         CharacterName characterName = playerTeam.Name;
-        Debug.Log($"Character: {characterName}, Team: {playerTeam.Team}");
+        //Debug.Log($"Character: {characterName}, Team: {playerTeam.Team}");
 
         switch (characterName)
         {
@@ -98,7 +98,7 @@ public class WeaponRigController : MonoBehaviour
 
         transform.localPosition = weaponPos;
         transform.localEulerAngles = weaponRot;
-        Debug.Log("Weapon Rotation = " + weaponRot);
+        //Debug.Log("Weapon Rotation = " + weaponRot);
 
         if (_leftHandTarget != null)
         {

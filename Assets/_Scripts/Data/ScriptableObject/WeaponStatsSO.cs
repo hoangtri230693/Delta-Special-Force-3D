@@ -18,6 +18,7 @@ public class WeaponStatsSO : ScriptableObject
 
     [Header("Physics & Targeting")]
     public LayerMask targetMask;
+    public LayerMask raycastMask;
     public float maxDistance;
     public float shootForce;
     public float explosionForce;

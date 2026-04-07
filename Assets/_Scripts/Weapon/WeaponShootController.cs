@@ -261,7 +261,20 @@ public class WeaponShootController : MonoBehaviour
 
             if (playerHealth._currentHealth <= 0)
             {
-                _weaponController._playerController.IncrementKillCount();
+                if (playerHealth.TryGetComponent<PlayerController>(out var targetController))
+                {
+                    // Lấy thông tin Team của người bắn và mục tiêu
+                    var team = _weaponController._playerController.GetComponent<PlayerTeam>().Team;
+                    var targetTeam = targetController.GetComponent<PlayerTeam>().Team;
+
+                    // ĐIỀU KIỆN: 
+                    // - Mục tiêu không phải là chính mình
+                    // - Mục tiêu phải khác Team với mình
+                    if (targetController != _weaponController._playerController && team != targetTeam)
+                    {
+                        _weaponController._playerController.IncrementKillCount();
+                    }
+                }
             }
         }
 

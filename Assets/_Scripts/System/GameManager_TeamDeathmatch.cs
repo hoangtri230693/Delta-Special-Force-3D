@@ -36,8 +36,12 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
     private float _timeCount;
     private int _currentRound = 0;
     private int _playerKilled = 0;
+    private int _playerDeath = 0;
+    private int _playerActorID;
+    private List<int> _availableActorIDs_Counter;
+    private List<int> _availableActorIDs_Terrorist;
 
-    
+
 
     private void Awake()
     {
@@ -56,8 +60,7 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
     private async void Start()
     {
         await SpawnMatch();
-        UIGameManager_TeamDeathmatch.instance.OnLoadingScreen(false);
-        UIGameManager_TeamDeathmatch.instance.SetupMiniMap(_player);
+        UIGameManager_TeamDeathmatch.instance.OnLoadingScreen(false);        
         AudioManager.instance.PlayRadioTeam(_currentGameState, _currentGameResult);    
     }
 
@@ -158,22 +161,38 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
         }
     }
 
-    public void UpdatePlayerKilled(GameObject player)
+    public void UpdatePlayerKilled(TeamName team, int actorID, int killedCount)
     {
-        if (player == _player)
+        if (actorID == _playerActorID && team == _playerTeam)
+        {
             _playerKilled++;
+            UIGameManager_TeamDeathmatch.instance.UpdateKilledCount(team, actorID, _playerKilled);
+        }
+        else
+        {
+            UIGameManager_TeamDeathmatch.instance.UpdateKilledCount(team, actorID, killedCount);
+        }
     }
 
-    public void UpdateTeamCount(TeamName teamName)
+    public void UpdatePlayerDeath(TeamName team, int actorID, int deathCount)
     {
-        if (teamName == TeamName.Counter)
+        switch (team)
         {
-            _teamCounterCount--;
+            case TeamName.Counter:
+                _teamCounterCount--;
+                break;
+            case TeamName.Terrorist:
+                _teamTerroristCount--;
+                break;
         }
-        if (teamName == TeamName.Terrorist)
+
+        if (actorID == _playerActorID && team == _playerTeam)
         {
-            _teamTerroristCount--;
-        }
+            _playerDeath++;
+            UIGameManager_TeamDeathmatch.instance.UpdateDeathCount(team, actorID, _playerDeath);
+        }              
+        else
+            UIGameManager_TeamDeathmatch.instance.UpdateDeathCount(team, actorID, deathCount);     
     }
 
     public void OnPlayerDeath()
@@ -187,7 +206,7 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
 
             if (_playerTeam == TeamName.Counter) _teamTerroristWin++;
             else _teamCounterWin++;
-
+            
             UpdateResultRound();
             UIGameManager_TeamDeathmatch.instance.OpenResultMenu(true);
         }
@@ -200,27 +219,34 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
 
         int mapID = PlayerPrefs.GetInt("SelectedMapID", 0);
         var mapData = _mapMenu.GetMapDataByMapID(mapID);
-        Debug.Log("Map ID: " + mapID);
+        SetupMapPoint(mapData);
 
         _spawnCounter = mapData._spawnCounter;
-        _spawnTerrorist = mapData._spawnTerrorist; 
-        int teamSize = _gameplayConfig.teamSize;
+        _spawnTerrorist = mapData._spawnTerrorist;
         ShuffleArray(_spawnCounter);
         ShuffleArray(_spawnTerrorist);
 
-        SetupMapPoint(mapData);
-        
+        int teamSize = _gameplayConfig.teamSize;
+        _availableActorIDs_Counter = new List<int>();
+        _availableActorIDs_Terrorist = new List<int>();
+
+        for (int i = 0; i < teamSize; i++)
+        {
+            _availableActorIDs_Counter.Add(i);
+            _availableActorIDs_Terrorist.Add(i);
+        }
+
         var teamID = PlayerPrefs.GetInt("SelectedTeamID", 0);
         var teamData = _teamMenu.GetTeamByTeamID(teamID);
         _playerTeam = teamData.teamName;
-        Debug.Log("Player Team: " + _playerTeam.ToString());
+        //Debug.Log("Player Team: " + _playerTeam.ToString());
 
-        await SpawnPlayer(teamData);
+        await SpawnPlayer(teamData, teamSize);
         await SpawnTeamBots(TeamName.Counter, teamSize);
         await SpawnTeamBots(TeamName.Terrorist, teamSize);
     }
 
-    private async UniTask SpawnPlayer(TeamDataSO teamData)
+    private async UniTask SpawnPlayer(TeamDataSO teamData, int teamSize)
     {
         int charID = PlayerPrefs.GetInt("SelectedCharacterID", 0);
         var charData = teamData.GetCharacterDataByCharacterID(charID);
@@ -234,6 +260,23 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
                 SpawnData spawnData = (_playerTeam == TeamName.Counter) ? _spawnCounter[0] : _spawnTerrorist[0];
                 _player.transform.position = spawnData.position;
                 _player.transform.rotation = Quaternion.Euler(spawnData.rotation);
+                if (_player.TryGetComponent<PlayerTeam>(out var playerTeam))
+                {
+                    var list = (_playerTeam == TeamName.Counter) ? _availableActorIDs_Counter : _availableActorIDs_Terrorist;
+
+                    int randomIndex = Random.Range(0, list.Count - 1);
+                    //Debug.Log("List Count: " + list.Count);
+                    _playerActorID = list[randomIndex];
+
+                    list.RemoveAt(randomIndex);
+                    playerTeam.SetupActor(_playerActorID);
+                    UIGameManager_TeamDeathmatch.instance.ResetResultMenu();
+                    UIGameManager_TeamDeathmatch.instance.SetColorPlayerResult(_playerActorID, _playerTeam);
+                    UIGameManager_TeamDeathmatch.instance.UpdateKilledCount(_playerTeam, _playerActorID, _playerKilled);
+                    UIGameManager_TeamDeathmatch.instance.UpdateDeathCount(_playerTeam, _playerActorID, _playerDeath);
+                    UIGameManager_TeamDeathmatch.instance.SetupMiniMap(_player);
+                    //Debug.Log("Player Team: " + _playerTeam);
+                }
             }
 
             if (_playerTeam == TeamName.Counter) _teamCounterCount++; else _teamTerroristCount++;
@@ -267,6 +310,17 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
             bot.transform.position = sPoint.position;
             Vector3 spawnRotation = sPoint.rotation;
             bot.transform.rotation = Quaternion.Euler(0, spawnRotation.y, 0);
+
+            if (bot.TryGetComponent<PlayerTeam>(out var botTeam))
+            {
+                var list = (teamName == TeamName.Counter) ? _availableActorIDs_Counter : _availableActorIDs_Terrorist;
+
+                int randomIndex = Random.Range(0, list.Count);
+                int actorID = list[randomIndex];
+
+                list.RemoveAt(randomIndex);
+                botTeam.SetupActor(actorID);
+            }
 
             await SetupBotAI(bot, teamName, i);
            
@@ -346,7 +400,6 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
                     SetCharactersRoundState(false);
                     _timeCount = 5f;
                     UpdateResultRound();
-                    UIGameManager_TeamDeathmatch.instance.OpenResultMenu(true);
                 }
                 break;
         }
@@ -360,12 +413,10 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
             {
                 if (_currentRound < _gameplayConfig.totalRound)
                 {
-                    StopAllCharacters();
                     PrepareNextRound();
                 }
                 else
                 {
-                    StopAllCharacters();
                     _currentGameState = GameState.MatchEnd;
                     StartCoroutine(UpdateResultMatch());
                 }
@@ -389,12 +440,12 @@ public class GameManager_TeamDeathmatch : MonoBehaviour
 
     private void StopAllCharacters()
     {
-        if (_player.TryGetComponent<PlayerController>(out var playerController)) playerController.ResetPlayerState();
+        _player.GetComponent<PlayerController>().ResetPlayerState();
 
         foreach (var bot in _allBotCharacter)
         {
             if (bot == null) continue;
-            if (bot.TryGetComponent<BotAIController>(out var botAI)) botAI.enabled = false; 
+            if (bot.TryGetComponent<BotAIController>(out var botAI)) botAI.enabled = false;
             if (bot.TryGetComponent<BehaviorGraphAgent>(out var behavior)) behavior.enabled = false;
             if (bot.TryGetComponent<NavMeshAgent>(out var navMeshAgent)) navMeshAgent.enabled = false;
             if (bot.TryGetComponent<Animator>(out var animator)) animator.SetFloat("Speed", 0);

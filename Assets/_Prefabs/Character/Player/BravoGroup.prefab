@@ -1166,10 +1166,6 @@ MonoBehaviour:
   _actionState: 0
   _itemType: 2
   _lifeState: 1
-  _killedCount: 0
-  _deathCount: 0
-  _currentSpeed: 0
-  _currentDirection: 0
   _currentCash: 20000
 --- !u!114 &4840993619491885164
 MonoBehaviour:
@@ -1304,7 +1300,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _teamName: 1
   _characterName: 2
-  _characterID: 1
+  _actorID: 0
 --- !u!1 &2521371873702967470
 GameObject:
   m_ObjectHideFlags: 0
@@ -2067,6 +2063,7 @@ GameObject:
   - component: {fileID: 7995589591289224925}
   - component: {fileID: 4222529663195502675}
   - component: {fileID: 768721893262841795}
+  - component: {fileID: 2250959196029254947}
   m_Layer: 12
   m_Name: ThirdPersonAimCamera
   m_TagString: Untagged
@@ -2182,6 +2179,36 @@ MonoBehaviour:
     FrequencyGain: 1.2
     Duration: 0.2
     m_NoiseOffsets: {x: 0, y: 0, z: 0}
+--- !u!114 &2250959196029254947
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4177968508958893560}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca7de3aefa901374ba29464584a3109a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CameraRadius: 0.1
+  Decollision:
+    Enabled: 1
+    ObstacleLayers:
+      serializedVersion: 2
+      m_Bits: 1536
+    UseFollowTarget:
+      Enabled: 1
+      YOffset: 1
+    Damping: 1
+    SmoothingTime: 1
+  TerrainResolution:
+    Enabled: 1
+    TerrainLayers:
+      serializedVersion: 2
+      m_Bits: 1536
+    MaximumRaycast: 10
+    Damping: 1
 --- !u!1 &4274223399400187199
 GameObject:
   m_ObjectHideFlags: 0
@@ -3521,6 +3548,7 @@ GameObject:
   - component: {fileID: 6627828796367193948}
   - component: {fileID: 3786406756995823798}
   - component: {fileID: 5769559201257132671}
+  - component: {fileID: 4130525802180904829}
   m_Layer: 12
   m_Name: FreeLookCamera
   m_TagString: Untagged
@@ -3760,6 +3788,36 @@ MonoBehaviour:
         DecelTime: 0.25
   PlayerIndex: -1
   AutoEnableInputs: 1
+--- !u!114 &4130525802180904829
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7542454248191366218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca7de3aefa901374ba29464584a3109a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CameraRadius: 0.1
+  Decollision:
+    Enabled: 1
+    ObstacleLayers:
+      serializedVersion: 2
+      m_Bits: 1536
+    UseFollowTarget:
+      Enabled: 1
+      YOffset: 1
+    Damping: 1
+    SmoothingTime: 1
+  TerrainResolution:
+    Enabled: 1
+    TerrainLayers:
+      serializedVersion: 2
+      m_Bits: 1536
+    MaximumRaycast: 10
+    Damping: 1
 --- !u!1 &7613358225659179126
 GameObject:
   m_ObjectHideFlags: 0

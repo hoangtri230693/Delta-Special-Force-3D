@@ -1591,6 +1591,7 @@ GameObject:
   - component: {fileID: 7416895544616086800}
   - component: {fileID: 1032634832793299515}
   - component: {fileID: 5906266822623972642}
+  - component: {fileID: 330815414920373291}
   m_Layer: 11
   m_Name: ThirdPersonAimCamera
   m_TagString: Untagged
@@ -1706,6 +1707,36 @@ MonoBehaviour:
     FrequencyGain: 1.2
     Duration: 0.2
     m_NoiseOffsets: {x: 0, y: 0, z: 0}
+--- !u!114 &330815414920373291
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2049436401520426889}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca7de3aefa901374ba29464584a3109a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CameraRadius: 0.1
+  Decollision:
+    Enabled: 1
+    ObstacleLayers:
+      serializedVersion: 2
+      m_Bits: 1536
+    UseFollowTarget:
+      Enabled: 1
+      YOffset: 1
+    Damping: 1
+    SmoothingTime: 1
+  TerrainResolution:
+    Enabled: 1
+    TerrainLayers:
+      serializedVersion: 2
+      m_Bits: 1536
+    MaximumRaycast: 10
+    Damping: 1
 --- !u!1 &2233243108513328217
 GameObject:
   m_ObjectHideFlags: 0
@@ -1936,6 +1967,7 @@ GameObject:
   - component: {fileID: 1355783502717847435}
   - component: {fileID: 5724142539996845785}
   - component: {fileID: 4407529504738382282}
+  - component: {fileID: 2194894340721604688}
   m_Layer: 11
   m_Name: FreeLookCamera
   m_TagString: Untagged
@@ -2175,6 +2207,36 @@ MonoBehaviour:
         DecelTime: 0.25
   PlayerIndex: -1
   AutoEnableInputs: 1
+--- !u!114 &2194894340721604688
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2587885075578501006}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca7de3aefa901374ba29464584a3109a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CameraRadius: 0.1
+  Decollision:
+    Enabled: 1
+    ObstacleLayers:
+      serializedVersion: 2
+      m_Bits: 1536
+    UseFollowTarget:
+      Enabled: 1
+      YOffset: 1
+    Damping: 1
+    SmoothingTime: 1
+  TerrainResolution:
+    Enabled: 1
+    TerrainLayers:
+      serializedVersion: 2
+      m_Bits: 1536
+    MaximumRaycast: 10
+    Damping: 1
 --- !u!1 &2693617456509695324
 GameObject:
   m_ObjectHideFlags: 0
@@ -4879,12 +4941,7 @@ Animator:
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 0
-  m_WarningMessage: "\nBinding warning: Some generic clip(s) animate transforms that
-    are already bound by a Humanoid avatar. These transforms can only be changed
-    by Humanoid clips.\n\tTransform 'lowerarm_l'\n\tTransform 'hand_l'\n\tTransform
-    'upperarm_r'\n\tTransform 'upperarm_l'\n\tTransform 'pelvis'\n\tTransform 'spine_01'\n\tTransform
-    'lowerarm_r'\n\tTransform 'hand_r'\n\tTransform 'lowerarm_l'\n\tTransform 'hand_l'\n\tand
-    more ..."
+  m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
@@ -5118,10 +5175,6 @@ MonoBehaviour:
   _actionState: 0
   _itemType: 2
   _lifeState: 1
-  _killedCount: 0
-  _deathCount: 0
-  _currentSpeed: 0
-  _currentDirection: 0
   _currentCash: 20000
 --- !u!114 &2257126804939020538
 MonoBehaviour:
@@ -5256,7 +5309,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _teamName: 2
   _characterName: 6
-  _characterID: 2
+  _actorID: 0
 --- !u!1 &7591863395901474814
 GameObject:
   m_ObjectHideFlags: 0

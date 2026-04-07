@@ -48,7 +48,7 @@ public class RagdollSwitcher : MonoBehaviour
 
     private IEnumerator DisableRagdollsAfterTime()
     {
-        yield return new WaitForSeconds(10f);
+        yield return new WaitForSeconds(5f);
 
         foreach (var rigidbody in _rigids)
         {

@@ -13,6 +13,7 @@ public class WeaponThrowController : MonoBehaviour
 
     public int _currentAmmo;
     public int _currentReverse;
+    private readonly Collider[] _collider = new Collider[128];
 
     private void OnEnable() => RefreshUI();
 
@@ -115,22 +116,27 @@ public class WeaponThrowController : MonoBehaviour
         float fullDamageRadius = 10f;
         float baseDamage = _weaponController.WeaponStats.damage;
         float explosionForce = _weaponController.WeaponStats.explosionForce;
-        LayerMask raycastMask = _weaponController.WeaponStats.targetMask;
+        LayerMask targetMask = _weaponController.WeaponStats.targetMask;
+        LayerMask raycastMask = _weaponController.WeaponStats.raycastMask;
 
-        Collider[] colliders = Physics.OverlapSphere(explosionPosition, radius);
+        int numColliders = Physics.OverlapSphereNonAlloc(explosionPosition, radius, _collider, targetMask);
+        Debug.Log("Number of colliders hit: " + numColliders);
 
-        // Đảm bảo mỗi object chỉ bị xử lý 1 lần
+        // Dùng HashSet để tránh sát thương trùng lặp trên cùng 1 object cha
         HashSet<GameObject> hitObjects = new HashSet<GameObject>();
 
-        foreach (Collider hitCollider in colliders)
+        // Dùng vòng lặp for với numColliders
+        for (int i = 0; i < numColliders; i++)
         {
+            Collider hitCollider = _collider[i];
             GameObject root = hitCollider.transform.root.gameObject;
             if (hitObjects.Contains(root)) continue;
+            hitObjects.Add(root);
 
-            PlayerHealth player = hitCollider.GetComponent<PlayerHealth>();
-            ZombieHealth zombie = hitCollider.GetComponent<ZombieHealth>();
+            PlayerHealth playerHealth = root.GetComponent<PlayerHealth>();
+            ZombieHealth zombieHealth = root.GetComponent<ZombieHealth>();
 
-            if (player == null && zombie == null) continue;
+            if (playerHealth == null && zombieHealth == null) continue;
 
             float distance = Vector3.Distance(explosionPosition, hitCollider.bounds.center);
             float fallOffMultiplier = 1f;
@@ -156,20 +162,33 @@ public class WeaponThrowController : MonoBehaviour
 
             // -------- Apply damage --------
 
-            if (player != null && player._currentHealth > 0)
+            if (playerHealth != null && playerHealth._currentHealth > 0)
             {
-                player.UpdateHealth(finalDamage, _weaponController.WeaponStats.itemType);
+                playerHealth.UpdateHealth(finalDamage, _weaponController.WeaponStats.itemType);
 
-                if (player._currentHealth > 0) _weaponController._playerController.IncrementKillCount();
+                if (playerHealth._currentHealth <= 0)
+                {
+                    if (playerHealth.TryGetComponent<PlayerController>(out var targetController))
+                    {
+                        var team = _weaponController._playerController.GetComponent<PlayerTeam>().Team;
+                        var targetTeam = targetController.GetComponent<PlayerTeam>().Team;
+
+                        if (targetController != _weaponController._playerController && team != targetTeam)
+                        {
+                            _weaponController._playerController.IncrementKillCount();
+                        }
+                    }
+                }
             }
 
-            if (zombie != null && zombie._currentHealth > 0)
+            if (zombieHealth != null && zombieHealth._currentHealth > 0)
             {
-                zombie.UpdateHealth(finalDamage);
+                zombieHealth.UpdateHealth(finalDamage);
+                //Debug.Log("Zombie Health: " + zombieHealth._currentHealth);
 
-                if (zombie._currentHealth <= 0)
+                if (zombieHealth._currentHealth <= 0)
                 {
-                    Rigidbody[] rbs = zombie.GetComponentsInChildren<Rigidbody>();
+                    Rigidbody[] rbs = zombieHealth.GetComponentsInChildren<Rigidbody>();
                     foreach (Rigidbody rb in rbs)
                     {
                         rb.AddExplosionForce(explosionForce, explosionPosition, radius, 1f, ForceMode.Impulse);
@@ -179,6 +198,8 @@ public class WeaponThrowController : MonoBehaviour
                 }
             }
         }
+
+        System.Array.Clear(_collider, 0, numColliders);
     }
 
     private void HandleAudio()

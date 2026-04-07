@@ -1,4 +1,4 @@
-using Unity.Cinemachine;
+﻿using Unity.Cinemachine;
 using UnityEngine;
 using DeltaSpecialForce3D.Enums;
 
@@ -105,7 +105,18 @@ public class WeaponMeleeController : MonoBehaviour
                                        _weaponController.WeaponStats.itemType);
 
             if (_playerHealth._currentHealth <= 0)
-                _weaponController._playerController.IncrementKillCount();
+            {
+                if (_playerHealth.TryGetComponent<PlayerController>(out var targetController))
+                {
+                    var team = _weaponController._playerController.GetComponent<PlayerTeam>().Team;
+                    var targetTeam = targetController.GetComponent<PlayerTeam>().Team;
+
+                    if (targetController != _weaponController._playerController && team != targetTeam)
+                    {
+                        _weaponController._playerController.IncrementKillCount();
+                    }
+                }
+            }
 
             _playerHealth = null;
         }
